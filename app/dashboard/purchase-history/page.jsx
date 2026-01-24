@@ -1,0 +1,154 @@
+"use client";
+
+import React, { useState } from "react";
+import { FaBars } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+
+export default function PurchaseHistory() {
+  const router = useRouter();
+
+  // 🌸 STATIC PURCHASE DATA – HAMSINI SILKS
+  const [orders] = useState([
+    {
+      id: "HS-1001",
+      payable_amount: 12499,
+      order_status: "Delivered",
+      items: [
+        {
+          variant: {
+            image:
+              "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg",
+            product: {
+              name: "Pure Kanchipuram Silk Saree – Ruby Red",
+            },
+          },
+        },
+      ],
+    },
+    {
+      id: "HS-1002",
+      payable_amount: 18999,
+      order_status: "Shipped",
+      items: [
+        {
+          variant: {
+            image:
+              "https://images.pexels.com/photos/2065195/pexels-photo-2065195.jpeg",
+            product: {
+              name: "Traditional Banarasi Silk Saree – Royal Blue",
+            },
+          },
+        },
+      ],
+    },
+    {
+      id: "HS-1003",
+      payable_amount: 9999,
+      order_status: "Processing",
+      items: [
+        {
+          variant: {
+            image:
+              "https://images.pexels.com/photos/247287/pexels-photo-247287.jpeg",
+            product: {
+              name: "Soft Silk Saree – Elegant Peach",
+            },
+          },
+        },
+      ],
+    },
+  ]);
+
+  return (
+    <div className="p-6 bg-white rounded-xl shadow-sm border">
+      <h2 className="text-xl font-semibold mb-6">Purchase History</h2>
+
+      {orders.length === 0 && (
+        <p className="text-gray-500 text-sm">No orders found</p>
+      )}
+
+      {/* 📱 MOBILE + TABLET */}
+      <div className="grid grid-cols-1 gap-4 lg:hidden">
+        {orders.map((order) => (
+          <div
+            key={order.id}
+            className="border rounded-lg p-4 flex gap-3"
+          >
+            <img
+              src={order.items?.[0]?.variant?.image}
+              className="w-20 h-20 rounded object-cover"
+              alt={order.items?.[0]?.variant?.product?.name}
+            />
+
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-orange-600 line-clamp-2">
+                {order.items?.[0]?.variant?.product?.name}
+              </h3>
+
+              <div className="text-xs text-gray-500 mt-1">
+                Order #{order.id}
+              </div>
+
+              <div className="flex justify-between mt-3 text-sm">
+                <span>₹{order.payable_amount}</span>
+                <span className="text-gray-600">{order.order_status}</span>
+              </div>
+
+              <button
+                onClick={() =>
+                  router.push(
+                    `/dashboard/purchase-history/order?id=${order.id}`
+                  )
+                }
+                className="mt-3 text-sm bg-blue-50 text-blue-700 px-3 py-2 rounded"
+              >
+                <FaBars className="inline mr-1" />
+                Details
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 🖥️ DESKTOP TABLE */}
+      <div className="hidden lg:block">
+        <table className="w-full">
+          <thead className="border-b text-sm text-gray-500">
+            <tr>
+              <th className="py-3 text-left pl-2">Order ID</th>
+              <th className="text-left">Product</th>
+              <th className="text-left">Amount</th>
+              <th className="text-left">Status</th>
+              <th className="text-left">Order Details</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order.id} className="border-b">
+                <td className="py-4 pl-2">{order.id}</td>
+                <td className="py-4">
+                  {order.items?.[0]?.variant?.product?.name}
+                </td>
+                <td className="py-4">₹{order.payable_amount}</td>
+                <td className="py-4">{order.order_status}</td>
+                <td className="py-4">
+                  <button
+                    onClick={() =>
+                      router.push(
+                        `/dashboard/purchase-history/order?id=${order.id}`
+                      )
+                    }
+                    className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center"
+                  >
+                    <FaBars />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
