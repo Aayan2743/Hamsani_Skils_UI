@@ -146,6 +146,89 @@
 
 
 
+// "use client";
+
+// import Image from "next/image";
+// import { useRouter } from "next/navigation";
+// import { useCart } from "@/app/providers/CartProvider";
+// import { useWishlist } from "@/app/components/WishlistContext";
+// import { Heart } from "lucide-react";
+// import toast from "react-hot-toast";
+
+// export default function ProductCard({ product }) {
+//   const router = useRouter();
+//   const { addToCart } = useCart();
+//   const { wishlist, toggleWishlist } = useWishlist();
+
+//   const liked = wishlist.includes(product.id);
+
+//   function handleAddToCart(e) {
+//     e.stopPropagation();
+
+//     addToCart({
+//       variantId: product.id,
+//       title: product.title,
+//       price: product.price,
+//       img: product.images[0],
+//     });
+
+//     toast.success("Added to cart");
+//   }
+
+//   function handleWishlist(e) {
+//     e.stopPropagation();
+//     toggleWishlist(product.id);
+//   }
+
+//   return (
+//     <div
+//       onClick={() => router.push(`/product?id=${product.id}`)}
+//       className="group bg-white border border-zinc-200 rounded-xl overflow-hidden hover:shadow-lg transition cursor-pointer"
+//     >
+//       {/* IMAGE */}
+//       <div className="relative aspect-[3/4] overflow-hidden">
+//         <Image
+//           src={product.images}
+//           alt={product.title}
+//           fill
+//           className="object-cover group-hover:scale-110 transition duration-500"
+//         />
+
+//         {/* WISHLIST */}
+//         <button
+//           onClick={handleWishlist}
+//           className="absolute top-3 right-3 bg-white rounded-full p-2 shadow"
+//         >
+//           <Heart
+//             size={18}
+//             className={liked ? "fill-rose-600 text-rose-600" : "text-zinc-500"}
+//           />
+//         </button>
+//       </div>
+
+//       {/* INFO */}
+//       <div className="p-4 text-center">
+//         <p className="text-sm line-clamp-2 text-zinc-800">
+//           {product.title}
+//         </p>
+//         <p className="mt-1 font-semibold text-zinc-900">
+//           ₹ {product.price}
+//         </p>
+//       </div>
+
+//       {/* ADD TO CART */}
+//       <button
+//         onClick={handleAddToCart}
+//         className="w-full py-3 text-sm font-medium bg-red-700 text-white hover:bg-red-500 transition"
+//       >
+//         ADD TO CART
+//       </button>
+//     </div>
+//   );
+// }
+
+
+
 "use client";
 
 import Image from "next/image";
@@ -155,12 +238,25 @@ import { useWishlist } from "@/app/components/WishlistContext";
 import { Heart } from "lucide-react";
 import toast from "react-hot-toast";
 
+const IMAGE_BASE_URL = "http://192.168.1.6:8000/storage";
+
 export default function ProductCard({ product }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const { wishlist, toggleWishlist } = useWishlist();
 
   const liked = wishlist.includes(product.id);
+
+  // ✅ get primary image safely
+  const primaryImage =
+    product.images?.find((img) => img.is_primary)?.image_path ||
+    product.images?.[0]?.image_path ||
+    null;
+
+  // ✅ build full image URL
+  const imageUrl = primaryImage
+    ? `${IMAGE_BASE_URL}/${primaryImage}`
+    : "/placeholder.png";
 
   function handleAddToCart(e) {
     e.stopPropagation();
@@ -169,7 +265,7 @@ export default function ProductCard({ product }) {
       variantId: product.id,
       title: product.title,
       price: product.price,
-      img: product.images[0],
+      img: imageUrl,
     });
 
     toast.success("Added to cart");
@@ -182,15 +278,16 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      onClick={() => router.push(`/product?id=${product.id}`)}
+      onClick={() => router.push(`/product/${product.slug}`)}
       className="group bg-white border border-zinc-200 rounded-xl overflow-hidden hover:shadow-lg transition cursor-pointer"
     >
       {/* IMAGE */}
-      <div className="relative aspect-[3/4] overflow-hidden">
+      <div className="relative aspect-[3/4] overflow-hidden bg-zinc-100">
         <Image
-          src={product.images[0]}
+          src={imageUrl}
           alt={product.title}
           fill
+          sizes="(max-width: 768px) 50vw, 25vw"
           className="object-cover group-hover:scale-110 transition duration-500"
         />
 
@@ -201,7 +298,11 @@ export default function ProductCard({ product }) {
         >
           <Heart
             size={18}
-            className={liked ? "fill-rose-600 text-rose-600" : "text-zinc-500"}
+            className={
+              liked
+                ? "fill-rose-600 text-rose-600"
+                : "text-zinc-500"
+            }
           />
         </button>
       </div>
