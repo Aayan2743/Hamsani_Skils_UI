@@ -26,14 +26,14 @@ export default function WhoWeArePage() {
   return (
     <main className="bg-white text-[#1a1a1a]">
     <section className=" py-10 text-center text-white">
-  <h1 className="text-4xl font-bold text-red-600">About Us</h1>
+  <h1 className="text-4xl font-bold text-red-600 font-sans">About Us</h1>
 </section>
 
       <section className="max-w-7xl mx-auto px-10 ">
 
   {/* Page Heading */}
   <header className="text-center">
-    <h1 className="text-sm tracking-[0.25em] font-semibold mb-4">
+    <h1 className="text-sm tracking-[0.25em] font-semibold mb-4 font-sans">
       WHO WE ARE
     </h1>
   </header>
@@ -51,7 +51,7 @@ export default function WhoWeArePage() {
   </figure>
 
   {/* Content */}
-  <article className="max-w-5xl mx-auto text-[15px] leading-7 space-y-6">
+  <article className="max-w-5xl mx-auto text-[15px] leading-7 space-y-6 font-sans">
    <p>
             <strong>Hamsini Silks</strong> is a celebration of India’s rich
             handloom tradition, built on a deep respect for craftsmanship,

@@ -80,15 +80,15 @@ function handleBuyNow() {
         {/* RIGHT CONTENT */}
         <div>
           
-          <h1 className="text-2xl font-semibold mt-2 text-red-500">
+          <h1 className="text-2xl font-semibold mt-2 text-red-500 font-sans">
             {PRODUCT.name}
           </h1>
 
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1 font-sans">
             SKU: {PRODUCT.sku}
           </p>
 
-          <p className="text-2xl font-bold mt-4 text-black">
+          <p className="text-2xl font-bold mt-4 text-black font-sans">
             ₹{PRODUCT.price.toLocaleString()}
           </p>
 
@@ -96,14 +96,14 @@ function handleBuyNow() {
   <div className="grid grid-cols-2 gap-3">
     <button
       onClick={handleAdd}
-      className="bg-red-700 text-white py-3 rounded-lg"
+      className="bg-red-700 text-white py-3 rounded-lg font-sans"
     >
       Add to Cart
     </button>
 
     <button
       onClick={handleBuyNow}
-      className="border border-zinc-900 py-3 rounded-lg bg-blue-900"
+      className="border border-zinc-900 py-3 text-white rounded-lg bg-blue-900 font-sans"
     >
       Buy Now
     </button>
@@ -114,32 +114,29 @@ function handleBuyNow() {
   <div className="grid grid-cols-2 gap-3">
     <button
       onClick={handleAdd}
-      className="bg-red-700 text-white py-3 rounded-lg font-medium"
+      className="bg-red-700 text-white py-3 rounded-lg font-medium font-sans"
     >
       Add to Cart
     </button>
 
     <button
       onClick={handleBuyNow}
-      className="bg-blue-900 text-white py-3 rounded-lg font-medium"
+      className="bg-blue-900 text-white py-3 rounded-lg font-medium font-sans font-bold"
     >
       Buy Now
     </button>
   </div>
 </div>
 
-
-          <ul className="mt-6 space-y-2 text-sm text-gray-600">
+          <ul className="mt-6 space-y-2 text-md text-gray-900 font-sans">
             <li>🚚 Free Shipping
 Domestic Free standard shipping on orders over
-
 10,000 INR</li>
             <li>🔒 This site has implemented secure payment protocols to protect your financial information</li>
             <li>⚠️ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
           </ul>
         </div>
       </div>
-
       <ProductTabs />
       <RelatedProducts />
     </div>

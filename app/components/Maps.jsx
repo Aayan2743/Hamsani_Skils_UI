@@ -160,15 +160,13 @@ export default function Map() {
     <section className="bg-[#fafafa]">
       {/* INSTAGRAM */}
       <div className="max-w-[1770px] mx-auto pt-[40px] sm:pt-[55px] pb-[30px] sm:pb-[40px] text-center px-4">
-        <h2 className="uppercase text-[22px] sm:text-[25px] tracking-[0.08em] text-[#232323] mb-[20px] sm:mb-[15px]">
-          #Hamsini ON INSTAGRAM
-        </h2>
-
-        <p className="text-[17px] sm:text-[18px] text-[#3c3c3c] max-w-[1100px] mx-auto mb-[45px] sm:mb-[35px] leading-[30px] sm:leading-[28px]">
-          We love to interact with our followers! Follow @Hamsini_silks and drop a
-          comment to let us know you're there. Your thoughts mean the world to us
-        </p>
-
+        <h2 className="uppercase text-[22px] sm:text-[25px] tracking-[0.08em] text-[#232323] mb-[20px] sm:mb-[15px] font-sans">
+  #Hamsini ON INSTAGRAM
+</h2>
+<p className="text-[17px] sm:text-[18px] text-[#3c3c3c] max-w-[1100px] mx-auto mb-[45px] sm:mb-[35px] leading-[30px] sm:leading-[28px] font-sans">
+  We love to interact with our followers! Follow @Hamsini_silks and drop a
+  comment to let us know you're there. Your thoughts mean the world to us
+</p>
         <div className="relative mb-[35px] sm:mb-0">
           {/* LEFT ARROW */}
           <button
@@ -230,11 +228,11 @@ export default function Map() {
 
       {/* STORE */}
       <div className="text-center pt-[25px] sm:pt-[4px] pb-[45px] sm:pb-[40px] px-4">
-        <h2 className="text-[24px] sm:text-[26px] tracking-[0.08em] text-[#232323] mb-[22px] sm:mb-[18px]">
+        <h2 className="text-[24px] sm:text-[26px] tracking-[0.08em] text-[#232323] mb-[22px] sm:mb-[18px] font-sans">
           Visit our Hamsini Store
         </h2>
 
-        <p className="max-w-[1100px] mx-auto text-[16px] sm:text-[17px] leading-[30px] sm:leading-[26px] text-[#3c3c3c] mb-[35px] sm:mb-[30px]">
+        <p className="max-w-[1100px] mx-auto text-[16px] sm:text-[17px] leading-[30px] sm:leading-[26px] text-[#3c3c3c] mb-[35px] sm:mb-[30px] fon-sans">
           Experience the epitome of elegance by visiting our flagship store and
           exploring our array of exquisite store. We extend our warm welcome to
           our other branches located in your cities.
@@ -242,7 +240,7 @@ export default function Map() {
 
         <a
           href="#"
-          className="inline-block px-[42px] text-black  py-[14px] border border-[#232323] uppercase tracking-widest text-[17px] sm:text-[18px] hover:bg-[#232323] hover:text-white transition font-bold"
+          className="inline-block px-[42px] text-black  py-[14px] border border-[#232323] uppercase tracking-widest text-[17px] sm:text-[18px] hover:bg-[#232323] hover:text-white transition font-sans font-bold"
         >
           Our Other Branches
         </a>
