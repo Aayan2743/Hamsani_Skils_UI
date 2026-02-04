@@ -323,10 +323,11 @@ export default function Footer() {
   };
 
   const heading =
-    "uppercase text-[18px] font-bold tracking-[0.02em] mb-6";
+  "uppercase text-[18px] font-bold tracking-[0.02em] mb-6 font-sans";
 
-  const link =
-    "text-[14px] leading-[32px] tracking-[0.02em] text-[#f8f8f8] hover:underline block";
+const link =
+  "text-[14px] leading-[32px] tracking-[0.02em] text-[#f8f8f8] hover:underline block font-sans";
+
 
   return (
     <footer className="bg-[#232323] text-[#f8f8f8]">
@@ -381,18 +382,18 @@ export default function Footer() {
         {/* NEWSLETTER + SOCIAL (DESKTOP) */}
         <div className="hidden md:flex justify-between items-center mt-16">
           <div className="flex items-center gap-6">
-            <h3 className="text-[20px] font-bold">Newsletter Sign Up</h3>
+            <h3 className="text-[20px] font-bold font-sans">Newsletter Sign Up</h3>
             <input
               className="px-4 py-3 text-black w-[260px] bg-white"
               placeholder="Enter your Email address"
             />
-            <button className="border border-white px-10 py-3 uppercase font-bold">
+            <button className="border border-white px-10 py-3 uppercase font-bold font-sans">
               Submit
             </button>
           </div>
 
           <div>
-            <h3 className="uppercase font-bold mb-4">
+            <h3 className="uppercase font-bold mb-4 font-sans">
               Follow us on social
             </h3>
             <div className="flex gap-4">

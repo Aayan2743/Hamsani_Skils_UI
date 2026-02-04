@@ -9,7 +9,6 @@ import CartSidebar from "../components/CartSidebar";
 import { useCart } from "../providers/CartProvider";
 import { useAuth } from "../components/context/AuthProvider";
 
-/* ================= MENU DATA ================= */
 const slugify = (text) =>
   text
     .toLowerCase()
@@ -38,7 +37,7 @@ const MENU = [
   },
   {
     key: "silk-casual",
-    label: "Silk Sarees - Casual",
+    label: "Silk Sarees",
     items: [
        "Georgette Sarees",
       "Banaras Tussar Silk",
@@ -180,12 +179,11 @@ useEffect(() => {
   return () => document.removeEventListener("mousedown", handleOutsideClick);
 }, []);
 
-
   return (
     <>
-      <div className="w-full bg-red-500 text-center text-[18px] tracking-wide py-2 relative font-bold">
-        Our Showrooms EXPLORE
-      </div>
+     <div className="w-full bg-red-500 text-center text-white text-[18px] tracking-wide py-2 relative font-bold font-sans">
+  Our Showrooms EXPLORE
+</div>
       {/* HEADER */}
       <header className="bg-white border-b relative z-30 py-2">
         {/* TOP ROW */}
@@ -353,12 +351,11 @@ useEffect(() => {
                 ☰
               </button>
             </div>
-           
           </div>
         </div>
 
         {/* DESKTOP MENU */}
-        <nav className="hidden lg:flex justify-center gap-8 pb-3 text-[14px] uppercase tracking-[0.15em] text-black font-semibold">
+        <nav className="hidden lg:flex justify-center gap-8 pb-3 mt-3 text-[14px] uppercase tracking-[0.15em] text-black font-sans font-bold">
           {MENU.map((menu) => (
             <div
               key={menu.key}
@@ -366,26 +363,27 @@ useEffect(() => {
               onMouseEnter={() => setDesktopActive(menu.key)}
               onMouseLeave={() => setDesktopActive(null)}
             >
-              <span className="cursor-pointer pb-2 border-b-2 border-transparent hover:border-black">
-                {menu.label}
-              </span>
+            <span className="cursor-pointer pb-2 border-b-2 border-transparent hover:border-black font-sans">
+  {menu.label}
+</span>
 
-              {desktopActive === menu.key && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[260px] bg-white border shadow-lg">
-                  <ul className="divide-y text-[16px] normal-case">
-                    {menu.items.map((item) => (
-                      <li key={item} className="hover:bg-gray-50">
-                        <Link
-                          href={`/collections?category=${slugify(item)}`}
-                          className="block px-5 py-3"
-                        >
-                          {item}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {desktopActive === menu.key && (
+  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg">
+    <ul className="grid grid-cols-2 gap-x-6 gap-y-2 p-4 text-[16px] normal-case">
+      {menu.items.map((item, i) => (
+        <li key={i} className="hover:bg-gray-50 font-sans rounded">
+          <Link
+            href={`/collections?category=${slugify(item)}`}
+            className="block px-3 py-2"
+          >
+            {item}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
             </div>
           ))}
         </nav>
@@ -420,7 +418,7 @@ useEffect(() => {
               {MENU.map((menu) => (
                 <button
                   key={menu.key}
-                  className="w-full px-4 py-4 flex justify-between"
+                  className="w-full px-4 py-4 flex justify-between font-sans"
                   onClick={() => setMobileActive(menu)}
                 >
                   {menu.label}
@@ -662,11 +660,11 @@ useEffect(() => {
   className="relative"
   onClick={() => setCartOpen(true)}
 >
-  <img
+  {/* <img
     src="/cart-shopping-svgrepo-com.svg"
     alt="Cart"
     className="w-[20px] h-[20px]"
-  />
+  /> */}
 
   {count > 0 && (
             <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
