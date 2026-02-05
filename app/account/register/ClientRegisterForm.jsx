@@ -305,7 +305,6 @@
 
 
 
-
 "use client";
 
 import React, { useState } from "react";
@@ -326,7 +325,7 @@ export default function SignupPage() {
   const [errorMessages, setErrorMessages] = useState({});
   const [loading, setLoading] = useState(false);
 
-  /* ---------------- VALIDATION ---------------- */
+  /* ================= VALIDATION ================= */
   const validate = () => {
     const errs = {};
 
@@ -349,7 +348,7 @@ export default function SignupPage() {
     return errs;
   };
 
-  /* ---------------- SUBMIT ---------------- */
+  /* ================= SUBMIT ================= */
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -361,7 +360,7 @@ export default function SignupPage() {
 
     try {
       const res = await fetch(
-        "http://192.168.1.5:8000/api/auth/user-register",
+        "http://192.168.1.6:8000/api/auth/user-register",
         {
           method: "POST",
           headers: {
@@ -377,21 +376,26 @@ export default function SignupPage() {
       );
 
       const json = await res.json();
-     console.log("test",json)
-      if (!res.ok || json?.success === false) {
-        throw new Error(json?.message || "Registration failed");
-      }
+      /* ===============================
+         STORE TOKEN + USER (AUTO LOGIN)
+      =============================== */
+      localStorage.setItem("token", json.token);
+      localStorage.setItem("token_type", json.token_type);
+      localStorage.setItem("user", JSON.stringify(json.user));
 
-      // ✅ SAVE TOKEN + USER
+      // // Keep AuthContext in sync
       // login({
       //   token: json.token,
-      //   name: json.user?.name || name,
+      //   user: json.user,
       // });
 
       toast.success("Account created successfully 🎉");
-      // router.push(redirect);
+      router.push(redirect);
+
     } catch (err) {
+      console.error("Signup error:", err);
       toast.error(err.message || "Something went wrong");
+    } finally {
       setLoading(false);
     }
   };
@@ -476,11 +480,12 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg font-semibold transition"
+                className="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg font-semibold transition disabled:opacity-60"
               >
                 {loading ? "Creating account..." : "Sign Up"}
               </button>
             </form>
+
             <p className="mt-6 text-center text-sm">
               Already have an account?{" "}
               <a href="/account/login" className="text-green-700 font-medium">
@@ -493,3 +498,4 @@ export default function SignupPage() {
     </div>
   );
 }
+

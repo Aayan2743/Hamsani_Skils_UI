@@ -904,6 +904,7 @@ import CartSidebar from "../components/CartSidebar";
 import { useCart } from "../providers/CartProvider";
 import { useAuth } from "../components/context/AuthProvider";
 
+
 const slugify = (text = "") =>
   text
     .toString()

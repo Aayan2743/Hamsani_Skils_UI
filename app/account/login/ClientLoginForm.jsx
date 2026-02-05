@@ -90,9 +90,7 @@
 //                   onChange={(e) => setPassword(e.target.value)}
 //                 />
 //               </div>
-
 //               {error && <p className="text-red-500 text-sm">{error}</p>}
-
 //               {/* DARK GREEN SIGN-IN BUTTON */}
 //               <button
 //                 type="submit"
@@ -137,9 +135,8 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect") || "/";
-  const { login } = useAuth();
-
-  const [email, setEmail] = useState(""); // phone or email
+  // const { login } = useAuth();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -148,36 +145,42 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        "http://192.168.1.5:8000/api/auth/user-login",
+      const res = await fetch("http://192.168.1.6:8000/api/auth/user-login",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: email,
+            login: email, 
             password: password,
           }),
         }
       );
-
       const json = await res.json();
 
-      if (!res.ok || json?.success !== true) {
-        throw new Error(json?.message || "Invalid credentials");
-      }
 
-      // ✅ STORE TOKEN + USER (AuthProvider handles localStorage)
-      login({
-        token: json.token,
-        name: json.user?.name || "User",
-      });
+      /* ===============================
+         STORE TOKEN + USER
+      =============================== */
+
+      localStorage.setItem("token", json.token);
+      localStorage.setItem("token_type", json.token_type);
+      // localStorage.setItem("user", JSON.stringify(json.user));
+
+      // Optional: keep AuthContext in sync
+      // login({
+      //   token: json.token,
+      //   user: json.user,
+      // });
 
       toast.success("Login successful 🎉");
       router.push(redirect);
+
     } catch (err) {
+      console.error("Login error:", err);
       toast.error(err.message || "Login failed");
+    } finally {
       setLoading(false);
     }
   };
@@ -203,11 +206,9 @@ export default function LoginPage() {
             <h2 className="text-3xl font-bold mb-2 text-red-600">
               Login
             </h2>
-
             <p className="text-sm mb-6">
               Enter your details to get started.
             </p>
-
             <form onSubmit={onSubmit} className="space-y-4">
               {/* USERNAME */}
               <div>
@@ -223,7 +224,6 @@ export default function LoginPage() {
                   required
                 />
               </div>
-
               {/* PASSWORD */}
               <div>
                 <label className="block text-sm font-medium">
@@ -238,12 +238,11 @@ export default function LoginPage() {
                   required
                 />
               </div>
-
               {/* SUBMIT */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-green-700 hover:bg-green-600 text-white py-2 rounded-lg font-semibold transition"
+                className="w-full bg-green-700 hover:bg-green-600 text-white py-2 rounded-lg font-semibold transition disabled:opacity-60"
               >
                 {loading ? "Signing in..." : "Sign In"}
               </button>
@@ -263,6 +262,7 @@ export default function LoginPage() {
     </div>
   );
 }
+
 
 
 
