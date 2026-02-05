@@ -129,13 +129,17 @@ export default function CollectionsPage() {
       try {
         setLoading(true);
 
-        const res = await fetch(
-          "http://192.168.1.6:8000/api/ecom/products"
-        );
+        const res = await fetch("http://192.168.1.6:8000/api/ecom/products");
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const json = await res.json();
 
-        // ✅ correct API level
-        setProducts(json?.data?.data || []);
+        // Handle different response structures
+        const productsData = json?.data?.data || json?.data || json || [];
+        setProducts(Array.isArray(productsData) ? productsData : []);
       } catch (err) {
         console.error("Products API error:", err);
         setProducts([]);

@@ -232,6 +232,7 @@
 "use client";
 
 import Image from "next/image";
+import SafeImage from "./SafeImage";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/app/providers/CartProvider";
 import { useWishlist } from "@/app/components/WishlistContext";
@@ -245,21 +246,29 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { wishlist, toggleWishlist } = useWishlist();
 
-  const liked = wishlist.includes(product.id);
-
-  // ✅ get primary image safely
-  const primaryImage =
+  const liked = wishlist.includes(product.id)
+  // ✅ get primary image safely with fallbacks
+  const primaryImage = 
+    product.raw?.images?.find((img) => img.is_primary)?.image_path ||
+    product.raw?.images?.[0]?.image_path ||
     product.images?.find((img) => img.is_primary)?.image_path ||
     product.images?.[0]?.image_path ||
+    product.image ||
     null;
 
-  // ✅ build full image URL
+  // ✅ build full image URL with error handling
   const imageUrl = primaryImage
     ? `${IMAGE_BASE_URL}/${primaryImage}`
-    : "/placeholder.png";
+    : "/placeholder.svg";
 
   function handleAddToCart(e) {
     e.stopPropagation();
+
+    // Ensure we have valid product data
+    if (!product.id || !product.title || !product.price) {
+      toast.error("Product data is incomplete");
+      return;
+    }
 
     addToCart({
       variantId: product.id,
@@ -275,17 +284,19 @@ export default function ProductCard({ product }) {
     e.stopPropagation();
     toggleWishlist(product.id);
   }
-
+   console.log("PRODUCT ROUTE",product.slug)
   return (
     <div
-      onClick={() => router.push(`/product/${product.slug}`)}
+      onClick={() => router.push(`/products/details?id=${product.slug}`)}
+      // onClick={() => router.push(`/product/${product.slug}`)}
       className="group bg-white border border-zinc-200 rounded-xl overflow-hidden hover:shadow-lg transition cursor-pointer"
     >
       {/* IMAGE */}
       <div className="relative aspect-[3/4] overflow-hidden bg-zinc-100">
-        <Image
+        <SafeImage
           src={imageUrl}
           alt={product.title}
+          fallback="/placeholder.svg"
           fill
           sizes="(max-width: 768px) 50vw, 25vw"
           className="object-cover group-hover:scale-110 transition duration-500"

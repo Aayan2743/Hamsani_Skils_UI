@@ -142,14 +142,7 @@ export default function SidebarFilters({
         </button>
 
         <div>
-          <h3 className="font-semibold border-b pb-2 mb-4 mt-6 font-sans">
-            SILK SAREE'S
-          </h3>
-
-          <img
-            src="https://www.psrsilks.com/cdn/shop/files/smarthika_kanjivaram.webp?v=1741094492&width=1920"
-            alt="Weaving Silk Saree"
-          />
+         
         </div>
       </div>
     </aside>

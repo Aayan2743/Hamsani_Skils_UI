@@ -928,12 +928,19 @@ export default function Header() {
     async function fetchMenu() {
       try {
         const res = await fetch("http://192.168.1.6:8000/api/ecom/menu");
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data = await res.json();
-
-        console.log("test",data)
-        setMenuData(Array.isArray(data) ? data : []);
+        
+        // Handle different response structures
+        const menuItems = data?.data || data;
+        setMenuData(Array.isArray(menuItems) ? menuItems : []);
       } catch (err) {
         console.error("Menu API error:", err);
+        // Fallback to empty array to prevent crashes
         setMenuData([]);
       }
     }
@@ -963,7 +970,7 @@ export default function Header() {
 
       {/* HEADER */}
       <header className="bg-white border-b relative z-30 py-2">
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between h-[90px] px-4">
+        <div className="max-w-[1400px] mx-auto flex items-center justify-between h-[100px] px-4 mt-2">
           {/* LOGO */}
           <Link href="/">
             <Image

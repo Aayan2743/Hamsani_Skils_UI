@@ -56,7 +56,7 @@ export default function HeroSection() {
         <Carousel
           autoPlay
           infiniteLoop
-          interval={1000} // auto swipe every second
+          interval={2500} // auto swipe every second
           transitionTime={800}
           showThumbs={false}
           showStatus={false}
