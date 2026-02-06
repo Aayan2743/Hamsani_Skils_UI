@@ -145,7 +145,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://192.168.1.6:8000/api/auth/user-login",
+      const res = await fetch("http://192.168.1.3:8000/api/auth/user-login",
         {
           method: "POST",
           headers: {
@@ -166,7 +166,7 @@ export default function LoginPage() {
 
       localStorage.setItem("token", json.token);
       localStorage.setItem("token_type", json.token_type);
-      // localStorage.setItem("user", JSON.stringify(json.user));
+      localStorage.setItem("user", JSON.stringify(json.user));
 
       // Optional: keep AuthContext in sync
       // login({

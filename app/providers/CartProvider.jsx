@@ -315,12 +315,13 @@ export function CartProvider({ children }) {
 
   /* ================= ADD ================= */
   function addToCart(product, qty = 1) {
+    console.log("cart product",product)
     setItems((prev) => {
-      const existing = prev[product.variantId];
+      const existing = prev[product.product_id];
 
       return {
         ...prev,
-        [product.variantId]: existing
+        [product.product_id]: existing
           ? { ...existing, qty: existing.qty + qty }
           : { ...product, qty },
       };
@@ -328,24 +329,24 @@ export function CartProvider({ children }) {
   }
 
   /* ================= REMOVE ================= */
-  function removeFromCart(variantId) {
+  function removeFromCart(product_id) {
     setItems((prev) => {
       const copy = { ...prev };
-      delete copy[variantId];
+      delete copy[product_id];
       return copy;
     });
   }
 
   /* ================= UPDATE QTY ================= */
-  function updateQty(variantId, qty) {
+  function updateQty(product_id, qty) {
     if (qty <= 0) {
-      removeFromCart(variantId);
+      removeFromCart(product_id);
       return;
     }
 
     setItems((prev) => ({
       ...prev,
-      [variantId]: { ...prev[variantId], qty },
+      [product_id]: { ...prev[product_id], qty },
     }));
   }
 

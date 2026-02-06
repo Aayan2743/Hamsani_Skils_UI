@@ -371,7 +371,7 @@ export default function ProductDetailsPage() {
   /* ================= ADD TO CART ================= */
   function handleAddToCart() {
     addToCart({
-      variantId: selectedVariant.sku || product.id,
+      product_id: product.id,
       title: product.name,
       price: Number(selectedVariant.extra_price || 0),
       img: imageUrl,
