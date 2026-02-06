@@ -340,7 +340,7 @@ export default function ProductDetailsPage() {
   useEffect(() => {
     if (!productId) return;
 
-    fetch(`http://192.168.1.6:8000/api/ecom/products?slug=${productId}`)
+    fetch(`http://192.168.1.3:8000/api/ecom/products?slug=${productId}`)
       .then((res) => res.json())
       .then((json) => {
         const prod = json?.data?.data?.[0] || null;

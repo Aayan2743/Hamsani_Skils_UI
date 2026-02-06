@@ -25,7 +25,7 @@ export default function KanjivaramBanners() {
 <section className="grid grid-cols-1 md:grid-cols-2">
 
           {/* IMAGE */}
-          <div className="relative h-[220px] md:h-[600px] overflow-hidden group">
+          <div className="relative h-[220px] md:h-[600px] overflow-hidden group" style={{width:"100%"}}>
             <Image
               src="https://www.psrsilks.com/cdn/shop/files/bridal.webp?v=1741094381&width=1920"
               alt="Bridal Kanjivaram"

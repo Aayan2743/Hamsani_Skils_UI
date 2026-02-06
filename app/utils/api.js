@@ -1,6 +1,6 @@
 // API utility functions with error handling
 
-const API_BASE_URL = "http://192.168.1.6:8000/api/ecom";
+const API_BASE_URL = "http://192.168.1.3:8000/api/ecom";
 const API_TIMEOUT = 10000;
 
 export class APIError extends Error {

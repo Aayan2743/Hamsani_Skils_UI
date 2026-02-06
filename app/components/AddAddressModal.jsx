@@ -84,8 +84,8 @@ export default function AddAddressModal({
 
     try {
       const url = editData
-        ? `http://192.168.1.6:8000/api/user-dashboard/cart/update-address/${editData.id}`
-        : `http://192.168.1.6:8000/api/user-dashboard/cart/add-address`;
+        ? `http://192.168.1.3:8000/api/user-dashboard/cart/update-address/${editData.id}`
+        : `http://192.168.1.3:8000/api/user-dashboard/cart/add-address`;
 
       const res = await fetch(url, {
         method: "POST",

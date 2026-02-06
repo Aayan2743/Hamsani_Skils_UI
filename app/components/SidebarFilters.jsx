@@ -91,7 +91,7 @@ export default function SidebarFilters({
   applyPrice,
 }) {
   return (
-    <aside className="w-[260px] space-y-10 text-black font-sans">
+    <aside className="w-full lg:w-[260px] space-y-10 text-black font-sans">
       {/* AVAILABILITY */}
       {/* <div>
         <h3 className="font-semibold mb-4 font-sans">AVAILABILITY</h3>

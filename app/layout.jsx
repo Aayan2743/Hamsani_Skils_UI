@@ -95,6 +95,7 @@
 
 
 import "./globals.css";
+import "./globals-responsive.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Source_Sans_3 } from "next/font/google";
