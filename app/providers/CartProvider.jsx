@@ -228,7 +228,83 @@
 
 
 
+// "use client";
+// import { createContext, useContext, useState } from "react";
+
+// const CartContext = createContext();
+
+// export function CartProvider({ children }) {
+//   const [items, setItems] = useState({});
+//   const [cartOpen, setCartOpen] = useState(false);
+
+//   /* ================= ADD ================= */
+//   function addToCart(product, qty = 1) {
+//     setItems(prev => {
+//       const existing = prev[product.variantId];
+
+//       return {
+//         ...prev,
+//         [product.variantId]: existing
+//           ? { ...existing, qty: existing.qty + qty }
+//           : { ...product, qty },
+//       };
+//     });
+//   }
+
+//   /* ================= REMOVE ================= */
+//   function removeFromCart(variantId) {
+//     setItems(prev => {
+//       const copy = { ...prev };
+//       delete copy[variantId];
+//       return copy;
+//     });
+//   }
+
+//   /* ================= UPDATE QTY ================= */
+//   function updateQty(variantId, qty) {
+//     setItems(prev => ({
+//       ...prev,
+//       [variantId]: { ...prev[variantId], qty },
+//     }));
+//   }
+
+//   /* ================= TOTAL ================= */
+//   const total = Object.values(items).reduce(
+//     (sum, item) => sum + item.price * item.qty,
+//     0
+//   );
+
+//   /* ================= COUNT ================= */
+//   const count = Object.values(items).reduce(
+//     (sum, item) => sum + item.qty,
+//     0
+//   );
+//   return (
+//     <CartContext.Provider
+//       value={{
+//         items,
+//         addToCart,
+//         removeFromCart,
+//         updateQty,
+//         total,
+//         count,
+//         cartOpen,
+//         setCartOpen,
+//       }}
+//     >
+//       {children}
+//     </CartContext.Provider>
+//   );
+// }
+
+// export function useCart() {
+//   return useContext(CartContext);
+// }
+
+
+
 "use client";
+
 import { createContext, useContext, useState } from "react";
 
 const CartContext = createContext();
@@ -239,12 +315,13 @@ export function CartProvider({ children }) {
 
   /* ================= ADD ================= */
   function addToCart(product, qty = 1) {
-    setItems(prev => {
-      const existing = prev[product.variantId];
+    console.log("cart product",product)
+    setItems((prev) => {
+      const existing = prev[product.product_id];
 
       return {
         ...prev,
-        [product.variantId]: existing
+        [product.product_id]: existing
           ? { ...existing, qty: existing.qty + qty }
           : { ...product, qty },
       };
@@ -252,20 +329,31 @@ export function CartProvider({ children }) {
   }
 
   /* ================= REMOVE ================= */
-  function removeFromCart(variantId) {
-    setItems(prev => {
+  function removeFromCart(product_id) {
+    setItems((prev) => {
       const copy = { ...prev };
-      delete copy[variantId];
+      delete copy[product_id];
       return copy;
     });
   }
 
   /* ================= UPDATE QTY ================= */
-  function updateQty(variantId, qty) {
-    setItems(prev => ({
+  function updateQty(product_id, qty) {
+    if (qty <= 0) {
+      removeFromCart(product_id);
+      return;
+    }
+
+    setItems((prev) => ({
       ...prev,
-      [variantId]: { ...prev[variantId], qty },
+      [product_id]: { ...prev[product_id], qty },
     }));
+  }
+
+  /* ================= CLEAR CART ================= */
+  function clearCart() {
+    setItems({});
+    setCartOpen(false);
   }
 
   /* ================= TOTAL ================= */
@@ -287,6 +375,7 @@ export function CartProvider({ children }) {
         addToCart,
         removeFromCart,
         updateQty,
+        clearCart, // 👈 exposed here
         total,
         count,
         cartOpen,
@@ -301,3 +390,4 @@ export function CartProvider({ children }) {
 export function useCart() {
   return useContext(CartContext);
 }
+

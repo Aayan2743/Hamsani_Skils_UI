@@ -91,9 +91,9 @@ export default function SidebarFilters({
   applyPrice,
 }) {
   return (
-    <aside className="w-[260px] space-y-10 text-black font-sans">
+    <aside className="w-full lg:w-[260px] space-y-10 text-black font-sans">
       {/* AVAILABILITY */}
-      <div>
+      {/* <div>
         <h3 className="font-semibold mb-4 font-sans">AVAILABILITY</h3>
 
         <label className="block text-sm font-sans">
@@ -113,14 +113,12 @@ export default function SidebarFilters({
           />{" "}
           Out Of Stock
         </label>
-      </div>
-
+      </div> */}
       {/* PRICE */}
       <div>
         <h3 className="font-semibold border-b pb-2 mb-4 font-sans">
           PRICE
         </h3>
-
         <input
           type="range"
           min={0}
@@ -131,7 +129,6 @@ export default function SidebarFilters({
           }
           className="w-full accent-blue-600 cursor-pointer"
         />
-
         <div className="flex justify-between text-sm mt-2 font-sans">
           <span>₹ {price.min}</span>
           <span>₹ {price.max}</span>
@@ -145,14 +142,7 @@ export default function SidebarFilters({
         </button>
 
         <div>
-          <h3 className="font-semibold border-b pb-2 mb-4 mt-6 font-sans">
-            SILK SAREE'S
-          </h3>
-
-          <img
-            src="https://www.psrsilks.com/cdn/shop/files/smarthika_kanjivaram.webp?v=1741094492&width=1920"
-            alt="Weaving Silk Saree"
-          />
+         
         </div>
       </div>
     </aside>
