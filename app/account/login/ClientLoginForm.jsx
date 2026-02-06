@@ -130,6 +130,7 @@ import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../../components/context/AuthProvider";
 import toast from "react-hot-toast";
+import api from "../../utils/apiInstance";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -140,50 +141,46 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const onSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await fetch("http://192.168.1.3:8000/api/auth/user-login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            login: email, 
-            password: password,
-          }),
-        }
-      );
-      const json = await res.json();
+  try {
+    const res = await api.post("/auth/user-login", {
+      login: email,
+      password: password,
+    });
 
+    const json = res.data;
 
-      /* ===============================
-         STORE TOKEN + USER
-      =============================== */
+    /* ===============================
+       STORE TOKEN + USER
+    =============================== */
+    localStorage.setItem("token", json.token);
+    localStorage.setItem("token_type", json.token_type);
+    localStorage.setItem("user", JSON.stringify(json.user));
 
-      localStorage.setItem("token", json.token);
-      localStorage.setItem("token_type", json.token_type);
-      localStorage.setItem("user", JSON.stringify(json.user));
+    // Optional: keep AuthContext in sync
+    // login({
+    //   token: json.token,
+    //   user: json.user,
+    // });
 
-      // Optional: keep AuthContext in sync
-      // login({
-      //   token: json.token,
-      //   user: json.user,
-      // });
+    toast.success("Login successful 🎉");
+    router.push(redirect);
+  } catch (err) {
+    console.error("Login error:", err);
 
-      toast.success("Login successful 🎉");
-      router.push(redirect);
+    const message =
+      err.response?.data?.message ||
+      err.message ||
+      "Login failed";
 
-    } catch (err) {
-      console.error("Login error:", err);
-      toast.error(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full flex items-center justify-center bg-white p-6 text-black">

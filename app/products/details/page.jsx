@@ -325,6 +325,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "../../providers/CartProvider";
 import toast from "react-hot-toast";
+import api from "../../utils/apiInstance";
 
 const IMAGE_BASE_URL = "http://192.168.1.6:8000/storage";
 
@@ -337,22 +338,31 @@ export default function ProductDetailsPage() {
   const [selectedVariant, setSelectedVariant] = useState(null);
 
   /* ================= FETCH PRODUCT ================= */
-  useEffect(() => {
-    if (!productId) return;
+useEffect(() => {
+  if (!productId) return;
 
-    fetch(`http://192.168.1.3:8000/api/ecom/products?slug=${productId}`)
-      .then((res) => res.json())
-      .then((json) => {
-        const prod = json?.data?.data?.[0] || null;
-        setProduct(prod);
+  const fetchProduct = async () => {
+    try {
+      const res = await api.get("/ecom/products", {
+        params: { slug: productId },
+      });
 
-        // ✅ default variant (first one)
-        if (prod?.variant_combinations?.length) {
-          setSelectedVariant(prod.variant_combinations[0]);
-        }
-      })
-      .catch(() => setProduct(null));
-  }, [productId]);
+      const prod = res?.data?.data?.data?.[0] || null;
+      setProduct(prod);
+
+      // ✅ default variant (first one)
+      if (prod?.variant_combinations?.length) {
+        setSelectedVariant(prod.variant_combinations[0]);
+      }
+    } catch (error) {
+      console.error("Product API error:", error);
+      setProduct(null);
+    }
+  };
+
+  fetchProduct();
+}, [productId]);
+
 
   if (!product || !selectedVariant) {
     return <div className="p-10 text-center">Loading...</div>;

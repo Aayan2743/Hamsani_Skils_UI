@@ -311,6 +311,7 @@ import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../../components/context/AuthProvider";
 import toast from "react-hot-toast";
+import api from "../../utils/apiInstance";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -349,56 +350,53 @@ export default function SignupPage() {
   };
 
   /* ================= SUBMIT ================= */
-  const onSubmit = async (e) => {
-    e.preventDefault();
+ const onSubmit = async (e) => {
+  e.preventDefault();
 
-    const errs = validate();
-    setErrorMessages(errs);
-    if (Object.keys(errs).length > 0) return;
+  const errs = validate();
+  setErrorMessages(errs);
+  if (Object.keys(errs).length > 0) return;
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const res = await fetch(
-        "http://192.168.1.6:8000/api/auth/user-register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            phone,
-            email,
-            password,
-          }),
-        }
-      );
+  try {
+    const res = await api.post("/auth/user-register", {
+      name,
+      phone,
+      email,
+      password,
+    });
 
-      const json = await res.json();
-      /* ===============================
-         STORE TOKEN + USER (AUTO LOGIN)
-      =============================== */
-      localStorage.setItem("token", json.token);
-      localStorage.setItem("token_type", json.token_type);
-      localStorage.setItem("user", JSON.stringify(json.user));
+    const json = res.data;
 
-      // // Keep AuthContext in sync
-      // login({
-      //   token: json.token,
-      //   user: json.user,
-      // });
+    /* ===============================
+       STORE TOKEN + USER (AUTO LOGIN)
+    =============================== */
+    localStorage.setItem("token", json.token);
+    localStorage.setItem("token_type", json.token_type);
+    localStorage.setItem("user", JSON.stringify(json.user));
 
-      toast.success("Account created successfully 🎉");
-      router.push(redirect);
+    // // Keep AuthContext in sync
+    // login({
+    //   token: json.token,
+    //   user: json.user,
+    // });
 
-    } catch (err) {
-      console.error("Signup error:", err);
-      toast.error(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success("Account created successfully 🎉");
+    router.push(redirect);
+  } catch (err) {
+    console.error("Signup error:", err);
+
+    const message =
+      err.response?.data?.message ||
+      err.message ||
+      "Something went wrong";
+
+    toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full flex items-center justify-center bg-white p-6 text-black">

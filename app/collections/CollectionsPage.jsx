@@ -103,7 +103,7 @@ import SidebarFilters from "../components/SidebarFilters";
 import ProductGrid from "../components/ProductGrid";
 import MobileFilterDrawer from "../components/MobileFilterDrawer";
 import { WishlistProvider } from "../components/WishlistContext";
-import api from "../utils/api";
+import api from "../utils/apiInstance";
 
 
 export default function CollectionsPage() {
@@ -127,30 +127,31 @@ export default function CollectionsPage() {
 
   /* ---------------- FETCH PRODUCTS ---------------- */
   useEffect(() => {
-    async function fetchProducts() {
-      try {
-        setLoading(true);
-        const res = await fetch("http://192.168.1.3:8000/api/ecom/products");
-        //  const res =await api.get('/ecom/products')
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        
-        const json = await res.json();
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
 
-        // Handle different response structures
-        const productsData = json?.data?.data || json?.data || json || [];
-        setProducts(Array.isArray(productsData) ? productsData : []);
-      } catch (err) {
-        console.error("Products API error:", err);
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
+      const res = await api.get("ecom/products");
+
+      // Axios already returns parsed JSON
+      const data = res.data;
+
+      // Handle different response structures safely
+      const productsData =
+        data?.data?.data || data?.data || data || [];
+
+      setProducts(Array.isArray(productsData) ? productsData : []);
+    } catch (err) {
+      console.error("Products API error:", err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    fetchProducts();
-  }, []);
+  fetchProducts();
+}, []);
+
 
   /* ---------------- NORMALIZE PRODUCT DATA ---------------- */
   const normalizedProducts = products.map((p) => {
