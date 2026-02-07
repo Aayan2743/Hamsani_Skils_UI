@@ -403,7 +403,7 @@
 
 "use client";
 import React, { useEffect, useState } from "react";
-import { FiX, FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
+import { FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useCart } from "../providers/CartProvider";
@@ -427,15 +427,11 @@ export default function CartSidebar({ open, onClose }) {
   const [coupon, setCoupon] = useState("");
   const [couponData, setCouponData] = useState(null);
 
-  /* ORDER LOADER */
-  const [placingOrder, setPlacingOrder] = useState(false);
-
   /* TOTAL CALCULATION */
   const total = cartItems.reduce(
     (acc, item) => acc + (Number(item.price) || 0) * (Number(item.qty) || 0),
     0
   );
-
   const discount = Number(couponData?.discount) || 0;
   const finalTotal = Math.max(0, total - discount);
 
@@ -511,12 +507,9 @@ export default function CartSidebar({ open, onClose }) {
       return;
     }
 
-    setPlacingOrder(true);
-
     const loaded = await loadRazorpayScript();
     if (!loaded) {
       toast.error("Razorpay SDK failed");
-      setPlacingOrder(false);
       return;
     }
 
@@ -549,8 +542,6 @@ export default function CartSidebar({ open, onClose }) {
           } catch (verifyError) {
             console.error("Payment verification failed:", verifyError);
             toast.error("Payment verification failed");
-          } finally {
-            setPlacingOrder(false);
           }
         },
       };
@@ -559,8 +550,21 @@ export default function CartSidebar({ open, onClose }) {
     } catch (error) {
       console.error("Payment failed:", error);
       toast.error("Payment failed");
-      setPlacingOrder(false);
     }
+  };
+
+  /* HANDLE QUANTITY CHANGE */
+  const handleQtyChange = (product_id, delta) => {
+    const item = items[product_id];
+    if (!item) return;
+
+    const newQty = (item.qty || 1) + delta;
+    if (newQty < 1) {
+      removeFromCart(product_id); // remove if quantity goes below 1
+      return;
+    }
+
+    updateQty(product_id, newQty);
   };
 
   return (
@@ -588,16 +592,22 @@ export default function CartSidebar({ open, onClose }) {
               </p>
 
               <div className="flex gap-2 mt-1">
-                <button onClick={() => updateQty(item.id, (item.qty || 1) - 1)}>
+                <button
+                  onClick={() => handleQtyChange(item.product_id, -1)}
+                  className="border px-2 rounded"
+                >
                   -
                 </button>
-                <span>{item.qty || 1}</span>
-                <button onClick={() => updateQty(item.id, (item.qty || 1) + 1)}>
+                <span className="px-2">{item.qty || 1}</span>
+                <button
+                  onClick={() => handleQtyChange(item.product_id, 1)}
+                  className="border px-2 rounded"
+                >
                   +
                 </button>
               </div>
             </div>
-            <button onClick={() => removeFromCart(item.id)}>
+            <button onClick={() => removeFromCart(item.product_id)}>
               <FiTrash2 />
             </button>
           </div>
@@ -703,14 +713,9 @@ export default function CartSidebar({ open, onClose }) {
         {cartItems.length > 0 && (
           <button
             onClick={handleRazorpayPayment}
-            className="w-full bg-red-800 text-white py-3 mt-3 flex justify-center items-center gap-2"
-            disabled={placingOrder}
+            className="w-full bg-red-800 text-white py-3 mt-3"
           >
-            {placingOrder ? (
-              <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            ) : (
-              "Place My Order"
-            )}
+            Place My Order
           </button>
         )}
       </div>
@@ -725,25 +730,7 @@ export default function CartSidebar({ open, onClose }) {
         }}
         onSuccess={fetchAddresses}
       />
-
-      {/* LOADER CSS */}
-      <style jsx global>{`
-        .loader {
-          border-width: 2px;
-          border-style: solid;
-          border-color: white transparent white transparent;
-          border-radius: 50%;
-          width: 20px;
-          height: 20px;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }
+

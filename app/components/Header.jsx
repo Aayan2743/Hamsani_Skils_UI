@@ -1,5 +1,6 @@
 
 
+
 // "use client";
 
 // import { useEffect, useRef, useState } from "react";
@@ -12,13 +13,10 @@
 // import { useAuth } from "../components/context/AuthProvider";
 // import api from "../utils/apiInstance";
 
-
-
 // import {
 //   UserCircleIcon,
 //   ArrowRightOnRectangleIcon,
 // } from "@heroicons/react/24/outline";
-
 
 // const slugify = (text = "") =>
 //   text
@@ -42,15 +40,20 @@
 //   const router = useRouter();
 //   const dropdownRef = useRef(null);
 
+//   // ---------------- CLIENT-SAFE TOKEN ----------------
+//   const [token, setToken] = useState(null);
+//   useEffect(() => {
+//     setToken(localStorage.getItem("token"));
+//   }, []);
+
 //   /* ================= FETCH MENU ================= */
 //   useEffect(() => {
 //     async function fetchMenu() {
 //       try {
 //         const data = await api.get("ecom/menu");
-//         const menuItems =await  data?.data || data;
+//         const menuItems = await data?.data || data;
 //         setMenuData(Array.isArray(menuItems) ? menuItems : []);
 //       } catch (err) {
-//         console.error("Menu API error:", err);
 //         setMenuData([]);
 //       }
 //     }
@@ -70,10 +73,8 @@
 //       document.removeEventListener("mousedown", handleOutsideClick);
 //   }, []);
 
-//   /* ================= PROFILE CLICK LOGIC (UPDATED) ================= */
+//   /* ================= PROFILE CLICK ================= */
 //   const handleProfileClick = () => {
-//     const token = localStorage.getItem("token"); // 👈 ONLY LOGIC CHANGE
-
 //     if (token) {
 //       router.push("/dashboard");
 //     } else {
@@ -104,52 +105,43 @@
 
 //           {/* RIGHT ICONS */}
 //           <div className="flex items-center gap-6 text-black">
-//             {/* SEARCH */}
-//             {/* <div className="hidden lg:flex items-center border px-3 py-1 rounded-md">
-//               <input
-//                 suppressHydrationWarning
-//                 type="text"
-//                 placeholder="Search"
-//                 className="ml-2 outline-none text-sm w-[160px]"
-//               />
-//             </div> */}
-
 //             {/* PROFILE */}
-//                           <div
-//   className="relative"
-//   ref={dropdownRef}
-//   onMouseEnter={() => isLoggedIn && setAccountOpen(true)}
-//   onMouseLeave={() => setAccountOpen(false)}
-// >
-//      <button onClick={handleProfileClick}>
-//   {localStorage.getItem("token") ? (
-//     <UserCircleIcon className="w-6 h-6 text-black" />
-//   ) : (
-//     <ArrowRightOnRectangleIcon className="w-6 h-6 text-black" />
-//   )}
-// </button>
-//   {isLoggedIn && accountOpen && (
-//     <div className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md">
-//       <button
-//         onClick={() => router.push("/dashboard")}
-//         className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-//       >
-//         Dashboard
-//       </button>
+//             <div
+//               className="relative"
+//               ref={dropdownRef}
+//               onMouseEnter={() => isLoggedIn && setAccountOpen(true)}
+//               onMouseLeave={() => setAccountOpen(false)}
+//             >
+//               <button onClick={handleProfileClick}>
+//                 {token ? (
+//                   <UserCircleIcon className="w-6 h-6 text-black" />
+//                 ) : (
+//                   <ArrowRightOnRectangleIcon className="w-6 h-6 text-black" />
+//                 )}
+//               </button>
 
-//       <button
-//         onClick={() => {
-//           logout();
-//           router.push("/");
-//         }}
-//         className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
-//       >
-//         Logout
-//       </button>
-//     </div>
-//   )}
-// </div>
- 
+//               {isLoggedIn && accountOpen && (
+//                 <div className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md">
+//                   <button
+//                     onClick={() => router.push("/dashboard")}
+//                     className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+//                   >
+//                     Dashboard
+//                   </button>
+
+//                   <button
+//                     onClick={() => {
+//                       logout();
+//                       router.push("/");
+//                     }}
+//                     className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+//                   >
+//                     Logout
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+
 //             {/* CART */}
 //             <button onClick={() => setCartOpen(true)} className="relative">
 //               <img
@@ -186,7 +178,6 @@
 //               <span className="cursor-pointer pb-2 hover:border-b-2 border-black">
 //                 {menu.label}
 //               </span>
-
 //               {desktopActive === menu.key && (
 //                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg">
 //                   <ul className="grid grid-cols-2 gap-2 p-4 text-[16px]">
@@ -212,13 +203,10 @@
 //           ))}
 //         </nav>
 //       </header>
-
 //       <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
 //     </>
 //   );
 // }
-
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -258,7 +246,6 @@ export default function Header() {
   const router = useRouter();
   const dropdownRef = useRef(null);
 
-  // ---------------- CLIENT-SAFE TOKEN ----------------
   const [token, setToken] = useState(null);
   useEffect(() => {
     setToken(localStorage.getItem("token"));
@@ -269,13 +256,12 @@ export default function Header() {
     async function fetchMenu() {
       try {
         const data = await api.get("ecom/menu");
-        const menuItems = await data?.data || data;
+        const menuItems = data?.data || data;
         setMenuData(Array.isArray(menuItems) ? menuItems : []);
-      } catch (err) {
+      } catch {
         setMenuData([]);
       }
     }
-
     fetchMenu();
   }, []);
 
@@ -287,8 +273,7 @@ export default function Header() {
       }
     }
     document.addEventListener("mousedown", handleOutsideClick);
-    return () =>
-      document.removeEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
   /* ================= PROFILE CLICK ================= */
@@ -339,7 +324,11 @@ export default function Header() {
               </button>
 
               {isLoggedIn && accountOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md">
+                <div
+                  className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md"
+                  onMouseEnter={() => setAccountOpen(true)}
+                  onMouseLeave={() => setAccountOpen(false)}
+                >
                   <button
                     onClick={() => router.push("/dashboard")}
                     className="block w-full px-4 py-2 text-left hover:bg-gray-100"
@@ -427,3 +416,4 @@ export default function Header() {
     </>
   );
 }
+
