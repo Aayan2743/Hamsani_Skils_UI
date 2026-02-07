@@ -166,10 +166,9 @@ export default function LoginPage() {
     //   user: json.user,
     // });
 
-    toast.success("Login successful 🎉");
+    toast.success("Login successful please continu shopping");
     router.push(redirect);
   } catch (err) {
-    console.error("Login error:", err);
 
     const message =
       err.response?.data?.message ||

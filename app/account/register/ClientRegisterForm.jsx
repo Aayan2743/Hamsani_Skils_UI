@@ -385,7 +385,7 @@ export default function SignupPage() {
     toast.success("Account created successfully 🎉");
     router.push(redirect);
   } catch (err) {
-    console.error("Signup error:", err);
+ 
 
     const message =
       err.response?.data?.message ||
