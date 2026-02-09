@@ -111,7 +111,7 @@ async function getProductBySlug(slug) {
 }
 
 export default async function ProductPage({ params }) {
-  console.log("PARAMS:", params);
+  // console.log("PARAMS:", params);
 
   const product = await getProductBySlug(params.slug);
   return <ProductClient product={product} />;

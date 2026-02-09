@@ -45,7 +45,7 @@ export function ProductFilterProvider({ children }) {
         const res = await AuthAPI.getproducts(params);
         setProducts(res?.data?.data || []);
       } catch (err) {
-        console.error("API error", err);
+  
       } finally {
         setLoading(false);
       }

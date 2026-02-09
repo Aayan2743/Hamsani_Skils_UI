@@ -315,7 +315,6 @@ export function CartProvider({ children }) {
 
   /* ================= ADD ================= */
   function addToCart(product, qty = 1) {
-    console.log("cart product",product)
     setItems((prev) => {
       const existing = prev[product.product_id];
 

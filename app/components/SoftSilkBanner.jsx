@@ -114,12 +114,12 @@ export default function SoftSilkHero() {
               occasion.
             </p>
 
-            <a
+            {/* <a
               href="/collections/?category=soft-silk"
               className="inline-block bg-white text-black uppercase tracking-widest font-bold px-12 py-2 border border-black transition hover:bg-black hover:text-white"
             >
               Shop Now
-            </a>
+            </a> */}
           </div>
         </div>
       </section>

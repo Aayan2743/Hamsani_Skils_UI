@@ -1,7 +1,4 @@
 
-
-
-
 // export default function HeroSection() {
 //   return (
 //     <main className="w-full overflow-x-hidden">
@@ -40,14 +37,10 @@
 //     </main>
 //   );
 // }
-
-
-
 "use client";
-
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
-
+// import defaultImage from "../utils/homepage.jpg";
 export default function HeroSection() {
   return (
     <main className="w-full overflow-hidden">
@@ -56,7 +49,7 @@ export default function HeroSection() {
         <Carousel
           autoPlay
           infiniteLoop
-          interval={2500} // auto swipe every second
+          interval={2500}
           transitionTime={800}
           showThumbs={false}
           showStatus={false}
@@ -69,14 +62,13 @@ export default function HeroSection() {
           <div className="w-full h-[320px] md:h-[450px]">
             {/* Desktop */}
             <img
-              src="https://www.psrsilks.com/cdn/shop/files/main_banner_header_copy_aeb79531-363d-4f59-ac96-82df1363648f.webp"
-              alt="Hamsini Silks Banner 1"
-              className="hidden md:block w-full h-full object-cover"
-            />
+  src="https://www.psrsilks.com/cdn/shop/files/shrestha_kanjivaram.webp?v=1741094440"
+  className="hidden md:block w-full h-full object-cover"
+/>
 
             {/* Mobile */}
             <img
-              src="https://www.psrsilks.com/cdn/shop/files/header_mobile_size_copy_2a452766-c801-46b6-ba68-70531ca343a0.webp"
+              src="https://www.psrsilks.com/cdn/shop/files/bridal.webp?v=1741094381&width=1920"
               alt="Hamsini Silks Mobile Banner 1"
               className="block md:hidden w-full h-full object-cover"
             />
@@ -86,14 +78,13 @@ export default function HeroSection() {
           <div className="w-full h-[320px] md:h-[450px]">
             {/* Desktop */}
             <img
-              src="https://www.psrsilks.com/cdn/shop/files/main_banner_header_copy_aeb79531-363d-4f59-ac96-82df1363648f.webp"
-              alt="Hamsini Silks Banner 2"
-              className="hidden md:block w-full h-full object-cover"
-            />
+ src="/softsilk_saree.webp"
+  className="hidden md:block w-full h-full object-cover"
+/>
 
             {/* Mobile */}
             <img
-              src="https://www.psrsilks.com/cdn/shop/files/header_mobile_size_copy_2a452766-c801-46b6-ba68-70531ca343a0.webp"
+              src="https://www.psrsilks.com/cdn/shop/files/bridal.webp?v=1741094381&width=1920"
               alt="Hamsini Silks Mobile Banner 2"
               className="block md:hidden w-full h-full object-cover"
             />
@@ -120,3 +111,4 @@ export default function HeroSection() {
     </main>
   );
 }
+

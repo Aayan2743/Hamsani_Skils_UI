@@ -43,37 +43,8 @@ export default function DashboardHome() {
             />
           </div>
         </div>
-
         {/* ADDRESS */}
-        <div className="bg-white border rounded shadow-sm p-3 flex flex-col justify-between">
-          <div>
-            <h4 className="font-medium mb-2">Default Shipping Address</h4>
-
-            {defaultAddress ? (
-              <div className="text-sm text-gray-700">
-                <div>{defaultAddress.address}</div>
-                <div className="text-xs text-gray-400 mt-2">
-                  {defaultAddress.phone}
-                </div>
-              </div>
-            ) : (
-              <div className="text-sm text-gray-500">
-                You don't have a default address yet.
-              </div>
-            )}
-          </div>
-
-          <div className="mt-3">
-            <button
-              className="w-full lg:w-auto inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-3 py-2 rounded-full shadow text-sm cursor-default"
-            >
-              <span className="text-lg leading-none">+</span>
-              <span className="font-medium">Add New Address</span>
-            </button>
-          </div>
-        </div>
       </div>
-
       {/* IMAGE SECTION */}
       <div className="bg-white border rounded shadow-sm p-4">
         <div className="w-full rounded overflow-hidden">

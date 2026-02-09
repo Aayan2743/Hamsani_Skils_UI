@@ -140,9 +140,8 @@ export default function SidebarFilters({
         >
           APPLY
         </button>
-
         <div>
-         
+  
         </div>
       </div>
     </aside>
