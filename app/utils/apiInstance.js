@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://192.168.1.3:8000/api/"||process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL:"https://api-hamsini.easybizcart.com/public/api/",
+  // baseURL: "http://192.168.1.3:8000/api/"||process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",

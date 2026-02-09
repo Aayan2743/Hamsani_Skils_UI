@@ -62,7 +62,7 @@ export default function HeroSection() {
           <div className="w-full h-[320px] md:h-[450px]">
             {/* Desktop */}
             <img
-  src="/homepage.jpg"
+  src="https://www.psrsilks.com/cdn/shop/files/shrestha_kanjivaram.webp?v=1741094440"
   className="hidden md:block w-full h-full object-cover"
 />
 

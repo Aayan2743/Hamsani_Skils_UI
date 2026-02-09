@@ -1,8 +1,5 @@
 
-
-
 // "use client";
-
 // import { useEffect, useRef, useState } from "react";
 // import { useRouter } from "next/navigation";
 // import Image from "next/image";
@@ -17,6 +14,8 @@
 //   UserCircleIcon,
 //   ArrowRightOnRectangleIcon,
 // } from "@heroicons/react/24/outline";
+
+// import { FaFacebookF, FaInstagram } from "react-icons/fa";
 
 // const slugify = (text = "") =>
 //   text
@@ -40,7 +39,6 @@
 //   const router = useRouter();
 //   const dropdownRef = useRef(null);
 
-//   // ---------------- CLIENT-SAFE TOKEN ----------------
 //   const [token, setToken] = useState(null);
 //   useEffect(() => {
 //     setToken(localStorage.getItem("token"));
@@ -51,13 +49,12 @@
 //     async function fetchMenu() {
 //       try {
 //         const data = await api.get("ecom/menu");
-//         const menuItems = await data?.data || data;
+//         const menuItems = data?.data || data;
 //         setMenuData(Array.isArray(menuItems) ? menuItems : []);
-//       } catch (err) {
+//       } catch {
 //         setMenuData([]);
 //       }
 //     }
-
 //     fetchMenu();
 //   }, []);
 
@@ -69,8 +66,7 @@
 //       }
 //     }
 //     document.addEventListener("mousedown", handleOutsideClick);
-//     return () =>
-//       document.removeEventListener("mousedown", handleOutsideClick);
+//     return () => document.removeEventListener("mousedown", handleOutsideClick);
 //   }, []);
 
 //   /* ================= PROFILE CLICK ================= */
@@ -104,7 +100,28 @@
 //           </Link>
 
 //           {/* RIGHT ICONS */}
-//           <div className="flex items-center gap-6 text-black">
+//           <div className="flex items-center gap-5 text-black">
+//             {/* SOCIAL MEDIA */}
+//             <a
+//               href="https://www.facebook.com/profile.php?id=61587415783400"
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               className="hover:text-blue-600 transition"
+//               aria-label="Facebook"
+//             >
+//               <FaFacebookF size={18} />
+//             </a>
+
+//             <a
+//               href="https://www.instagram.com/hamsinisilks/?hl=en"
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               className="hover:text-pink-600 transition"
+//               aria-label="Instagram"
+//             >
+//               <FaInstagram size={18} />
+//             </a>
+
 //             {/* PROFILE */}
 //             <div
 //               className="relative"
@@ -121,7 +138,11 @@
 //               </button>
 
 //               {isLoggedIn && accountOpen && (
-//                 <div className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md">
+//                 <div
+//                   className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md"
+//                   onMouseEnter={() => setAccountOpen(true)}
+//                   onMouseLeave={() => setAccountOpen(false)}
+//                 >
 //                   <button
 //                     onClick={() => router.push("/dashboard")}
 //                     className="block w-full px-4 py-2 text-left hover:bg-gray-100"
@@ -178,6 +199,7 @@
 //               <span className="cursor-pointer pb-2 hover:border-b-2 border-black">
 //                 {menu.label}
 //               </span>
+
 //               {desktopActive === menu.key && (
 //                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg">
 //                   <ul className="grid grid-cols-2 gap-2 p-4 text-[16px]">
@@ -207,6 +229,9 @@
 //     </>
 //   );
 // }
+
+
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -224,6 +249,8 @@ import {
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
+
 const slugify = (text = "") =>
   text
     .toString()
@@ -235,20 +262,26 @@ const slugify = (text = "") =>
 export default function Header() {
   const [desktopActive, setDesktopActive] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileActive, setMobileActive] = useState(null);
   const [accountOpen, setAccountOpen] = useState(false);
   const [menuData, setMenuData] = useState([]);
 
   const { count, cartOpen, setCartOpen } = useCart();
-  const { user, logout } = useAuth();
-  const isLoggedIn = !!user;
+  // const { logout } = useAuth();
+
+  const logout=()=>{
+    localStorage.clear()
+    window.location.reload()
+  }
 
   const router = useRouter();
   const dropdownRef = useRef(null);
 
   const [token, setToken] = useState(null);
+
+  /* ================= LOAD TOKEN ================= */
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
   }, []);
 
   /* ================= FETCH MENU ================= */
@@ -265,7 +298,7 @@ export default function Header() {
     fetchMenu();
   }, []);
 
-  /* ================= OUTSIDE CLICK ================= */
+  /* ================= CLOSE DROPDOWN ON OUTSIDE CLICK ================= */
   useEffect(() => {
     function handleOutsideClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -278,12 +311,20 @@ export default function Header() {
 
   /* ================= PROFILE CLICK ================= */
   const handleProfileClick = () => {
-    if (token) {
-      router.push("/dashboard");
-    } else {
+    if (!token) {
       router.push("/account/login");
+    } else {
+      setAccountOpen((prev) => !prev);
     }
   };
+
+  /* ================= LIMIT MENU ================= */
+  const filteredMenus = menuData.filter(
+    (menu) => menu.items && menu.items.length > 0
+  );
+
+  const visibleMenus = filteredMenus.slice(0, 6);
+  const extraMenus = filteredMenus.slice(6);
 
   return (
     <>
@@ -295,6 +336,7 @@ export default function Header() {
       {/* HEADER */}
       <header className="bg-white border-b relative z-30 py-2">
         <div className="max-w-[1400px] mx-auto flex items-center justify-between h-[100px] px-4 mt-2">
+
           {/* LOGO */}
           <Link href="/">
             <Image
@@ -307,14 +349,29 @@ export default function Header() {
           </Link>
 
           {/* RIGHT ICONS */}
-          <div className="flex items-center gap-6 text-black">
-            {/* PROFILE */}
-            <div
-              className="relative"
-              ref={dropdownRef}
-              onMouseEnter={() => isLoggedIn && setAccountOpen(true)}
-              onMouseLeave={() => setAccountOpen(false)}
+          <div className="flex items-center gap-5 text-black">
+
+            {/* SOCIAL */}
+            <a
+              href="https://www.facebook.com/profile.php?id=61587415783400"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-600 transition"
             >
+              <FaFacebookF size={18} />
+            </a>
+
+            <a
+              href="https://www.instagram.com/hamsinisilks/?hl=en"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-pink-600 transition"
+            >
+              <FaInstagram size={18} />
+            </a>
+
+            {/* PROFILE */}
+            <div className="relative" ref={dropdownRef}>
               <button onClick={handleProfileClick}>
                 {token ? (
                   <UserCircleIcon className="w-6 h-6 text-black" />
@@ -323,14 +380,13 @@ export default function Header() {
                 )}
               </button>
 
-              {isLoggedIn && accountOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md"
-                  onMouseEnter={() => setAccountOpen(true)}
-                  onMouseLeave={() => setAccountOpen(false)}
-                >
+              {token && accountOpen && (
+                <div className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md z-50">
                   <button
-                    onClick={() => router.push("/dashboard")}
+                    onClick={() => {
+                      router.push("/dashboard");
+                      setAccountOpen(false);
+                    }}
                     className="block w-full px-4 py-2 text-left hover:bg-gray-100"
                   >
                     Dashboard
@@ -339,7 +395,9 @@ export default function Header() {
                   <button
                     onClick={() => {
                       logout();
+                      localStorage.removeItem("token");
                       router.push("/");
+                      setAccountOpen(false);
                     }}
                     className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
                   >
@@ -375,7 +433,9 @@ export default function Header() {
 
         {/* DESKTOP MENU */}
         <nav className="hidden lg:flex justify-center gap-8 pb-3 mt-3 uppercase text-[14px] font-bold">
-          {menuData.map((menu) => (
+
+          {/* FIRST 6 MENUS */}
+          {visibleMenus.map((menu) => (
             <div
               key={menu.key}
               className="relative"
@@ -387,7 +447,7 @@ export default function Header() {
               </span>
 
               {desktopActive === menu.key && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg z-40">
                   <ul className="grid grid-cols-2 gap-2 p-4 text-[16px]">
                     {menu.items.map((item) => {
                       const slug = slugify(item);
@@ -409,6 +469,31 @@ export default function Header() {
               )}
             </div>
           ))}
+
+          {/* MORE MENU */}
+          {extraMenus.length > 0 && (
+            <div
+              className="relative"
+              onMouseEnter={() => setDesktopActive("more")}
+              onMouseLeave={() => setDesktopActive(null)}
+            >
+              <span className="cursor-pointer pb-2 hover:border-b-2 border-black">
+                More
+              </span>
+
+              {desktopActive === "more" && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg z-40">
+                  <ul className="grid grid-cols-2 gap-2 p-4 text-[16px]">
+                    {extraMenus.map((menu) => (
+                      <li key={menu.key} className="font-semibold px-3 py-2">
+                        {menu.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </nav>
       </header>
 

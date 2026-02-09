@@ -167,6 +167,7 @@ export default function LoginPage() {
     // });
 
     toast.success("Login successful please continu shopping");
+     window.location.reload()
     router.push(redirect);
   } catch (err) {
 
