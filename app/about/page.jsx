@@ -37,9 +37,8 @@ export default function WhoWeArePage() {
       WHO WE ARE
     </h1>
   </header>
-
   {/* Image */}
-  <figure className="mb-6 flex justify-center">
+  <figure className="mb-6 ml-4 flex justify-center border-1">
     <Image
       src="/about.webp"
       alt="Hamsini Silks handloom heritage and founder legacy"

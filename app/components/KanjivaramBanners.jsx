@@ -206,7 +206,7 @@ export default function KanjivaramBanners() {
       <main className="w-full bg-white">
 
         {/* ===== SECTION 1 ===== */}
-        <section className="grid grid-cols-1 md:grid-cols-2 border-0">
+        <section className="grid grid-cols-1 md:grid-cols-2">
 
           {/* IMAGE */}
           <div className="relative h-[220px] md:h-[600px] overflow-hidden group">
@@ -315,7 +315,7 @@ export default function KanjivaramBanners() {
         </section>
 
         {/* ===== SECTION 4 ===== */}
-        <section className="grid grid-cols-1 md:grid-cols-2 mt-8 md:pb-8 border-0 md:border md:border-[#2a2a2a]">
+        <section className="grid grid-cols-1 md:grid-cols-2 mt-8 md:pb-8 ">
 
           {/* CONTENT */}
           <div className="flex items-center justify-center p-4 md:p-12 order-2 md:order-1">

@@ -7,7 +7,6 @@
 
 // import CartSidebar from "../components/CartSidebar";
 // import { useCart } from "../providers/CartProvider";
-// import { useAuth } from "../components/context/AuthProvider";
 // import api from "../utils/apiInstance";
 
 // import {
@@ -19,7 +18,6 @@
 
 // const slugify = (text = "") =>
 //   text
-//     .toString()
 //     .toLowerCase()
 //     .replace(/&/g, "and")
 //     .replace(/[^a-z0-9]+/g, "-")
@@ -28,29 +26,25 @@
 // export default function Header() {
 //   const [desktopActive, setDesktopActive] = useState(null);
 //   const [menuOpen, setMenuOpen] = useState(false);
-//   const [mobileActive, setMobileActive] = useState(null);
 //   const [accountOpen, setAccountOpen] = useState(false);
 //   const [menuData, setMenuData] = useState([]);
+//   const [token, setToken] = useState(null);
 
 //   const { count, cartOpen, setCartOpen } = useCart();
-//   const { user, logout } = useAuth();
-//   const isLoggedIn = !!user;
-
 //   const router = useRouter();
 //   const dropdownRef = useRef(null);
 
-//   const [token, setToken] = useState(null);
+//   /* TOKEN */
 //   useEffect(() => {
 //     setToken(localStorage.getItem("token"));
 //   }, []);
 
-//   /* ================= FETCH MENU ================= */
+//   /* MENU API */
 //   useEffect(() => {
 //     async function fetchMenu() {
 //       try {
-//         const data = await api.get("ecom/menu");
-//         const menuItems = data?.data || data;
-//         setMenuData(Array.isArray(menuItems) ? menuItems : []);
+//         const res = await api.get("ecom/menu");
+//         setMenuData(Array.isArray(res?.data) ? res.data : []);
 //       } catch {
 //         setMenuData([]);
 //       }
@@ -58,173 +52,195 @@
 //     fetchMenu();
 //   }, []);
 
-//   /* ================= OUTSIDE CLICK ================= */
+//   /* CLOSE PROFILE DROPDOWN */
 //   useEffect(() => {
-//     function handleOutsideClick(e) {
+//     const close = (e) => {
 //       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
 //         setAccountOpen(false);
 //       }
-//     }
-//     document.addEventListener("mousedown", handleOutsideClick);
-//     return () => document.removeEventListener("mousedown", handleOutsideClick);
+//     };
+//     document.addEventListener("mousedown", close);
+//     return () => document.removeEventListener("mousedown", close);
 //   }, []);
 
-//   /* ================= PROFILE CLICK ================= */
-//   const handleProfileClick = () => {
-//     if (token) {
-//       router.push("/dashboard");
-//     } else {
-//       router.push("/account/login");
-//     }
+//   const logout = () => {
+//     localStorage.clear();
+//     router.push("/");
+//     window.location.reload();
 //   };
+
+//   const handleProfileClick = () => {
+//     if (!token) router.push("/account/login");
+//     else setAccountOpen((p) => !p);
+//   };
+
+//   const filteredMenus = menuData.filter(
+//     (menu) => menu.items && menu.items.length
+//   );
+
+//   const visibleMenus = filteredMenus.slice(0, 6);
+//   const extraMenus = filteredMenus.slice(6);
 
 //   return (
 //     <>
-//       {/* TOP BAR */}
-//       <div className="w-full bg-red-500 text-center text-white text-[18px] py-2 font-bold font-sans">
-//         Our Showrooms EXPLORE
-//       </div>
-
-//       {/* HEADER */}
-//       <header className="bg-white border-b relative z-30 py-2">
-//         <div className="max-w-[1400px] mx-auto flex items-center justify-between h-[100px] px-4 mt-2">
-//           {/* LOGO */}
-//           <Link href="/">
-//             <Image
-//               src="/image.png"
-//               alt="PSR Silk Sarees"
-//               width={120}
-//               height={50}
-//               priority
-//             />
-//           </Link>
-
-//           {/* RIGHT ICONS */}
-//           <div className="flex items-center gap-5 text-black">
-//             {/* SOCIAL MEDIA */}
-//             <a
-//               href="https://www.facebook.com/profile.php?id=61587415783400"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="hover:text-blue-600 transition"
-//               aria-label="Facebook"
-//             >
-//               <FaFacebookF size={18} />
-//             </a>
-
-//             <a
-//               href="https://www.instagram.com/hamsinisilks/?hl=en"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="hover:text-pink-600 transition"
-//               aria-label="Instagram"
-//             >
-//               <FaInstagram size={18} />
-//             </a>
-
-//             {/* PROFILE */}
-//             <div
-//               className="relative"
-//               ref={dropdownRef}
-//               onMouseEnter={() => isLoggedIn && setAccountOpen(true)}
-//               onMouseLeave={() => setAccountOpen(false)}
-//             >
-//               <button onClick={handleProfileClick}>
-//                 {token ? (
-//                   <UserCircleIcon className="w-6 h-6 text-black" />
-//                 ) : (
-//                   <ArrowRightOnRectangleIcon className="w-6 h-6 text-black" />
-//                 )}
-//               </button>
-
-//               {isLoggedIn && accountOpen && (
-//                 <div
-//                   className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md"
-//                   onMouseEnter={() => setAccountOpen(true)}
-//                   onMouseLeave={() => setAccountOpen(false)}
-//                 >
-//                   <button
-//                     onClick={() => router.push("/dashboard")}
-//                     className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-//                   >
-//                     Dashboard
-//                   </button>
-
-//                   <button
-//                     onClick={() => {
-//                       logout();
-//                       router.push("/");
-//                     }}
-//                     className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
-//                   >
-//                     Logout
-//                   </button>
-//                 </div>
-//               )}
-//             </div>
-
-//             {/* CART */}
-//             <button onClick={() => setCartOpen(true)} className="relative">
-//               <img
-//                 src="/cart-shopping-svgrepo-com.svg"
-//                 className="w-[20px]"
-//                 alt="cart"
+//       <header className="bg-white  relative z-30 mt-2">
+//         <div className="max-w-[1400px] mx-auto px-4">
+//           {/* TOP ROW */}
+//           <div className="flex justify-between items-center py-4">
+//             {/* LOGO */}
+//             <Link href="/">
+//               <Image
+//                 src="/image.png"
+//                 alt="PSR Silk Sarees"
+//                 width={120}
+//                 height={50}
+//                 priority
 //               />
-//               {count > 0 && (
-//                 <span className="absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
-//                   {count}
+//             </Link>
+//               <nav className="hidden lg:flex justify-center gap-8 py-4 uppercase text-sm font-bold">
+//             {visibleMenus.map((menu) => (
+//               <div
+//                 key={menu.key}
+//                 className="relative"
+//                 onMouseEnter={() => setDesktopActive(menu.key)}
+//                 onMouseLeave={() => setDesktopActive(null)}
+//               >
+//                 <span className="cursor-pointer pb-2 hover">
+//                   {menu.label}
 //                 </span>
-//               )}
-//             </button>
-
-//             {/* HAMBURGER */}
-//             <button
-//               className="lg:hidden text-2xl p-2 hover:bg-gray-100 rounded-lg"
-//               onClick={() => setMenuOpen(true)}
-//             >
-//               ☰
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* DESKTOP MENU */}
-//         <nav className="hidden lg:flex justify-center gap-8 pb-3 mt-3 uppercase text-[14px] font-bold">
-//           {menuData.map((menu) => (
-//             <div
-//               key={menu.key}
-//               className="relative"
-//               onMouseEnter={() => setDesktopActive(menu.key)}
-//               onMouseLeave={() => setDesktopActive(null)}
-//             >
-//               <span className="cursor-pointer pb-2 hover:border-b-2 border-black">
-//                 {menu.label}
-//               </span>
-
-//               {desktopActive === menu.key && (
-//                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg">
-//                   <ul className="grid grid-cols-2 gap-2 p-4 text-[16px]">
-//                     {menu.items.map((item) => {
-//                       const slug = slugify(item);
-//                       if (!slug) return null;
-
-//                       return (
+//                 {desktopActive === menu.key && (
+//                   <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
+//                     <ul className="flex flex-col gap-2 p-4">
+//                       {menu.items.map((item) => (
 //                         <li key={item}>
 //                           <Link
-//                             href={`/collections?category=${slug}`}
+//                             href={`/collections?category=${slugify(item)}`}
 //                             className="block px-3 py-2 hover:bg-gray-50"
 //                           >
 //                             {item}
 //                           </Link>
 //                         </li>
-//                       );
-//                     })}
-//                   </ul>
-//                 </div>
-//               )}
+//                       ))}
+//                     </ul>
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+
+//             {extraMenus.length > 0 && (
+//               <div
+//                 className="relative"
+//                 onMouseEnter={() => setDesktopActive("more")}
+//                 onMouseLeave={() => setDesktopActive(null)}
+//               >
+//                 <span className="cursor-pointer pb-2 ">
+//                   More
+//                 </span>
+
+//                 {desktopActive === "more" && (
+//                   <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
+//                     <ul className="flex flex-col gap-2 p-4">
+//                       {extraMenus.map((menu) => (
+//                         <li key={menu.key}>{menu.label}</li>
+//                       ))}
+//                     </ul>
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+//           </nav>
+
+//             {/* ICONS */}
+//             <div className="flex items-center gap-5 text-black mb-20">
+//               <a
+//                 href="https://www.facebook.com/profile.php?id=61587415783400"
+//                 target="_blank"
+//                 className="hover:text-blue-600"
+//               >
+//                 <FaFacebookF size={18} />
+//               </a>
+
+//               <a
+//                 href="https://www.instagram.com/hamsinisilks/?hl=en"
+//                 target="_blank"
+//                 className="hover:text-pink-600"
+//               >
+//                 <FaInstagram size={18} />
+//               </a>
+
+//               {/* PROFILE */}
+//             <div
+//   ref={dropdownRef}
+//   className="relative mt-2"
+//   onMouseEnter={() => token && setAccountOpen(true)}
+//   onMouseLeave={() => setAccountOpen(false)}
+// >
+//   <button
+//     onClick={() => {
+//       if (!token) router.push("/account/login");
+//     }}
+//     className="cursor-pointer pb-2"
+//   >
+//     {token ? (
+//       <UserCircleIcon className="w-6 h-6" />
+//     ) : (
+//       <UserCircleIcon className="w-6 h-6" />
+//     )}
+//   </button>
+
+//   {token && accountOpen && (
+//     <div className="absolute right-0 top-full pt-2 z-50">
+//       <div className="w-44 bg-white  shadow-lg rounded-md overflow-hidden">
+//         <button
+//           onClick={() => {
+//             router.push("/dashboard");
+//             setAccountOpen(false);
+//           }}
+//           className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+//         >
+//           Dashboard
+//         </button>
+
+//         <button
+//           onClick={logout}
+//           className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+//         >
+//           Logout
+//         </button>
+//       </div>
+//     </div>
+//   )}
+// </div>
+
+
+//               {/* CART */}
+//               <button onClick={() => setCartOpen(true)} className="relative">
+//                 <img
+//                   src="/cart-shopping-svgrepo-com.svg"
+//                   className="w-5"
+//                   alt="cart"
+//                 />
+//                 {count > 0 && (
+//                   <span className="absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
+//                     {count}
+//                   </span>
+//                 )}
+//               </button>
+
+//               {/* MOBILE */}
+//               <button
+//                 className="lg:hidden text-2xl"
+//                 onClick={() => setMenuOpen(true)}
+//               >
+//                 ☰
+//               </button>
 //             </div>
-//           ))}
-//         </nav>
+//           </div>
+
+//           {/* CENTER MENU */}
+//         </div>
 //       </header>
+
 //       <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
 //     </>
 //   );
@@ -241,19 +257,14 @@ import Link from "next/link";
 
 import CartSidebar from "../components/CartSidebar";
 import { useCart } from "../providers/CartProvider";
-import { useAuth } from "../components/context/AuthProvider";
 import api from "../utils/apiInstance";
 
-import {
-  UserCircleIcon,
-  ArrowRightOnRectangleIcon,
-} from "@heroicons/react/24/outline";
-
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 
+/* ---------- UTILS ---------- */
 const slugify = (text = "") =>
   text
-    .toString()
     .toLowerCase()
     .replace(/&/g, "and")
     .replace(/[^a-z0-9]+/g, "-")
@@ -264,33 +275,23 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [menuData, setMenuData] = useState([]);
+  const [token, setToken] = useState(null);
 
   const { count, cartOpen, setCartOpen } = useCart();
-  // const { logout } = useAuth();
-
-  const logout=()=>{
-    localStorage.clear()
-    window.location.reload()
-  }
-
   const router = useRouter();
   const dropdownRef = useRef(null);
 
-  const [token, setToken] = useState(null);
-
-  /* ================= LOAD TOKEN ================= */
+  /* ---------- TOKEN ---------- */
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
+    setToken(localStorage.getItem("token"));
   }, []);
 
-  /* ================= FETCH MENU ================= */
+  /* ---------- MENU API ---------- */
   useEffect(() => {
     async function fetchMenu() {
       try {
-        const data = await api.get("ecom/menu");
-        const menuItems = data?.data || data;
-        setMenuData(Array.isArray(menuItems) ? menuItems : []);
+        const res = await api.get("ecom/menu");
+        setMenuData(Array.isArray(res?.data) ? res.data : []);
       } catch {
         setMenuData([]);
       }
@@ -298,29 +299,25 @@ export default function Header() {
     fetchMenu();
   }, []);
 
-  /* ================= CLOSE DROPDOWN ON OUTSIDE CLICK ================= */
+  /* ---------- CLOSE PROFILE ON OUTSIDE CLICK ---------- */
   useEffect(() => {
-    function handleOutsideClick(e) {
+    const close = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setAccountOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  /* ================= PROFILE CLICK ================= */
-  const handleProfileClick = () => {
-    if (!token) {
-      router.push("/account/login");
-    } else {
-      setAccountOpen((prev) => !prev);
-    }
+  const logout = () => {
+    localStorage.clear();
+    router.push("/");
+    window.location.reload();
   };
 
-  /* ================= LIMIT MENU ================= */
   const filteredMenus = menuData.filter(
-    (menu) => menu.items && menu.items.length > 0
+    (menu) => menu.items && menu.items.length
   );
 
   const visibleMenus = filteredMenus.slice(0, 6);
@@ -328,177 +325,254 @@ export default function Header() {
 
   return (
     <>
-      {/* TOP BAR */}
-      <div className="w-full bg-red-500 text-center text-white text-[18px] py-2 font-bold font-sans">
-        Our Showrooms EXPLORE
-      </div>
+      {/* ================= HEADER ================= */}
+      <header className="sticky top-0 z-40 bg-white shadow-sm">
+        <div className="max-w-[1400px] mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-center justify-between py-4 gap-4 lg:gap-0">
 
-      {/* HEADER */}
-      <header className="bg-white border-b relative z-30 py-2">
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between h-[100px] px-4 mt-2">
+            {/* LOGO */}
+            <Link href="/">
+              <Image
+                src="/image.png"
+                alt="Hamsini Silks & Jewellers"
+                width={120}
+                height={60}
+                priority
+              />
+            </Link>
 
-          {/* LOGO */}
-          <Link href="/">
-            <Image
-              src="/image.png"
-              alt="PSR Silk Sarees"
-              width={120}
-              height={50}
-              priority
-            />
-          </Link>
+            {/* ===== DESKTOP NAV ===== */}
+            <nav className="hidden lg:flex gap-8 uppercase text-sm font-bold">
+              {visibleMenus.map((menu) => (
+                <div
+                  key={menu.key}
+                  className="relative"
+                  onMouseEnter={() => setDesktopActive(menu.key)}
+                  onMouseLeave={() => setDesktopActive(null)}
+                >
+                  <span className="cursor-pointer pb-2">
+                    {menu.label}
+                  </span>
 
-          {/* RIGHT ICONS */}
-          <div className="flex items-center gap-5 text-black">
+                  {desktopActive === menu.key && (
+                    <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
+                      <ul className="flex flex-col p-4 min-w-[200px]">
+                        {menu.items.map((item) => (
+                          <li key={item}>
+                            <Link
+                              href={`/collections?category=${slugify(item)}`}
+                              className="block px-3 py-2 hover:bg-gray-100"
+                            >
+                              {item}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
 
-            {/* SOCIAL */}
-            <a
-              href="https://www.facebook.com/profile.php?id=61587415783400"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-blue-600 transition"
-            >
-              <FaFacebookF size={18} />
-            </a>
+              {extraMenus.length > 0 && (
+                <div
+                  className="relative"
+                  onMouseEnter={() => setDesktopActive("more")}
+                  onMouseLeave={() => setDesktopActive(null)}
+                >
+                  <span className="cursor-pointer pb-2">More</span>
 
-            <a
-              href="https://www.instagram.com/hamsinisilks/?hl=en"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-pink-600 transition"
-            >
-              <FaInstagram size={18} />
-            </a>
+                  {desktopActive === "more" && (
+                    <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
+                      <ul className="flex flex-col p-4 min-w-[200px]">
+                        {extraMenus.map((menu) => (
+                          <li key={menu.key} className="px-3 py-2">
+                            {menu.label}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </nav>
 
-            {/* PROFILE */}
-            <div className="relative" ref={dropdownRef}>
-              <button onClick={handleProfileClick}>
-                {token ? (
-                  <UserCircleIcon className="w-6 h-6 text-black" />
-                ) : (
-                  <ArrowRightOnRectangleIcon className="w-6 h-6 text-black" />
+            {/* ===== RIGHT ICONS ===== */}
+            <div className="flex items-center gap-5 justify-center lg:justify-end w-full lg:w-auto">
+
+              {/* FACEBOOK */}
+              <a
+                href="https://www.facebook.com/profile.php?id=61587415783400"
+                target="_blank"
+                className="hover:text-blue-600"
+              >
+                <FaFacebookF size={18} />
+              </a>
+
+              {/* INSTAGRAM */}
+              <a
+                href="https://www.instagram.com/hamsinisilks/?hl=en"
+                target="_blank"
+                className="hover:text-pink-600"
+              >
+                <FaInstagram size={18} />
+              </a>
+
+              {/* PROFILE */}
+              <div
+                ref={dropdownRef}
+                className="relative"
+                onMouseEnter={() => token && setAccountOpen(true)}
+                onMouseLeave={() => setAccountOpen(false)}
+              >
+                <button
+                  onClick={() => !token && router.push("/account/login")}
+                  className="cursor-pointer"
+                >
+                  <UserCircleIcon className="w-6 h-6" />
+                </button>
+
+                {token && accountOpen && (
+                  <div className="absolute right-0 top-full pt-2 z-50">
+                    <div className="w-44 bg-white shadow-lg rounded-md">
+                      <button
+                        onClick={() => {
+                          router.push("/dashboard");
+                          setAccountOpen(false);
+                        }}
+                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      >
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={logout}
+                        className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* CART */}
+              <button onClick={() => setCartOpen(true)} className="relative">
+                <img
+                  src="/cart-shopping-svgrepo-com.svg"
+                  className="w-5"
+                  alt="cart"
+                />
+                {count > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
+                    {count}
+                  </span>
                 )}
               </button>
 
-              {token && accountOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border shadow-lg rounded-md z-50">
-                  <button
-                    onClick={() => {
-                      router.push("/dashboard");
-                      setAccountOpen(false);
-                    }}
-                    className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </button>
+              {/* HAMBURGER */}
+              <button
+                className="lg:hidden text-2xl"
+                onClick={() => setMenuOpen(true)}
+              >
+                ☰
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
 
+      {/* ================= MOBILE MENU ================= */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setMenuOpen(false)}
+          />
+
+          <div className="absolute left-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-xl overflow-y-auto">
+            <div className="flex justify-between items-center px-4 py-4 border-b">
+              <Image src="/image.png" width={100} height={50} alt="logo" />
+              <button onClick={() => setMenuOpen(false)}>✕</button>
+            </div>
+
+            <div className="px-4 py-3 space-y-2">
+              {filteredMenus.map((menu) => (
+                <MobileMenuItem
+                  key={menu.key}
+                  menu={menu}
+                  onClose={() => setMenuOpen(false)}
+                />
+              ))}
+            </div>
+
+            <div className="border-t px-4 py-4">
+              {!token ? (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    router.push("/account/login");
+                  }}
+                  className="w-full py-2 text-left font-medium"
+                >
+                  Login / Register
+                </button>
+              ) : (
+                <>
                   <button
                     onClick={() => {
-                      logout();
-                      localStorage.removeItem("token");
-                      router.push("/");
-                      setAccountOpen(false);
+                      setMenuOpen(false);
+                      router.push("/dashboard");
                     }}
-                    className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                    className="w-full py-2 text-left font-medium"
+                  >
+                    My Account
+                  </button>
+                  <button
+                    onClick={logout}
+                    className="w-full py-2 text-left text-red-600 font-medium"
                   >
                     Logout
                   </button>
-                </div>
+                </>
               )}
             </div>
-
-            {/* CART */}
-            <button onClick={() => setCartOpen(true)} className="relative">
-              <img
-                src="/cart-shopping-svgrepo-com.svg"
-                className="w-[20px]"
-                alt="cart"
-              />
-              {count > 0 && (
-                <span className="absolute -top-2 -right-2 bg-black text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
-                  {count}
-                </span>
-              )}
-            </button>
-
-            {/* HAMBURGER */}
-            <button
-              className="lg:hidden text-2xl p-2 hover:bg-gray-100 rounded-lg"
-              onClick={() => setMenuOpen(true)}
-            >
-              ☰
-            </button>
           </div>
         </div>
-
-        {/* DESKTOP MENU */}
-        <nav className="hidden lg:flex justify-center gap-8 pb-3 mt-3 uppercase text-[14px] font-bold">
-
-          {/* FIRST 6 MENUS */}
-          {visibleMenus.map((menu) => (
-            <div
-              key={menu.key}
-              className="relative"
-              onMouseEnter={() => setDesktopActive(menu.key)}
-              onMouseLeave={() => setDesktopActive(null)}
-            >
-              <span className="cursor-pointer pb-2 hover:border-b-2 border-black">
-                {menu.label}
-              </span>
-
-              {desktopActive === menu.key && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg z-40">
-                  <ul className="grid grid-cols-2 gap-2 p-4 text-[16px]">
-                    {menu.items.map((item) => {
-                      const slug = slugify(item);
-                      if (!slug) return null;
-
-                      return (
-                        <li key={item}>
-                          <Link
-                            href={`/collections?category=${slug}`}
-                            className="block px-3 py-2 hover:bg-gray-50"
-                          >
-                            {item}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* MORE MENU */}
-          {extraMenus.length > 0 && (
-            <div
-              className="relative"
-              onMouseEnter={() => setDesktopActive("more")}
-              onMouseLeave={() => setDesktopActive(null)}
-            >
-              <span className="cursor-pointer pb-2 hover:border-b-2 border-black">
-                More
-              </span>
-
-              {desktopActive === "more" && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white border shadow-lg z-40">
-                  <ul className="grid grid-cols-2 gap-2 p-4 text-[16px]">
-                    {extraMenus.map((menu) => (
-                      <li key={menu.key} className="font-semibold px-3 py-2">
-                        {menu.label}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
-        </nav>
-      </header>
+      )}
 
       <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
+  );
+}
+
+/* ================= MOBILE MENU ITEM ================= */
+function MobileMenuItem({ menu, onClose }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border-b pb-2">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex justify-between items-center py-2 font-semibold"
+      >
+        {menu.label}
+        <span>{open ? "−" : "+"}</span>
+      </button>
+
+      {open && (
+        <div className="pl-4 space-y-1">
+          {menu.items.map((item) => (
+            <Link
+              key={item}
+              href={`/collections?category=${slugify(item)}`}
+              onClick={onClose}
+              className="block py-1 text-sm text-gray-700"
+            >
+              {item}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
