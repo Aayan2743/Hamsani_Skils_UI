@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
   return (
     <div className="bg-white text-gray-800">
            <header className="text-center  mt-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-red-600 mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-3">
            Privacy Policy
           </h1>
          
@@ -130,11 +130,7 @@ export default function PrivacyPolicy() {
           <p className="mb-2">
             If you have questions about this Privacy Policy, contact us at:
           </p>
-          <p className="font-medium">📧 Email: support@hamisniskills.com</p>
-          <p className="mt-2">
-            📍 Address: No 361 Dr. Rajendraprasad Street (100 Feet), Tatabad,
-            Coimbatore – 641012, Tamil Nadu, India
-          </p>
+          <p className="font-medium">📧 Email: support@hamsinisilks.com</p>
         </section>
 
         <p className="mt-8 text-sm text-gray-500">

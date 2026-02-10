@@ -77,7 +77,6 @@ function ProductDetailsContent() {
         }
       } catch (error) {
         if (!isMounted) return;
-        console.error("Product fetch error:", error);
         setError("Failed to load product");
         setProduct(null);
       } finally {

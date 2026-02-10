@@ -75,8 +75,7 @@ export default function ContactPage() {
             <h3 className="text-lg font-semibold text-green-900 mb-2">
               Phone
             </h3>
-            <p className="text-gray-700">+91 98765 98525</p>
-            <p className="text-gray-700">+91 98765 75237</p>
+            <p className="text-gray-700">+91 9133616616</p>
           </div>
 
           <div>
@@ -84,7 +83,7 @@ export default function ContactPage() {
               Working Hours
             </h3>
             <p className="text-gray-700">Monday – Friday: 8:00 AM – 6:00 PM</p>
-            <p className="text-gray-700">Saturday & Sunday: Closed</p>
+            {/* <p className="text-gray-700">Saturday & Sunday: Closed</p> */}
           </div>
         </div>
 

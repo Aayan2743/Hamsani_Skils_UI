@@ -181,9 +181,9 @@ export default function Map() {
 
   /* INSTAGRAM LINKS */
   const instagramPosts = [
-    "https://www.instagram.com/p/DUhvd7FEZEA/",
     "https://www.instagram.com/p/DUasaFvkf4b/",
-    "https://www.instagram.com/p/DUhvd7FEZEA/",
+    "https://www.instagram.com/p/DUe-hV0ES3O/",
+    "https://www.instagram.com/p/DUasaFvkf4b/",
   ];
   const scroll = (direction) => {
     if (!sliderRef.current) return;

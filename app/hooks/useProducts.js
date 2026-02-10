@@ -44,7 +44,6 @@ export function useProducts() {
         setError(null);
       } catch (err) {
         if (!isMounted) return;
-        console.error("Products API error:", err);
         setError(err.message || "Failed to load products");
         setProducts([]);
       } finally {

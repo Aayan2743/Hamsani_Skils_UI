@@ -268,8 +268,6 @@ export default function SignupPage() {
         window.location.reload();
       }, 1000);
     } catch (err) {
-      console.error("Signup error:", err);
-
       const data = err.response?.data;
 
       /* ===============================

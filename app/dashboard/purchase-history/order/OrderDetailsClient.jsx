@@ -29,11 +29,17 @@ export default function OrderDetailsClient() {
 
         // Fetch order details from API
         const res = await api.get(`/ecom/orders/${orderId}`);
-        
+
         if (!isMounted) return;
 
-        const orderData = res?.data?.data || res?.data || null;
-        
+        // Try different response structures
+        const orderData =
+          res?.data?.data?.order ||
+          res?.data?.order ||
+          res?.data?.data ||
+          res?.data ||
+          null;
+
         if (!orderData) {
           setError("Order not found");
           setOrder(null);
@@ -42,8 +48,11 @@ export default function OrderDetailsClient() {
         }
       } catch (err) {
         if (!isMounted) return;
-        console.error("Failed to fetch order:", err);
-        setError(err.response?.data?.message || "Failed to load order details");
+        setError(
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to load order details"
+        );
         setOrder(null);
       } finally {
         if (isMounted) {
@@ -183,44 +192,50 @@ export default function OrderDetailsClient() {
               Order Items
             </h3>
 
-            {order.items.map((it, idx) => (
-              <div
-                key={it.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border rounded p-4 mb-4"
-              >
-                <div className="md:col-span-1 text-orange-600 font-semibold">
-                  {idx + 1}
-                </div>
+            {order.items && order.items.length > 0 ? (
+              order.items.map((it, idx) => (
+                <div
+                  key={it.id}
+                  className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border rounded p-4 mb-4"
+                >
+                  <div className="md:col-span-1 text-orange-600 font-semibold">
+                    {idx + 1}
+                  </div>
 
-                <div className="md:col-span-3 text-orange-600">
-                  {it.variant.product.name}
-                </div>
+                  <div className="md:col-span-3 text-orange-600">
+                    {it.variant?.product?.name || it.product_name || "N/A"}
+                  </div>
 
-                <div className="md:col-span-1">
-                  <img
-                    src={it.variant.image}
-                    alt={it.variant.product.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                </div>
+                  <div className="md:col-span-1">
+                    {it.variant?.image && (
+                      <img
+                        src={it.variant.image}
+                        alt={it.variant?.product?.name || "Product"}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )}
+                  </div>
 
-                <div className="md:col-span-2 text-sm">
-                  SKU: {it.variant.sku}
-                </div>
+                  <div className="md:col-span-2 text-sm">
+                    SKU: {it.variant?.sku || it.sku || "N/A"}
+                  </div>
 
-                <div className="md:col-span-1 text-sm">
-                  Qty: {it.qty}
-                </div>
+                  <div className="md:col-span-1 text-sm">
+                    Qty: {it.qty || it.quantity || 0}
+                  </div>
 
-                <div className="md:col-span-2 text-sm">
-                  Home Delivery
-                </div>
+                  <div className="md:col-span-2 text-sm">
+                    Home Delivery
+                  </div>
 
-                <div className="md:col-span-1 font-semibold">
-                  ₹{it.price_at_time}
+                  <div className="md:col-span-1 font-semibold">
+                    ₹{it.price_at_time || it.price || 0}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">No items found</p>
+            )}
           </div>
         </section>
 

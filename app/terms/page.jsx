@@ -18,7 +18,7 @@ export default function TermsOfService() {
   return (
     <main className="bg-white-50 text-gray-800">
        <header className="text-center  mt-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-red-600 mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-3">
          Terms of Service
           </h1>
           <p className="text-sm tracking-widest text-gray-500">

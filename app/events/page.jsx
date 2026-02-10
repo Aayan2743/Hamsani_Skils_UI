@@ -109,7 +109,7 @@ export default function EventsPage() {
   return (
     <main className="bg-white">
  <section className=" py-10 text-center text-white">
-  <h1 className="text-4xl font-bold text-red-600">Events</h1>
+  <h1 className="text-4xl font-bold text-green-600">Events</h1>
 </section>
 
       {/* SINGLE EVENT POSTER */}

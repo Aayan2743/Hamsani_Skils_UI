@@ -3,7 +3,7 @@ export const blogs = [
     slug: "celebrate-every-occasion",
     title:
       "Celebrate Every Occasion With PSR Silks: From Bridal Bliss To Everyday Elegance",
-    date: "Aug 20, 2024",
+    // date: "Aug 20, 2024",
     author: "PSR Silk Sarees",
     heroImage:
       "https://www.psrsilks.com/cdn/shop/articles/IMG_20210121_102801_116_5_1066x.jpg?v=1724411392",
@@ -34,7 +34,7 @@ export const blogs = [
   {
     slug: "psr-deepavali",
     title: "PSR's Deepavali",
-    date: "Nov 07, 2023",
+    // date: "Nov 07, 2023",
     author: "PSR Silk Sarees",
     heroImage:
       "https://www.psrsilks.com/cdn/shop/articles/deepavali_1066x.jpg?v=172441202",
@@ -49,7 +49,7 @@ export const blogs = [
   {
     slug: "sarees-and-teachers",
     title: "Sarees And Teachers",
-    date: "Sep 05, 2023",
+    // date: "Sep 05, 2023",
     author: "PSR Silk Sarees",
     heroImage:
       "https://www.psrsilks.com/cdn/shop/articles/IMG_20210121_102801_116_520x5_a62335c2-7898-4470-b8fd-25e6fe83c485_1066x.jpg?v=1724412089",

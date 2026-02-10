@@ -5,32 +5,10 @@ import { useState } from "react";
 
 const STORES = [
   {
-    city: "Coimbatore – 100 Feet Road",
+    city: "Hyderabad",
     address:
-      "361, Dr. Rajendra Prasad Road (100 Feet), Tatabad, Coimbatore, Tamil Nadu 641012",
-    phone: "91500 16561",
+      "Hyd",
     map: "https://www.google.com/maps?q=361 Dr Rajendra Prasad Road Tatabad Coimbatore&output=embed",
-  },
-  {
-    city: "Coimbatore – Cross Cut Road",
-    address:
-      "942, Cross Cut Road, Gandhipuram, Coimbatore, Tamil Nadu 641012",
-    phone: "91500 16562",
-    map: "https://www.google.com/maps?q=942 Cross Cut Road Gandhipuram Coimbatore&output=embed",
-  },
-  {
-    city: "Madurai",
-    address:
-      "No. 137, 5th Street, K.K. Nagar, Madurai, Tamil Nadu 625020",
-    phone: "91500 16577",
-    map: "https://www.google.com/maps?q=137 5th Street KK Nagar Madurai&output=embed",
-  },
-  {
-    city: "Salem",
-    address:
-      "10/3, Fair Lands, Park Street, Z2 Hasthampatty, Salem, Tamil Nadu 636016",
-    phone: "91500 16567",
-    map: "https://www.google.com/maps?q=10/3 Fair Lands Park Street Salem&output=embed",
   },
 ];
 
@@ -42,7 +20,7 @@ export default function StoreLocatorPage() {
     <main className="bg-white min-h-screen text-black">
       {/* PAGE TITLE */}
       <header className="py-8">
-        <h1 className="text-3xl font-semibold text-center tracking-wide text-red-500">
+        <h1 className="text-3xl font-semibold text-center tracking-wide text-green-500">
           STORE LOCATOR
         </h1>
       </header>
@@ -78,7 +56,7 @@ export default function StoreLocatorPage() {
 
           {/* Phone */}
           <p className="text-sm text-gray-900">
-            Phone: {store.phone}
+            {/* Phone: {store.phone} */}
           </p>
         </article>
       );

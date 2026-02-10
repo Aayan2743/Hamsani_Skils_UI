@@ -190,7 +190,7 @@ export default function BlogsClient() {
   return (
     <main className="max-w-7xl mx-auto px-6 py-14 text-black">
       <section className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-red-600">
+        <h1 className="text-4xl font-bold text-green-600">
           Blogs
         </h1>
       </section>

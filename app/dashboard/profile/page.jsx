@@ -302,7 +302,6 @@ export default function ProfilePage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const userStr = localStorage.getItem("user");
-    console.log("Loaded user from localStorage:", userStr);
     if (!userStr) return;
 
     try {
@@ -314,7 +313,7 @@ export default function ProfilePage() {
       setPhotoUrl(user.avatar || null);
       setAvatarBase64(user.avatar || null);
     } catch (err) {
-      console.error("Failed to parse user from localStorage", err);
+      // Failed to parse user
     }
   }, []);
 
@@ -371,7 +370,6 @@ export default function ProfilePage() {
         toast.error(res.data?.message || "Profile update failed");
       }
     } catch (error) {
-      console.error("Profile update error:", error);
       toast.error("Profile update failed");
     }
   }

@@ -231,8 +231,6 @@ export default function OrderDetailsPage() {
           },
         });
 
-        console.log("🟢 API RESPONSE:", res.data);
-
         if (res.status === 200 && res.data?.success) {
           const apiData = res.data.data;
 
@@ -241,11 +239,10 @@ export default function OrderDetailsPage() {
             ? apiData
             : [apiData];
 
-          console.log("🟢 Orders normalized:", ordersArray);
           setOrders(ordersArray);
         }
       } catch (error) {
-        console.error("❌ Failed to fetch orders", error);
+        // Error handled silently
       } finally {
         setLoading(false);
       }

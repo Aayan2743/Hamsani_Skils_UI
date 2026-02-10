@@ -17,16 +17,12 @@ export default function RefundPolicy() {
     <main className="bg-white-50 text-gray-800">
 
           <header className="text-center  mt-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-red-600 mb-3">
-           Refund & Exchange Policy
+          <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-3">
+           Refund & Exchange Policys
           </h1>
-          <p className="text-sm tracking-widest text-gray-500">
-              Last updated: July 2025
-          </p>
         </header>
       <section className="max-w-5xl mx-auto px-4 py-6">
-       
-
+      
         {/* Domestic Returns */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">
@@ -54,10 +50,10 @@ export default function RefundPolicy() {
           <p className="mt-4">
             To initiate a return, contact us at{" "}
             <a
-              href="mailto:customercare@psrsilkindia.com"
+              href="mailto:customercare@hamsinisilks.com"
               className="text-blue-600 underline"
             >
-              customercare@psrsilkindia.com
+             customercare@hamsinisilks.com
             </a>
           </p>
         </section>
@@ -127,10 +123,10 @@ export default function RefundPolicy() {
               If a wrong or damaged item is received, inform us within 48 hours
               at{" "}
               <a
-                href="mailto:customercare@psrsilkindia.com"
+                href="mailto:customercare@hamsinisilks.com"
                 className="text-blue-600 underline"
               >
-                customercare@psrsilkindia.com
+            customercare@hamsinisilks.com
               </a>
             </li>
             <li>

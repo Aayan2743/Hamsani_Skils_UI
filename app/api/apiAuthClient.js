@@ -26,7 +26,6 @@ apiAuthClient.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      console.warn("Unauthorized — clearing token");
       clearToken();
       window.location.href = "/login";
     }

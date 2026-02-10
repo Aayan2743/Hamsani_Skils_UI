@@ -308,7 +308,6 @@ export default function AddAddressModal({
         state: postOffice.State || "",
       }));
     } catch (error) {
-      console.error("Pincode error:", error);
       toast.error("Failed to fetch pincode details");
       setForm((p) => ({ ...p, city: "", state: "" }));
     } finally {
@@ -395,8 +394,6 @@ export default function AddAddressModal({
       onSuccess(res.data?.data || form);
       onClose();
     } catch (err) {
-      console.error("Address error:", err);
-
       const apiData = err.response?.data;
 
       if (typeof apiData?.errors === "string") {

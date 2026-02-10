@@ -167,7 +167,6 @@ export default function LoginPage() {
     // });
 
     toast.success("Login successful please continu shopping");
-
        router.push(redirect);
     setTimeout(() => {
        window.location.reload();

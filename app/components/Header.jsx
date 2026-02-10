@@ -301,7 +301,6 @@ export default function Header() {
         setMenuData(Array.isArray(res?.data) ? res.data : []);
       } catch (error) {
         if (!isMounted) return;
-        console.error("Menu fetch error:", error);
         setMenuData([]);
       } finally {
         if (isMounted) {

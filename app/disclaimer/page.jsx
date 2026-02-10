@@ -27,7 +27,7 @@ export default function DisclaimerPage() {
         
         {/* Page Heading */}
         <header className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-red-600 mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-3">
             Disclaimer
           </h1>
           <p className="text-sm tracking-widest text-gray-500">

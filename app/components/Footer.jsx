@@ -319,7 +319,7 @@ const customerCare = {
   items: [
     "Time : 10 Am – 7 Pm",
     "Working Days : Mon – Sat",
-    "Whatsapp : 7540005884",
+    // "Whatsapp : 7540005884",
     "Customercare@hamishinisilks.in",
   ],
 };

@@ -33,7 +33,6 @@ apiClient.interceptors.response.use(
   (error) => {
     requestCount--;
     if (requestCount <= 0 && setGlobalLoading) setGlobalLoading(false);
-    console.error("API Error:", error.response?.status, error.response?.data);
     return Promise.reject(error);
   }
 );
