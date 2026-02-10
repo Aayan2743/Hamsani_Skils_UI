@@ -383,8 +383,8 @@ export default function SignupPage() {
     // });
 
     toast.success("Account created successfully 🎉");
-    router.push(redirect);
      window.location.reload()
+         router.push(redirect);
   } catch (err) {
  
 
