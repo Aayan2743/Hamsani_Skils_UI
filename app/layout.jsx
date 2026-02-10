@@ -103,7 +103,8 @@ import { AuthProvider } from "./components/context/AuthProvider";
 import { CartProvider } from "./providers/CartProvider";
 import { Toaster } from "react-hot-toast";
 import { WishlistProvider } from "./components/WishlistContext";
-import Script from "next/script"; // ✅ ADD THIS
+import Script from "next/script";
+import ClientPrefetch from "./components/ClientPrefetch";
 
 export const metadata = {
   title: "Hamsini Silk sarees India Pvt Ltd",
@@ -128,6 +129,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
+              <ClientPrefetch />
               <Header className="font-sans" />
               <main className="min-h-[60vh]">{children}</main>
               <Footer className="bg-[#232323] text-[#f8f8f8] font-sans" />

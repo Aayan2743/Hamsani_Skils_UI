@@ -796,6 +796,7 @@ export default function CartSidebar({ open, onClose }) {
       });
 
       const data = res?.data?.data || [];
+      // console.log("FEtch",data) 
       setAddresses(data);
       setSelectedAddress(
         data.find((a) => a.is_default === 1) || data[0] || null

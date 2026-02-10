@@ -2,85 +2,105 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import api from "../../../utils/apiInstance";
 
-export default function OrderDetailsPage() {
+export default function OrderDetailsClient() {
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("id");
+
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  /* ---------------- STATIC MOCK DATA ---------------- */
-  const STATIC_ORDER = {
-    id: "HS-ORD-10234",
-    payment_status: "PAID",
-    order_status: "SHIPPED",
-    gateway: "Razorpay",
-    total_amount: 18999,
-    discount_amount: 2000,
-    payable_amount: 16999,
-    tracking_number: "BLUEDART-88990012",
-    tracking_url: "https://www.bluedart.com/tracking",
-    address: {
-      address: "12-3-45, Silk Weavers Colony",
-      city: "Kanchipuram",
-      state: "Tamil Nadu",
-      pincode: "631501",
-      country: "India",
-    },
-    items: [
-      {
-        id: 1,
-        qty: 1,
-        price_at_time: 12999,
-        variant: {
-          sku: "HS-KAN-RED-ZARI",
-          image:
-            "https://images.unsplash.com/photo-1618354691373-d851c5c3a990",
-          product: {
-            name: "Kanchipuram Pure Silk Saree – Red Zari",
-          },
-        },
-      },
-      {
-        id: 2,
-        qty: 1,
-        price_at_time: 6000,
-        variant: {
-          sku: "HS-BAN-GOLD",
-          image:
-            "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-          product: {
-            name: "Banarasi Silk Saree – Gold Weave",
-          },
-        },
-      },
-    ],
-  };
-  /* -------------------------------------------------- */
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // simulate loading
-    setTimeout(() => {
-      setOrder(STATIC_ORDER);
+    if (!orderId) {
+      setError("No order ID provided");
       setLoading(false);
-    }, 500);
-  }, []);
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadOrder() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch order details from API
+        const res = await api.get(`/ecom/orders/${orderId}`);
+        
+        if (!isMounted) return;
+
+        const orderData = res?.data?.data || res?.data || null;
+        
+        if (!orderData) {
+          setError("Order not found");
+          setOrder(null);
+        } else {
+          setOrder(orderData);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error("Failed to fetch order:", err);
+        setError(err.response?.data?.message || "Failed to load order details");
+        setOrder(null);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadOrder();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [orderId]);
 
   if (loading) {
-    return <div className="p-6">Loading order...</div>;
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading order details...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (!order) {
-    return <div className="p-6 text-red-500">Order not found</div>;
+  if (error || !order) {
+    return (
+      <div className="p-6">
+        <div className="max-w-2xl mx-auto text-center py-12">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold mb-2">
+            {error || "Order not found"}
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {orderId
+              ? `Unable to load order details for ID: ${orderId}`
+              : "No order ID provided in the URL"}
+          </p>
+          <Link
+            href="/dashboard/purchase-history"
+            className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            ← Back to Orders
+          </Link>
+        </div>
+      </div>
+    );
   }
 
-  const address = order.address;
+  const address = order.address || {};
 
   return (
     <div className="min-h-screen bg-white text-gray-900 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold">
-            Order Id: {order.id}
-          </h1>
+          <h1 className="text-lg font-semibold">Order Id: {order.id}</h1>
           <Link
             href="/dashboard/purchase-history"
             className="text-sm text-blue-600 hover:underline"
@@ -103,7 +123,11 @@ export default function OrderDetailsPage() {
                 <Row label="Order Status" value={order.order_status} />
                 <Row
                   label="Shipping Address"
-                  value={`${address.address}, ${address.city}, ${address.state} - ${address.pincode}`}
+                  value={
+                    address.address
+                      ? `${address.address}, ${address.city}, ${address.state} - ${address.pincode}`
+                      : "N/A"
+                  }
                 />
               </div>
 
@@ -126,19 +150,23 @@ export default function OrderDetailsPage() {
                   <>
                     <Row
                       label="Tracking Id"
-                      value={order.tracking_number}
+                      value={order.tracking_number || "N/A"}
                     />
                     <Row
                       label="Tracking URL"
                       value={
-                        <a
-                          href={order.tracking_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          Track Shipment
-                        </a>
+                        order.tracking_url ? (
+                          <a
+                            href={order.tracking_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                          >
+                            Track Shipment
+                          </a>
+                        ) : (
+                          "N/A"
+                        )
                       }
                     />
                   </>

@@ -182,13 +182,12 @@ export default function OrderDetailsPage() {
 
         const user = JSON.parse(userStr);
         const userId = user?.id;
-
         if (!userId) {
           setLoading(false);
           return;
         }
 
-        const res = await api.get(`/user-dashboard/orders/?id=${userId}`,
+        const res = await api.get(`/user-dashboard/orders/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

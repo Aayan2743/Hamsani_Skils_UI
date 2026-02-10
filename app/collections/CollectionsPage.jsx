@@ -167,13 +167,13 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import SidebarFilters from "../components/SidebarFilters";
 import ProductGrid from "../components/ProductGrid";
 import MobileFilterDrawer from "../components/MobileFilterDrawer";
 import { WishlistProvider } from "../components/WishlistContext";
-import api from "../utils/apiInstance";
+import { useProducts } from "../hooks/useProducts";
 
 /* ---------- SKELETON LOADER ---------- */
 function ProductsSkeleton() {
@@ -199,9 +199,8 @@ export default function CollectionsPage() {
   const params = useSearchParams();
   const category = params.get("category");
 
-  /* ---------------- API STATE ---------------- */
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  /* ---------------- USE PRODUCTS HOOK ---------------- */
+  const { products, loading, error } = useProducts();
 
   /* ---------------- FILTER STATES ---------------- */
   const [filterOpen, setFilterOpen] = useState(false);
@@ -213,30 +212,6 @@ export default function CollectionsPage() {
   const [columns, setColumns] = useState(3);
   const [limit, setLimit] = useState(20);
   const [sort, setSort] = useState("best");
-
-  /* ---------------- FETCH PRODUCTS ---------------- */
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-
-        const res = await api.get("ecom/products");
-        const data = res.data;
-
-        const productsData =
-          data?.data?.data || data?.data || data || [];
-
-        setProducts(Array.isArray(productsData) ? productsData : []);
-      } catch (err) {
-        console.log("Products API error:", err);
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProducts();
-  }, []);
 
   /* ---------------- NORMALIZE PRODUCT DATA ---------------- */
   const normalizedProducts = products.map((p) => {

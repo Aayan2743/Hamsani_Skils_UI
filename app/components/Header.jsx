@@ -275,6 +275,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [menuData, setMenuData] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(true);
   const [token, setToken] = useState(null);
 
   const { count, cartOpen, setCartOpen } = useCart();
@@ -288,15 +289,32 @@ export default function Header() {
 
   /* ---------- MENU API ---------- */
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchMenu() {
       try {
+        setMenuLoading(true);
         const res = await api.get("ecom/menu");
+        
+        if (!isMounted) return;
+        
         setMenuData(Array.isArray(res?.data) ? res.data : []);
-      } catch {
+      } catch (error) {
+        if (!isMounted) return;
+        console.error("Menu fetch error:", error);
         setMenuData([]);
+      } finally {
+        if (isMounted) {
+          setMenuLoading(false);
+        }
       }
     }
+
     fetchMenu();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   /* ---------- CLOSE PROFILE ON OUTSIDE CLICK ---------- */
@@ -343,56 +361,70 @@ export default function Header() {
 
             {/* ===== DESKTOP NAV ===== */}
             <nav className="hidden lg:flex gap-8 uppercase text-sm font-bold">
-              {visibleMenus.map((menu) => (
-                <div
-                  key={menu.key}
-                  className="relative"
-                  onMouseEnter={() => setDesktopActive(menu.key)}
-                  onMouseLeave={() => setDesktopActive(null)}
-                >
-                  <span className="cursor-pointer pb-2">
-                    {menu.label}
-                  </span>
+              {menuLoading ? (
+                // Menu skeleton loader
+                <>
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div
+                      key={i}
+                      className="h-4 w-20 bg-gray-200 rounded animate-pulse"
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {visibleMenus.map((menu) => (
+                    <div
+                      key={menu.key}
+                      className="relative"
+                      onMouseEnter={() => setDesktopActive(menu.key)}
+                      onMouseLeave={() => setDesktopActive(null)}
+                    >
+                      <span className="cursor-pointer pb-2">
+                        {menu.label}
+                      </span>
 
-                  {desktopActive === menu.key && (
-                    <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
-                      <ul className="flex flex-col p-4 min-w-[200px]">
-                        {menu.items.map((item) => (
-                          <li key={item}>
-                            <Link
-                              href={`/collections?category=${slugify(item)}`}
-                              className="block px-3 py-2 hover:bg-gray-100"
-                            >
-                              {item}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                      {desktopActive === menu.key && (
+                        <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
+                          <ul className="flex flex-col p-4 min-w-[200px]">
+                            {menu.items.map((item) => (
+                              <li key={item}>
+                                <Link
+                                  href={`/collections?category=${slugify(item)}`}
+                                  className="block px-3 py-2 hover:bg-gray-100"
+                                >
+                                  {item}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {extraMenus.length > 0 && (
+                    <div
+                      className="relative"
+                      onMouseEnter={() => setDesktopActive("more")}
+                      onMouseLeave={() => setDesktopActive(null)}
+                    >
+                      <span className="cursor-pointer pb-2">More</span>
+
+                      {desktopActive === "more" && (
+                        <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
+                          <ul className="flex flex-col p-4 min-w-[200px]">
+                            {extraMenus.map((menu) => (
+                              <li key={menu.key} className="px-3 py-2">
+                                {menu.label}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   )}
-                </div>
-              ))}
-
-              {extraMenus.length > 0 && (
-                <div
-                  className="relative"
-                  onMouseEnter={() => setDesktopActive("more")}
-                  onMouseLeave={() => setDesktopActive(null)}
-                >
-                  <span className="cursor-pointer pb-2">More</span>
-
-                  {desktopActive === "more" && (
-                    <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
-                      <ul className="flex flex-col p-4 min-w-[200px]">
-                        {extraMenus.map((menu) => (
-                          <li key={menu.key} className="px-3 py-2">
-                            {menu.label}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
+                </>
               )}
             </nav>
 
@@ -495,13 +527,25 @@ export default function Header() {
             </div>
 
             <div className="px-4 py-3 space-y-2">
-              {filteredMenus.map((menu) => (
-                <MobileMenuItem
-                  key={menu.key}
-                  menu={menu}
-                  onClose={() => setMenuOpen(false)}
-                />
-              ))}
+              {menuLoading ? (
+                // Mobile menu skeleton
+                <>
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="h-10 bg-gray-200 rounded animate-pulse"
+                    />
+                  ))}
+                </>
+              ) : (
+                filteredMenus.map((menu) => (
+                  <MobileMenuItem
+                    key={menu.key}
+                    menu={menu}
+                    onClose={() => setMenuOpen(false)}
+                  />
+                ))
+              )}
             </div>
 
             <div className="border-t px-4 py-4">
