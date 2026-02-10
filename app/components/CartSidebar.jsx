@@ -1051,7 +1051,7 @@ export default function CartSidebar({ open, onClose }) {
           </div>
         </div>
 
-        {cartItems.length > 0 && (
+        {cartItems.length > 0 &&(
           <button
             onClick={handleRazorpayPayment}
             className="w-full bg-red-800 text-white py-3 mt-3"

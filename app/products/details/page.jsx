@@ -108,11 +108,11 @@ function ProductDetailsContent() {
     <div className="max-w-[1400px] mx-auto px-6 py-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* LEFT IMAGE */}
-        <div className="w-full">
+        <div className="w-full b">
           <img
             src={imageUrl}
             alt={product.name}
-            className="w-full h-auto object-cover"
+            className="w-full h-150 "
           />
         </div>
 
