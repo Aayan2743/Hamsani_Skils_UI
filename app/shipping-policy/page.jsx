@@ -65,10 +65,10 @@ export default function ShippingPolicy() {
               <li>
                 For shipping-related queries, please contact us at{" "}
                 <a
-                  href="mailto:customercare@hamsinisilks.com"
+                  href="mailto:info@hamisnisilks.com"
                   className="text-blue-600 underline"
                 >
-                customercare@hamsinisilks.com
+               info@hamisnisilks.com
                 </a>
               </li>
             </ul>
@@ -158,7 +158,7 @@ export default function ShippingPolicy() {
                 href="mailto:customercare@hamisniskills.com"
                 className="text-blue-600 underline"
               >
-            customercare@hamsinisilks.com
+           info@hamisnisilks.com
               </a>
             </p>
           </section>

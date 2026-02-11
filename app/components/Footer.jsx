@@ -262,7 +262,7 @@ const footerLinks = [
       { label: "Events", href: "/events" },
       { label: "About Us", href: "/about" },
       { label: "Blogs", href: "/blogs" },
-      { label: "Store Locator", href: "/store" },
+      // { label: "Store Locator", href: "/store" },
     ],
   },
   {

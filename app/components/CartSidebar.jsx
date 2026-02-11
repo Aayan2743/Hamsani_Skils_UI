@@ -743,6 +743,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useCart } from "../providers/CartProvider";
 import AddAddessModal from "./AddAddressModal";
+import OTPAuthModal from "./OTPAuthModal";
 import api from "../utils/apiInstance";
 
 export default function CartSidebar({ open, onClose }) {
@@ -750,11 +751,11 @@ export default function CartSidebar({ open, onClose }) {
   const cartItems = Object.values(items ?? {});
   const router = useRouter();
 
-  const token =
-    typeof window !== "undefined" && localStorage.getItem("token");
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
 
-  const userId =
-    typeof window !== "undefined" && localStorage.getItem("user_id");
+  /* OTP AUTH MODAL */
+  const [showOTPAuth, setShowOTPAuth] = useState(false);
 
   /* ADDRESS STATES */
   const [addresses, setAddresses] = useState([]);
@@ -765,6 +766,14 @@ export default function CartSidebar({ open, onClose }) {
   /* COUPON STATES */
   const [coupon, setCoupon] = useState("");
   const [couponData, setCouponData] = useState(null);
+
+  /* LOAD TOKEN ON MOUNT */
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("token"));
+      setUserId(localStorage.getItem("user_id"));
+    }
+  }, []);
 
   /* TOTAL CALCULATION */
   const subtotal = cartItems.reduce(
@@ -832,9 +841,7 @@ export default function CartSidebar({ open, onClose }) {
   /* PLACE ORDER */
   const handleRazorpayPayment = async () => {
     if (!token) {
-      toast.error("Please login first");
-      onClose();
-      router.push("/account/login");
+      setShowOTPAuth(true);
       return;
     }
 
@@ -931,7 +938,6 @@ export default function CartSidebar({ open, onClose }) {
         <h2 className="text-xl font-semibold mb-3">
           Your Cart ({cartItems.length})
         </h2>
-
         {/* CART ITEMS */}
         {cartItems.map((item, i) => (
           <div key={i} className="flex gap-3 border p-2 rounded mb-2">
@@ -1052,20 +1058,33 @@ export default function CartSidebar({ open, onClose }) {
           </div>
         </div>
 
-        {cartItems.length > 0 &&(
           <button
             onClick={handleRazorpayPayment}
             className="w-full bg-red-800 text-white py-3 mt-3"
           >
             Place My Order
           </button>
-        )}
       </div>
+      
+      {/* ADD ADDRESS MODAL */}
       <AddAddessModal
         open={showAddAddress}
         editData={editAddress}
         onClose={() => setShowAddAddress(false)}
         onSuccess={fetchAddresses}
+      />
+
+      {/* OTP AUTH MODAL */}
+      <OTPAuthModal
+        open={showOTPAuth}
+        onClose={() => setShowOTPAuth(false)}
+        onSuccess={() => {
+          // Reload token after successful login/register
+          setToken(localStorage.getItem("token"));
+          setUserId(localStorage.getItem("user_id"));
+          // Fetch addresses for the newly logged in user
+          fetchAddresses();
+        }}
       />
     </div>
   );

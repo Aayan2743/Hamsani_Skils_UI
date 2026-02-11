@@ -171,13 +171,18 @@ export default function Map() {
   const sliderRef = useRef(null);
 
   /* IMAGE SLIDER */
-  const images = [
-    "https://www.psrsilks.com/cdn/shop/files/t1.webp?v=1742362090",
-    "https://www.psrsilks.com/cdn/shop/files/t3.webp?v=1742362146",
-    "https://www.psrsilks.com/cdn/shop/files/t4.webp?v=1742362166",
-    "https://www.psrsilks.com/cdn/shop/files/t5.webp?v=1742362198",
-    "https://www.psrsilks.com/cdn/shop/files/t6.webp?v=1742362217",
-  ];
+ const images = [
+    "https://th.bing.com/th/id/OIP.HRcHsNr7cuDbkwAMj5OmZgHaLH?w=208&h=305&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Red bridal saree
+  "https://th.bing.com/th/id/OIP.EdLuOfZ_rXKl1PumzVNx-AHaLF?w=204&h=305&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Golden silk saree
+  "https://th.bing.com/th/id/OIP.erOnXfVur0adgOKfqgVw2wHaLH?w=204&h=306&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Green saree
+  "https://th.bing.com/th/id/OIP.Vhw4sI7_0d2FjigP6W2KjQHaKH?w=208&h=285&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Pink traditional saree
+  "https://th.bing.com/th/id/OIP.HRcHsNr7cuDbkwAMj5OmZgHaLH?w=208&h=305&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Red bridal saree
+  "https://th.bing.com/th/id/OIP.EdLuOfZ_rXKl1PumzVNx-AHaLF?w=204&h=305&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Golden silk saree
+  "https://th.bing.com/th/id/OIP.erOnXfVur0adgOKfqgVw2wHaLH?w=204&h=306&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Green saree
+  "https://th.bing.com/th/id/OIP.Vhw4sI7_0d2FjigP6W2KjQHaKH?w=208&h=285&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3", // Pink traditional saree
+
+];
+
 
   /* INSTAGRAM LINKS */
   const instagramPosts = [

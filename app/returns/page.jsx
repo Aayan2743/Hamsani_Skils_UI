@@ -50,10 +50,10 @@ export default function RefundPolicy() {
           <p className="mt-4">
             To initiate a return, contact us at{" "}
             <a
-              href="mailto:customercare@hamsinisilks.com"
+              href="mailto:info@hamisnisilks.com"
               className="text-blue-600 underline"
             >
-             customercare@hamsinisilks.com
+           info@hamisnisilks.com
             </a>
           </p>
         </section>
@@ -121,10 +121,10 @@ export default function RefundPolicy() {
               If a wrong or damaged item is received, inform us within 48 hours
               at{" "}
               <a
-                href="mailto:customercare@hamsinisilks.com"
+                href="mailto:info@hamisnisilks.com"
                 className="text-blue-600 underline"
               >
-            customercare@hamsinisilks.com
+            info@hamisnisilks.com
               </a>
             </li>
             <li>
