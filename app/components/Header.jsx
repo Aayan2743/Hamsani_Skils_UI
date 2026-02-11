@@ -490,72 +490,69 @@ export default function Header() {
             </Link>
 
             {/* ===== DESKTOP NAV ===== */}
-            <nav className="hidden lg:flex gap-8 uppercase text-sm font-bold">
-              {menuLoading ? (
-                <>
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div
-                      key={i}
-                      className="h-4 w-20 bg-gray-200 rounded animate-pulse"
-                    />
-                  ))}
-                </>
-              ) : (
-                <>
-                  {visibleMenus.map((menu) => (
-                    <div
-                      key={menu.key}
-                      className="relative"
-                      onMouseEnter={() => setDesktopActive(menu.key)}
-                      onMouseLeave={() => setDesktopActive(null)}
-                    >
-                      <span className="cursor-pointer pb-2">
-                        {menu.label}
-                      </span>
+            {/* ===== DESKTOP NAV ===== */}
+<nav className="hidden lg:flex gap-8 uppercase text-sm font-bold">
+  {menuLoading ? (
+    <>
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div
+          key={i}
+          className="h-4 w-20 bg-gray-200 rounded animate-pulse"
+        />
+      ))}
+    </>
+  ) : (
+    <>
+      {visibleMenus.map((menu) => (
+        <div key={menu.key} className="relative group">
+          {/* Parent Label */}
+          <span className="cursor-pointer pb-2 inline-block">
+            {menu.label}
+          </span>
 
-                      {desktopActive === menu.key && (
-                        <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
-                          <ul className="flex flex-col p-4 min-w-[200px]">
-                            {menu.items.map((item) => (
-                              <li key={item}>
-                                <Link
-                                  href={`/collections?category=${slugify(item)}`}
-                                  className="block px-3 py-2 hover:bg-gray-100"
-                                >
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+          {/* Dropdown */}
+          <div className="absolute top-full left-0 bg-white shadow-lg z-40 
+                          opacity-0 invisible group-hover:opacity-100 
+                          group-hover:visible transition-all duration-200">
+            <ul className="flex flex-col p-4 min-w-[200px]">
+              {menu.items.map((item) => (
+                <li key={item}>
+                  <Link
+                    href={`/collections?category=${slugify(item)}`}
+                    className="block px-3 py-2 hover:bg-gray-100 whitespace-nowrap"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
 
-                  {extraMenus.length > 0 && (
-                    <div
-                      className="relative"
-                      onMouseEnter={() => setDesktopActive("more")}
-                      onMouseLeave={() => setDesktopActive(null)}
-                    >
-                      <span className="cursor-pointer pb-2">More</span>
+      {extraMenus.length > 0 && (
+        <div className="relative group">
+          <span className="cursor-pointer pb-2 inline-block">
+            More
+          </span>
 
-                      {desktopActive === "more" && (
-                        <div className="absolute top-full mt-3 bg-white shadow-lg z-40">
-                          <ul className="flex flex-col p-4 min-w-[200px]">
-                            {extraMenus.map((menu) => (
-                              <li key={menu.key} className="px-3 py-2">
-                                {menu.label}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-            </nav>
+          <div className="absolute top-full left-0 bg-white shadow-lg z-40 
+                          opacity-0 invisible group-hover:opacity-100 
+                          group-hover:visible transition-all duration-200">
+            <ul className="flex flex-col p-4 min-w-[200px]">
+              {extraMenus.map((menu) => (
+                <li key={menu.key} className="px-3 py-2 whitespace-nowrap">
+                  {menu.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+    </>
+  )}
+</nav>
+
 
             {/* ===== RIGHT SECTION ===== */}
             <div className="flex items-center gap-5 justify-center lg:justify-end w-full lg:w-auto">
