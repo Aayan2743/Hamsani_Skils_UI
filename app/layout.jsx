@@ -105,6 +105,7 @@ import { Toaster } from "react-hot-toast";
 import { WishlistProvider } from "./components/WishlistContext";
 import Script from "next/script";
 import ClientPrefetch from "./components/ClientPrefetch";
+import { SocialMediaProvider } from "./components/context/SocialMediaContext";
 
 export const metadata = {
   title: "Hamsini Silk sarees India Pvt Ltd",
@@ -130,10 +131,12 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
+              <SocialMediaProvider>
               <ClientPrefetch />
               <Header />
               <main className="min-h-[60vh]">{children}</main>
               <Footer className="bg-[#232323] text-[#f8f8f8]" />
+              </SocialMediaProvider>
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

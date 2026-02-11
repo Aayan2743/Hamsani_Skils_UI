@@ -924,7 +924,7 @@ export default function CartSidebar({ open, onClose }) {
   };
 
   return (
-    <div className={`fixed inset-0 z-[9999] ${open ? "visible" : "invisible"}`}>
+   <div className={`fixed inset-0 z-[9999] ${open ? "visible" : "invisible"}`}>
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       <div className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white p-5 overflow-y-auto">
@@ -958,7 +958,7 @@ export default function CartSidebar({ open, onClose }) {
         ))}
 
         {/* ADDRESS SECTION */}
-        <div className="mt-5">
+        {cartItems.length>0&&<div className="mt-5">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold">Delivery Address</h3>
 
@@ -1004,10 +1004,10 @@ export default function CartSidebar({ open, onClose }) {
               </button>
             </div>
           ))}
-        </div>
+        </div>}
 
         {/* COUPON */}
-        <div className="mt-4">
+        {cartItems.length>0&&<div className="mt-4">
           <h3 className="font-semibold mb-2">Apply Coupon</h3>
 
           <div className="flex gap-2">
@@ -1032,7 +1032,7 @@ export default function CartSidebar({ open, onClose }) {
               Discount Applied: ₹{discount}
             </p>
           )}
-        </div>
+        </div>}
 
         {/* TOTAL */}
         <div className="mt-5 border-t pt-3 text-sm space-y-1">
@@ -1061,7 +1061,6 @@ export default function CartSidebar({ open, onClose }) {
           </button>
         )}
       </div>
-
       <AddAddessModal
         open={showAddAddress}
         editData={editAddress}

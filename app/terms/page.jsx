@@ -29,7 +29,7 @@ export default function TermsOfService() {
        
 
         <p className="mb-6">
-          Welcome to <strong>Hamisni Skills</strong>. If you continue to browse
+          Welcome to <strong>Hamsini Silks</strong>. If you continue to browse
           and use this website, you are agreeing to comply with and be bound by
           the following terms and conditions of use, which together with our
           privacy policy govern Hamisni Skills’ relationship with you.
@@ -39,7 +39,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-xl font-semibold mb-2">1. Definitions</h2>
             <p>
-              The terms <strong>"Hamisni Skills"</strong>, <strong>"We"</strong>,
+              The terms <strong>Hamsini Silks</strong>, <strong>"We"</strong>,
               <strong>"Us"</strong>, or <strong>"Our"</strong> refer to the owner
               of this website. The term <strong>"You"</strong> refers to the user
               or viewer of our website.

@@ -79,7 +79,6 @@ export default function RefundPolicy() {
             <li>Sarees customized for finishing purposes</li>
             <li>Items with blouse cuts or knots tied</li>
             <li>Discounted or sale products</li>
-            <li>Gift cards</li>
           </ul>
         </section>
 
@@ -87,9 +86,8 @@ export default function RefundPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Exchanges</h2>
           <p>
-            Products purchased online can only be exchanged for items listed on
-            the Hamisni Skills website. Exchanges at physical stores or showrooms
-            are not accepted.
+            * All exchange requests must be made within 7 of receiving the order 
+            * Delivery of all exchanged products will be done within 7 working days.
           </p>
         </section>
 
