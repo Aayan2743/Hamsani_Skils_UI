@@ -34,6 +34,7 @@ export function useProducts() {
 
         const data = res.data;
         const productsData = data?.data?.data || data?.data || data || [];
+        console.log("Test", productsData);
         const validProducts = Array.isArray(productsData) ? productsData : [];
 
         // Update cache

@@ -54,7 +54,7 @@ function ProductDetailsContent() {
       try {
         setLoading(true);
         setError(null);
-
+         console.log("Fetching product with ID:", productId);
         const res = await api.get("/ecom/products", {
           params: { slug: productId },
         });

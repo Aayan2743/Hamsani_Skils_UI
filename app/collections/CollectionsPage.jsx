@@ -167,14 +167,13 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import SidebarFilters from "../components/SidebarFilters";
 import ProductGrid from "../components/ProductGrid";
 import MobileFilterDrawer from "../components/MobileFilterDrawer";
 import { WishlistProvider } from "../components/WishlistContext";
 import { useProducts } from "../hooks/useProducts";
-
 /* ---------- SKELETON LOADER ---------- */
 function ProductsSkeleton() {
   return (
@@ -194,68 +193,68 @@ function ProductsSkeleton() {
     </div>
   );
 }
-
 export default function CollectionsPage() {
-  const params = useSearchParams();
-  const category = params.get("category");
-
-  /* ---------------- USE PRODUCTS HOOK ---------------- */
-  const { products, loading, error } = useProducts();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");  /* ---------------- USE PRODUCTS HOOK ---------------- */
+  const { products = [], loading } = useProducts();
 
   /* ---------------- FILTER STATES ---------------- */
   const [filterOpen, setFilterOpen] = useState(false);
   const [inStock, setInStock] = useState(null);
-  const [price, setPrice] = useState({ min: 0, max: 10000 });
+  const [price, setPrice] = useState({ min: 0, max: 100000 });
   const [appliedPrice, setAppliedPrice] = useState(price);
 
   /* ---------------- GRID STATES ---------------- */
-  const [columns, setColumns] = useState(3);
-  const [limit, setLimit] = useState(20);
-  const [sort, setSort] = useState("best");
-
+  const [columns] = useState(3);
+    console.log("Products in CollectionsPage:", products); 
   /* ---------------- NORMALIZE PRODUCT DATA ---------------- */
-  const normalizedProducts = products.map((p) => {
-    const variant = p.variant_combinations?.[0];
+  const normalizedProducts = useMemo(() => {
+    return products.map((p) => {
+      const variant = p.variant_combinations?.[0];
 
-    return {
-      id: p.id,
-      slug: p.slug,
-      title: p.name,
-      category: p.category?.slug,
-      image:
-        p.images?.find((img) => img.is_primary)?.image_path ??
-        p.images?.[0]?.image_path ??
-        null,
-      price: Number(variant?.extra_price ?? 0),
-      inStock: (variant?.quantity ?? 0) > 0,
-      raw: p,
-    };
-  });
+      return {
+        id: p.id,
+        slug: p.slug,
+        title: p.name,
+        category: p.category?.slug?.toLowerCase() || "",
+        image:
+          p.images?.find((img) => img.is_primary)?.image_path ??
+          p.images?.[0]?.image_path ??
+          null,
+        price: Number(variant?.extra_price ?? 0),
+        inStock: (variant?.quantity ?? 0) > 0,
+        raw: p,
+      };
+    });
+  }, [products]);
 
   /* ---------------- FILTER LOGIC ---------------- */
-  let filtered = normalizedProducts.filter(
-    (p) =>
-      (!category || p.category === category) &&
-      (inStock === null || p.inStock === inStock) &&
-      p.price >= appliedPrice.min &&
-      p.price <= appliedPrice.max
-  );
+  const filteredProducts = useMemo(() => {
+    return normalizedProducts.filter((p) => {
+      const matchesCategory =
+        !categoryParam ||
+        p.category === categoryParam.toLowerCase();
 
-  if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
-  if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
-  if (sort === "az") filtered.sort((a, b) => a.title.localeCompare(b.title));
-  if (sort === "za") filtered.sort((a, b) => b.title.localeCompare(a.title));
+      const matchesStock =
+        inStock === null || p.inStock === inStock;
 
-  filtered = filtered.slice(0, limit);
+      const matchesPrice =
+        p.price >= appliedPrice.min &&
+        p.price <= appliedPrice.max;
 
+      return matchesCategory && matchesStock && matchesPrice;
+    });
+  }, [normalizedProducts, categoryParam, inStock, appliedPrice]);
+  console.log("normalizedProducts",normalizedProducts);
   /* ---------------- RENDER ---------------- */
   return (
     <WishlistProvider>
       <main className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
         {/* CATEGORY TITLE */}
-        {category && (
+        {categoryParam && (
           <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 capitalize">
-            {category.replace(/-/g, " ")}
+            {categoryParam.replace(/-/g, " ")}
           </h1>
         )}
 
@@ -268,6 +267,7 @@ export default function CollectionsPage() {
         </button>
 
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+          
           {/* DESKTOP FILTER SIDEBAR */}
           <div className="hidden lg:block w-72 shrink-0">
             <SidebarFilters
@@ -279,11 +279,11 @@ export default function CollectionsPage() {
             />
           </div>
 
-          {/* PRODUCTS / EMPTY STATE */}
+          {/* PRODUCTS */}
           <div className="flex-1">
             {loading ? (
               <ProductsSkeleton />
-            ) : filtered.length === 0 ? (
+            ) : filteredProducts.length === 0 ? (
               <div className="text-center py-20">
                 <h2 className="text-xl font-semibold mb-2">
                   No products available
@@ -293,7 +293,10 @@ export default function CollectionsPage() {
                 </p>
               </div>
             ) : (
-              <ProductGrid products={filtered} columns={columns} />
+              <ProductGrid
+                products={filteredProducts}
+                columns={columns}
+              />
             )}
           </div>
         </div>

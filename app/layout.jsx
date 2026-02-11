@@ -108,7 +108,7 @@ import ClientPrefetch from "./components/ClientPrefetch";
 import { SocialMediaProvider } from "./components/context/SocialMediaContext";
 
 export const metadata = {
-  title: "Hamsini Silk sarees India Pvt Ltd",
+  title: "Hamsini Silks",
 };
 
 const sourceSans = Source_Sans_3({
