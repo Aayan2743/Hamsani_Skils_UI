@@ -19,7 +19,7 @@ export default function ShippingPolicy() {
 
       <main className="bg-white text-gray-800">
   <header className="text-center  mt-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-red-600 mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-3">
           Shipping Policy
           </h1>
           <p className="text-sm tracking-widest text-gray-500">
@@ -65,10 +65,10 @@ export default function ShippingPolicy() {
               <li>
                 For shipping-related queries, please contact us at{" "}
                 <a
-                  href="mailto:customercare@hamisniskills.com"
+                  href="mailto:info@hamisnisilks.com"
                   className="text-blue-600 underline"
                 >
-                  customercare@hamisniskills.com
+               info@hamisnisilks.com
                 </a>
               </li>
             </ul>
@@ -152,13 +152,13 @@ export default function ShippingPolicy() {
               us at:
             </p>
             <p className="mt-2 text-gray-800 font-medium">
-              📞 +91 7540005884 <br />
+              {/* 📞 +91 7540005884 <br /> */}
               📧{" "}
               <a
                 href="mailto:customercare@hamisniskills.com"
                 className="text-blue-600 underline"
               >
-                customercare@hamisniskills.com
+           info@hamisnisilks.com
               </a>
             </p>
           </section>

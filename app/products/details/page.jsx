@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import Image from "next/image";
 import { useCart } from "../../providers/CartProvider";
 import toast from "react-hot-toast";
 import api from "../../utils/apiInstance";
@@ -38,35 +39,79 @@ function ProductDetailsContent() {
 
   const [product, setProduct] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   /* ================= FETCH PRODUCT ================= */
   useEffect(() => {
-    if (!productId) return;
+    if (!productId) {
+      setLoading(false);
+      return;
+    }
 
+    let isMounted = true;
     const fetchProduct = async () => {
       try {
+        setLoading(true);
+        setError(null);
+         console.log("Fetching product with ID:", productId);
         const res = await api.get("/ecom/products", {
           params: { slug: productId },
         });
 
+        if (!isMounted) return;
+
         const prod = res?.data?.data?.data?.[0] || null;
+        
+        if (!prod) {
+          setError("Product not found");
+          setProduct(null);
+          return;
+        }
+
         setProduct(prod);
 
-        // ✅ default variant (first one)
+        // Set default variant
         if (prod?.variant_combinations?.length) {
           setSelectedVariant(prod.variant_combinations[0]);
         }
       } catch (error) {
+        if (!isMounted) return;
+        setError("Failed to load product");
         setProduct(null);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProduct();
+
+    return () => {
+      isMounted = false;
+    };
   }, [productId]);
 
   /* ================= SHOW LOADER ================= */
-  if (!product || !selectedVariant) {
+  if (loading) {
     return <ProductLoader />;
+  }
+
+  if (error || !product || !selectedVariant) {
+    return (
+      <div className="max-w-[1400px] mx-auto px-6 py-20 text-center">
+        <h2 className="text-2xl font-bold mb-4">
+          {error || "Product not found"}
+        </h2>
+        <button
+          onClick={() => window.history.back()}
+          className="text-blue-600 hover:underline"
+        >
+          Go back
+        </button>
+      </div>
+    );
   }
 
   /* ================= IMAGE ================= */
@@ -108,11 +153,14 @@ function ProductDetailsContent() {
     <div className="max-w-[1400px] mx-auto px-6 py-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* LEFT IMAGE */}
-        <div className="w-full">
-          <img
+        <div className="w-full relative aspect-[3/4]">
+          <Image
             src={imageUrl}
             alt={product.name}
-            className="w-full h-auto object-cover"
+            fill
+            className="object-cover rounded-lg"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
           />
         </div>
 

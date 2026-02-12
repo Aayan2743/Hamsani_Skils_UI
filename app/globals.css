@@ -4,13 +4,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-source-sans: "Source Sans 3", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-source-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,6 +20,9 @@
   }
 }
 
+* {
+  font-family: var(--font-source-sans);
+}
 
 body {
   width: 100%;
@@ -28,8 +31,7 @@ body {
   padding: 0;
   background-color: #ffffff; /* GLOBAL WHITE */
   color: #000000;
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-source-sans);
 }
 
 

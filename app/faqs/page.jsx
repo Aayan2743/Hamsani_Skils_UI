@@ -42,7 +42,7 @@ export default function FAQPage() {
       {/* Header */}
      
       <header className="text-center  mt-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-red-600 mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-3">
            FAQ&apos;s
           </h1>
           <p className="text-sm tracking-widest text-gray-500">

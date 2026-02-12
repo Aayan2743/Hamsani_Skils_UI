@@ -1,3 +1,6 @@
+
+
+
 // "use client";
 // import React, { useEffect, useState } from "react";
 // import { FiX } from "react-icons/fi";
@@ -8,7 +11,7 @@
 //   open,
 //   onClose,
 //   onSuccess,
-//   editData = null, // 👈 pass address object for edit, null for add
+//   editData = null,
 // }) {
 //   const [form, setForm] = useState({
 //     name: "",
@@ -49,12 +52,18 @@
 //     const { name, value } = e.target;
 
 //     if (name === "phone") {
-//       setForm((p) => ({ ...p, phone: value.replace(/\D/g, "").slice(0, 15) }));
+//       setForm((p) => ({
+//         ...p,
+//         phone: value.replace(/\D/g, "").slice(0, 15),
+//       }));
 //       return;
 //     }
 
 //     if (name === "pincode") {
-//       setForm((p) => ({ ...p, pincode: value.replace(/\D/g, "").slice(0, 6) }));
+//       setForm((p) => ({
+//         ...p,
+//         pincode: value.replace(/\D/g, "").slice(0, 6),
+//       }));
 //       return;
 //     }
 
@@ -65,8 +74,14 @@
 //   const handleSubmit = async () => {
 //     const { name, phone, address, city, state, pincode } = form;
 
+//     // Client-side validation
 //     if (!name || !phone || !address || !city || !state || !pincode) {
 //       toast.error("All fields are required");
+//       return;
+//     }
+
+//     if (phone.length !== 10) {
+//       toast.error("Phone number must be 10 digits");
 //       return;
 //     }
 
@@ -85,32 +100,57 @@
 
 //     try {
 //       const url = editData
-//         ? `http://192.168.1.3:8000/api/user-dashboard/cart/update-address/${editData.id}`
-//         : `http://192.168.1.3:8000/api/user-dashboard/cart/add-address`;
+//         ? `/user-dashboard/cart/update-address/${editData.id}`
+//         : `/user-dashboard/cart/add-address`;
 
-//       const res = await fetch(url, {
-//         method: "POST",
+//       const res = await api.post(url, form, {
 //         headers: {
-//           "Content-Type": "application/json",
 //           Authorization: `Bearer ${token}`,
 //         },
-//         body: JSON.stringify(form),
 //       });
 
-//       const json = await res.json();
-
-//       if (!res.ok || json?.success === false) {
-//         throw new Error(json?.message || "Something went wrong");
-//       }
+//       const data = res.data;
 
 //       toast.success(
-//         editData ? "Address updated successfully 🎉" : "Address added successfully 🎉"
+//         editData
+//           ? "Address updated successfully 🎉"
+//           : "Address added successfully 🎉"
 //       );
 
-//       onSuccess(json?.data || form); // send back to parent
+//       onSuccess(data?.data || form);
 //       onClose();
 //     } catch (err) {
-//       toast.error(err.message || "Failed to save address");
+//       console.error("Address error:", err);
+
+//       const apiData = err.response?.data;
+
+//       /* ===============================
+//          HANDLE STRING ERROR
+//       =============================== */
+//       if (typeof apiData?.errors === "string") {
+//         toast.error(apiData.errors);
+//         return;
+//       }
+
+//       /* ===============================
+//          HANDLE FIELD ERRORS (OBJECT)
+//       =============================== */
+//       if (typeof apiData?.errors === "object") {
+//         const firstErrorKey = Object.keys(apiData.errors)[0];
+//         const firstErrorMessage = apiData.errors[firstErrorKey]?.[0];
+
+//         toast.error(firstErrorMessage || "Invalid input");
+//         return;
+//       }
+
+//       /* ===============================
+//          FALLBACK
+//       =============================== */
+//       toast.error(
+//         apiData?.message ||
+//           err.message ||
+//           "Failed to save address"
+//       );
 //     } finally {
 //       setLoading(false);
 //     }
@@ -195,11 +235,13 @@
 //   );
 // }
 
+
 "use client";
 import React, { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import api from "../utils/apiInstance";
+import axios from "axios";
 
 export default function AddAddressModal({
   open,
@@ -217,6 +259,7 @@ export default function AddAddressModal({
   });
 
   const [loading, setLoading] = useState(false);
+  const [pinLoading, setPinLoading] = useState(false);
 
   /* ================= PREFILL FOR EDIT ================= */
   useEffect(() => {
@@ -241,17 +284,63 @@ export default function AddAddressModal({
     }
   }, [editData]);
 
+  /* ================= FETCH CITY & STATE ================= */
+  const fetchPincodeDetails = async (pin) => {
+    setPinLoading(true);
+    try {
+      const res = await axios.get(
+        `https://api.postalpincode.in/pincode/${pin}`
+      );
+
+      const data = res.data?.[0];
+
+      if (data?.Status !== "Success" || !data?.PostOffice?.length) {
+        toast.error("Invalid pincode");
+        setForm((p) => ({ ...p, city: "", state: "" }));
+        return;
+      }
+
+      const postOffice = data.PostOffice[0];
+
+      setForm((p) => ({
+        ...p,
+        city: postOffice.District || "",
+        state: postOffice.State || "",
+      }));
+    } catch (error) {
+      toast.error("Failed to fetch pincode details");
+      setForm((p) => ({ ...p, city: "", state: "" }));
+    } finally {
+      setPinLoading(false);
+    }
+  };
+
   /* ================= CHANGE HANDLER ================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "phone") {
-      setForm((p) => ({ ...p, phone: value.replace(/\D/g, "").slice(0, 15) }));
+      setForm((p) => ({
+        ...p,
+        phone: value.replace(/\D/g, "").slice(0, 10),
+      }));
       return;
     }
 
     if (name === "pincode") {
-      setForm((p) => ({ ...p, pincode: value.replace(/\D/g, "").slice(0, 6) }));
+      const pin = value.replace(/\D/g, "").slice(0, 6);
+
+      setForm((p) => ({
+        ...p,
+        pincode: pin,
+        city: "",
+        state: "",
+      }));
+
+      if (pin.length === 6) {
+        fetchPincodeDetails(pin);
+      }
+
       return;
     }
 
@@ -267,6 +356,11 @@ export default function AddAddressModal({
       return;
     }
 
+    if (phone.length !== 10) {
+      toast.error("Phone number must be 10 digits");
+      return;
+    }
+
     if (pincode.length !== 6) {
       toast.error("Pincode must be 6 digits");
       return;
@@ -275,6 +369,7 @@ export default function AddAddressModal({
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please login again");
+      // router.push("")
       return;
     }
 
@@ -291,22 +386,29 @@ export default function AddAddressModal({
         },
       });
 
-      const data = res.data;
-
       toast.success(
         editData
           ? "Address updated successfully 🎉"
           : "Address added successfully 🎉"
       );
 
-      onSuccess(data?.data || form);
+      onSuccess(res.data?.data || form);
       onClose();
     } catch (err) {
-      toast.error(
-        err?.response?.data?.message ||
-        err.message ||
-        "Failed to save address"
-      );
+      const apiData = err.response?.data;
+
+      if (typeof apiData?.errors === "string") {
+        toast.error(apiData.errors);
+        return;
+      }
+
+      if (typeof apiData?.errors === "object") {
+        const firstKey = Object.keys(apiData.errors)[0];
+        toast.error(apiData.errors[firstKey]?.[0] || "Invalid input");
+        return;
+      }
+
+      toast.error(apiData?.message || err.message || "Failed to save address");
     } finally {
       setLoading(false);
     }
@@ -355,28 +457,29 @@ export default function AddAddressModal({
           />
 
           <input
-            name="city"
-            placeholder="City"
-            className="w-full border rounded px-3 py-2"
-            value={form.city}
-            onChange={handleChange}
-          />
-
-          <input
-            name="state"
-            placeholder="State"
-            className="w-full border rounded px-3 py-2"
-            value={form.state}
-            onChange={handleChange}
-          />
-
-          <input
             name="pincode"
             placeholder="Pincode"
             className="w-full border rounded px-3 py-2"
             value={form.pincode}
             onChange={handleChange}
           />
+
+          <input
+            name="city"
+            placeholder={pinLoading ? "Fetching city..." : "City"}
+            className="w-full border rounded px-3 py-2 bg-gray-100"
+            value={form.city}
+            disabled
+          />
+
+          <input
+            name="state"
+            placeholder={pinLoading ? "Fetching state..." : "State"}
+            className="w-full border rounded px-3 py-2 bg-gray-100"
+            value={form.state}
+            disabled
+          />
+
           <button
             onClick={handleSubmit}
             disabled={loading}
@@ -389,4 +492,3 @@ export default function AddAddressModal({
     </div>
   );
 }
-

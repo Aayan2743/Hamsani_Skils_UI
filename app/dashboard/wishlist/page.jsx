@@ -35,7 +35,6 @@ export default function WishlistPage() {
           toast.error("Failed to load wishlist");
         }
       } catch (error) {
-        console.error("Wishlist API error:", error);
         toast.error("Failed to load wishlist");
       } finally {
         setLoading(false);

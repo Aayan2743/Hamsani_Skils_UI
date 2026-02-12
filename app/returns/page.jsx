@@ -17,16 +17,12 @@ export default function RefundPolicy() {
     <main className="bg-white-50 text-gray-800">
 
           <header className="text-center  mt-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-red-600 mb-3">
-           Refund & Exchange Policy
+          <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-3">
+           Refund & Exchange Policys
           </h1>
-          <p className="text-sm tracking-widest text-gray-500">
-              Last updated: July 2025
-          </p>
         </header>
       <section className="max-w-5xl mx-auto px-4 py-6">
-       
-
+      
         {/* Domestic Returns */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">
@@ -54,10 +50,10 @@ export default function RefundPolicy() {
           <p className="mt-4">
             To initiate a return, contact us at{" "}
             <a
-              href="mailto:customercare@psrsilkindia.com"
+              href="mailto:info@hamisnisilks.com"
               className="text-blue-600 underline"
             >
-              customercare@psrsilkindia.com
+           info@hamisnisilks.com
             </a>
           </p>
         </section>
@@ -83,7 +79,6 @@ export default function RefundPolicy() {
             <li>Sarees customized for finishing purposes</li>
             <li>Items with blouse cuts or knots tied</li>
             <li>Discounted or sale products</li>
-            <li>Gift cards</li>
           </ul>
         </section>
 
@@ -91,9 +86,8 @@ export default function RefundPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Exchanges</h2>
           <p>
-            Products purchased online can only be exchanged for items listed on
-            the Hamisni Skills website. Exchanges at physical stores or showrooms
-            are not accepted.
+            * All exchange requests must be made within 7 of receiving the order 
+            * Delivery of all exchanged products will be done within 7 working days.
           </p>
         </section>
 
@@ -127,10 +121,10 @@ export default function RefundPolicy() {
               If a wrong or damaged item is received, inform us within 48 hours
               at{" "}
               <a
-                href="mailto:customercare@psrsilkindia.com"
+                href="mailto:info@hamisnisilks.com"
                 className="text-blue-600 underline"
               >
-                customercare@psrsilkindia.com
+            info@hamisnisilks.com
               </a>
             </li>
             <li>

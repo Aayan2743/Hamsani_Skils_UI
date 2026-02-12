@@ -103,22 +103,25 @@ import { AuthProvider } from "./components/context/AuthProvider";
 import { CartProvider } from "./providers/CartProvider";
 import { Toaster } from "react-hot-toast";
 import { WishlistProvider } from "./components/WishlistContext";
-import Script from "next/script"; // ✅ ADD THIS
+import Script from "next/script";
+import ClientPrefetch from "./components/ClientPrefetch";
+import { SocialMediaProvider } from "./components/context/SocialMediaContext";
 
 export const metadata = {
-  title: "Hamsini Silk sarees India Pvt Ltd",
+  title: "Hamsini Silks",
 };
 
 const sourceSans = Source_Sans_3({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
+  variable: "--font-source-sans",
 });
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={sourceSans.className}>
-      <body>
+    <html lang="en" className={sourceSans.variable}>
+      <body className="font-sans">{/* Apply font globally */}
         {/* ✅ Razorpay Script */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
@@ -128,9 +131,12 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <Header className="font-sans" />
+              <SocialMediaProvider>
+              <ClientPrefetch />
+              <Header />
               <main className="min-h-[60vh]">{children}</main>
-              <Footer className="bg-[#232323] text-[#f8f8f8] font-sans" />
+              <Footer className="bg-[#232323] text-[#f8f8f8]" />
+              </SocialMediaProvider>
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

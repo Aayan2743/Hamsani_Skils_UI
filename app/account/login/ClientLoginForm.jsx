@@ -167,14 +167,17 @@ export default function LoginPage() {
     // });
 
     toast.success("Login successful please continu shopping");
-    router.push(redirect);
+       router.push(redirect);
+    setTimeout(() => {
+       window.location.reload();
+    }, 1000);
   } catch (err) {
 
     const message =
       err.response?.data?.message ||
       err.message ||
       "Login failed";
-
+  
     toast.error(message);
   } finally {
     setLoading(false);

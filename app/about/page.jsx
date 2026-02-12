@@ -26,7 +26,7 @@ export default function WhoWeArePage() {
   return (
     <main className="bg-white text-[#1a1a1a]">
     <section className=" py-10 text-center text-white">
-  <h1 className="text-4xl font-bold text-red-600 font-sans">About Us</h1>
+  <h1 className="text-4xl font-bold text-green-600 font-sans">About Us</h1>
 </section>
 
       <section className="max-w-7xl mx-auto px-10 ">

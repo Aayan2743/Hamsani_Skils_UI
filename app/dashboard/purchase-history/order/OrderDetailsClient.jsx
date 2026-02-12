@@ -2,85 +2,114 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import api from "../../../utils/apiInstance";
 
-export default function OrderDetailsPage() {
+export default function OrderDetailsClient() {
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("id");
+
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  /* ---------------- STATIC MOCK DATA ---------------- */
-  const STATIC_ORDER = {
-    id: "HS-ORD-10234",
-    payment_status: "PAID",
-    order_status: "SHIPPED",
-    gateway: "Razorpay",
-    total_amount: 18999,
-    discount_amount: 2000,
-    payable_amount: 16999,
-    tracking_number: "BLUEDART-88990012",
-    tracking_url: "https://www.bluedart.com/tracking",
-    address: {
-      address: "12-3-45, Silk Weavers Colony",
-      city: "Kanchipuram",
-      state: "Tamil Nadu",
-      pincode: "631501",
-      country: "India",
-    },
-    items: [
-      {
-        id: 1,
-        qty: 1,
-        price_at_time: 12999,
-        variant: {
-          sku: "HS-KAN-RED-ZARI",
-          image:
-            "https://images.unsplash.com/photo-1618354691373-d851c5c3a990",
-          product: {
-            name: "Kanchipuram Pure Silk Saree – Red Zari",
-          },
-        },
-      },
-      {
-        id: 2,
-        qty: 1,
-        price_at_time: 6000,
-        variant: {
-          sku: "HS-BAN-GOLD",
-          image:
-            "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-          product: {
-            name: "Banarasi Silk Saree – Gold Weave",
-          },
-        },
-      },
-    ],
-  };
-  /* -------------------------------------------------- */
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // simulate loading
-    setTimeout(() => {
-      setOrder(STATIC_ORDER);
+    if (!orderId) {
+      setError("No order ID provided");
       setLoading(false);
-    }, 500);
-  }, []);
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadOrder() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch order details from API
+        const res = await api.get(`/ecom/orders/${orderId}`);
+
+        if (!isMounted) return;
+
+        // Try different response structures
+        const orderData =
+          res?.data?.data?.order ||
+          res?.data?.order ||
+          res?.data?.data ||
+          res?.data ||
+          null;
+
+        if (!orderData) {
+          setError("Order not found");
+          setOrder(null);
+        } else {
+          setOrder(orderData);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        setError(
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to load order details"
+        );
+        setOrder(null);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadOrder();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [orderId]);
 
   if (loading) {
-    return <div className="p-6">Loading order...</div>;
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading order details...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (!order) {
-    return <div className="p-6 text-red-500">Order not found</div>;
+  if (error || !order) {
+    return (
+      <div className="p-6">
+        <div className="max-w-2xl mx-auto text-center py-12">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold mb-2">
+            {error || "Order not found"}
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {orderId
+              ? `Unable to load order details for ID: ${orderId}`
+              : "No order ID provided in the URL"}
+          </p>
+          <Link
+            href="/dashboard/purchase-history"
+            className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            ← Back to Orders
+          </Link>
+        </div>
+      </div>
+    );
   }
 
-  const address = order.address;
+  const address = order.address || {};
 
   return (
     <div className="min-h-screen bg-white text-gray-900 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold">
-            Order Id: {order.id}
-          </h1>
+          <h1 className="text-lg font-semibold">Order Id: {order.id}</h1>
           <Link
             href="/dashboard/purchase-history"
             className="text-sm text-blue-600 hover:underline"
@@ -103,7 +132,11 @@ export default function OrderDetailsPage() {
                 <Row label="Order Status" value={order.order_status} />
                 <Row
                   label="Shipping Address"
-                  value={`${address.address}, ${address.city}, ${address.state} - ${address.pincode}`}
+                  value={
+                    address.address
+                      ? `${address.address}, ${address.city}, ${address.state} - ${address.pincode}`
+                      : "N/A"
+                  }
                 />
               </div>
 
@@ -126,19 +159,23 @@ export default function OrderDetailsPage() {
                   <>
                     <Row
                       label="Tracking Id"
-                      value={order.tracking_number}
+                      value={order.tracking_number || "N/A"}
                     />
                     <Row
                       label="Tracking URL"
                       value={
-                        <a
-                          href={order.tracking_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          Track Shipment
-                        </a>
+                        order.tracking_url ? (
+                          <a
+                            href={order.tracking_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                          >
+                            Track Shipment
+                          </a>
+                        ) : (
+                          "N/A"
+                        )
                       }
                     />
                   </>
@@ -155,44 +192,50 @@ export default function OrderDetailsPage() {
               Order Items
             </h3>
 
-            {order.items.map((it, idx) => (
-              <div
-                key={it.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border rounded p-4 mb-4"
-              >
-                <div className="md:col-span-1 text-orange-600 font-semibold">
-                  {idx + 1}
-                </div>
+            {order.items && order.items.length > 0 ? (
+              order.items.map((it, idx) => (
+                <div
+                  key={it.id}
+                  className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border rounded p-4 mb-4"
+                >
+                  <div className="md:col-span-1 text-orange-600 font-semibold">
+                    {idx + 1}
+                  </div>
 
-                <div className="md:col-span-3 text-orange-600">
-                  {it.variant.product.name}
-                </div>
+                  <div className="md:col-span-3 text-orange-600">
+                    {it.variant?.product?.name || it.product_name || "N/A"}
+                  </div>
 
-                <div className="md:col-span-1">
-                  <img
-                    src={it.variant.image}
-                    alt={it.variant.product.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                </div>
+                  <div className="md:col-span-1">
+                    {it.variant?.image && (
+                      <img
+                        src={it.variant.image}
+                        alt={it.variant?.product?.name || "Product"}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )}
+                  </div>
 
-                <div className="md:col-span-2 text-sm">
-                  SKU: {it.variant.sku}
-                </div>
+                  <div className="md:col-span-2 text-sm">
+                    SKU: {it.variant?.sku || it.sku || "N/A"}
+                  </div>
 
-                <div className="md:col-span-1 text-sm">
-                  Qty: {it.qty}
-                </div>
+                  <div className="md:col-span-1 text-sm">
+                    Qty: {it.qty || it.quantity || 0}
+                  </div>
 
-                <div className="md:col-span-2 text-sm">
-                  Home Delivery
-                </div>
+                  <div className="md:col-span-2 text-sm">
+                    Home Delivery
+                  </div>
 
-                <div className="md:col-span-1 font-semibold">
-                  ₹{it.price_at_time}
+                  <div className="md:col-span-1 font-semibold">
+                    ₹{it.price_at_time || it.price || 0}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">No items found</p>
+            )}
           </div>
         </section>
 

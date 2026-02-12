@@ -13,6 +13,7 @@
     "@splidejs/react-splide": "^0.7.12",
     "axios": "^1.13.4",
     "clsx": "^2.1.1",
+    "geist": "^1.7.0",
     "lucide-react": "^0.561.0",
     "next": "16.0.7",
     "razorpay": "^2.9.6",

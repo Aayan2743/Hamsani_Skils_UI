@@ -39,8 +39,6 @@ export function ProductFilterProvider({ children }) {
         params.search = filters.search;
       }
 
-      console.log("✅ API PARAMS:", params);
-
       try {
         const res = await AuthAPI.getproducts(params);
         setProducts(res?.data?.data || []);

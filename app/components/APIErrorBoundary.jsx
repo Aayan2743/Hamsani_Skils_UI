@@ -12,7 +12,6 @@ export default function APIErrorBoundary({
 
   useEffect(() => {
     const handleUnhandledRejection = (event) => {
-      console.error('Unhandled promise rejection:', event.reason);
       setError(event.reason);
       setHasError(true);
       if (onError) onError(event.reason);
