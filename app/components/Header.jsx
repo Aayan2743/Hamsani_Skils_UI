@@ -888,7 +888,7 @@ export default function Header() {
                 src="/image.png"
                 alt="Hamsini Silks & Jewellers"
                 width={120}
-                height={60}
+                height={100}
                 priority
               />
             </Link>

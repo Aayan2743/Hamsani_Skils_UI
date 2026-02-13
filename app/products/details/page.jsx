@@ -1,5 +1,4 @@
 "use client";
-
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { useCart } from "../../providers/CartProvider";
@@ -476,7 +475,6 @@ function SimilarProductsSlider({ products }) {
   const prev = () => {
     setCurrentIndex((prev) => Math.max(prev - 1, 0));
   };
-
   return (
     <div className="relative group">
       {/* Navigation Buttons */}
@@ -571,11 +569,9 @@ function SimilarProductCard({ product }) {
         <p className="text-xs text-[#8B7355] uppercase tracking-wide mb-1">
           SILK SAREES
         </p>
-        
         <h3 className="font-semibold text-[#2C1810] mb-2 line-clamp-2 text-sm group-hover:text-[#8B4513] transition-colors">
           {product.name}
         </h3>
-
         {/* Price */}
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-[#8B4513]">
@@ -591,7 +587,6 @@ function SimilarProductCard({ product }) {
     </a>
   );
 }
-
 export default function ProductDetailsPage() {
   return (
     <Suspense fallback={<ProductLoader />}>

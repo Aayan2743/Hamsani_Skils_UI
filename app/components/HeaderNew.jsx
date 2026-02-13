@@ -86,11 +86,13 @@ export default function HeaderNew() {
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/collections?search=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+  e.preventDefault();
+  if (searchQuery.trim()) {
+    router.push(`/collections?search=${encodeURIComponent(searchQuery)}`);
+    setSearchQuery(""); // 👈 ADD THIS LINE
+  }
+};
+
 
   const visibleMenus = menuData.slice(0, 6);
 
@@ -107,11 +109,11 @@ export default function HeaderNew() {
             <Link href="/" className="flex-shrink-0">
               <Image
                 src="/image.png"
-                alt="Vastra"
-                width={100}
-                height={40}
+                alt="hamsini silks"
+                width={120}
+                height={80}
                 priority
-                className="h-10 w-auto"
+                className="h-15 w-auto"
               />
             </Link>
 

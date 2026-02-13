@@ -357,6 +357,7 @@ export default function CollectionsPage() {
                 price={price}
                 setPrice={setPrice}
                 applyPrice={() => setAppliedPrice(price)}
+                selectedCategory={categoryParam}
               />
             </div>
 
@@ -410,6 +411,7 @@ export default function CollectionsPage() {
             setAppliedPrice(price);
             setFilterOpen(false);
           }}
+          selectedCategory={categoryParam}
         />
       </MobileFilterDrawer>
     </WishlistProvider>
