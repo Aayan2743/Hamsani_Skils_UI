@@ -112,7 +112,7 @@ export default function SidebarFilters({
         const res = await api.get("ecom/menu");
         setCategories(Array.isArray(res?.data) ? res.data : []);
       } catch (error) {
-        console.error("Failed to fetch categories", error);
+        // console.error("Failed to fetch categories", error);
         setCategories([]);
       } finally {
         setLoading(false);

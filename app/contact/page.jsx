@@ -387,7 +387,7 @@ export default function ContactPage() {
           setContactData(res.data.data);
         }
       } catch (error) {
-        console.error("Error fetching contact settings:", error);
+        // console.error("Error fetching contact settings:", error);
       } finally {
         setLoading(false);
       }

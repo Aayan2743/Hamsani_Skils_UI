@@ -990,9 +990,7 @@ export default function Header() {
               {/* PROFILE */}
               <div
                 ref={dropdownRef}
-                className="relative mt-2"
-                onMouseEnter={() => token && setAccountOpen(true)}
-                onMouseLeave={() => setAccountOpen(false)}
+                className="relative group"
               >
                 <button
                   onClick={() => !token && router.push("/account/login")}
@@ -1001,21 +999,20 @@ export default function Header() {
                   <UserCircleIcon className="w-6 h-6" />
                 </button>
 
-                {token && accountOpen && (
-                  <div className="absolute right-0 top-full pt-2 z-50">
-                    <div className="w-44 bg-white shadow-lg rounded-md">
+                {token && (
+                  <div className="absolute right-0 top-full pt-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="w-44 bg-white shadow-lg rounded-md overflow-hidden">
                       <button
                         onClick={() => {
                           router.push("/dashboard");
-                          setAccountOpen(false);
                         }}
-                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                        className="block w-full px-4 py-2 text-left hover:bg-gray-100 transition"
                       >
                         Dashboard
                       </button>
                       <button
                         onClick={logout}
-                        className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                        className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100 transition"
                       >
                         Logout
                       </button>

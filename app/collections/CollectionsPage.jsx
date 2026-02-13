@@ -262,8 +262,8 @@ export default function CollectionsPage() {
   /* ---------------- PAGINATION STATE ---------------- */
   const [currentPage, setCurrentPage] = useState(1);
   
-  /* ---------------- USE PRODUCTS HOOK WITH PAGINATION (8 per page) ---------------- */
-  const { products = [], loading, pagination } = useProducts(currentPage, 8);
+  /* ---------------- USE PRODUCTS HOOK WITH PAGINATION (12 per page) ---------------- */
+  const { products = [], loading, pagination } = useProducts(currentPage, 12);
 
   /* ---------------- FILTER STATES ---------------- */
   const [filterOpen, setFilterOpen] = useState(false);

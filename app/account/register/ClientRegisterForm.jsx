@@ -331,9 +331,11 @@ export default function SignupPage() {
         {/* FORM */}
         <div className="p-8 md:p-12 flex items-center justify-center">
           <div className="w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-2 text-red-600">
-              Create Account
-            </h2>
+             <div className="text-center lg:text-left">
+              <h1 className="text-4xl font-bold text-[#2C1810] mb-2 animate-slide-down">
+                Create Account
+              </h1>
+            </div>
 
             <form onSubmit={onSubmit} className="space-y-4">
               {/* NAME */}
@@ -390,13 +392,33 @@ export default function SignupPage() {
                 </p>
               )}
 
-              <button
+              {/* <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-lg font-semibold transition disabled:opacity-60"
               >
                 {loading ? "Creating account..." : "Sign Up"}
-              </button>
+              </button> */}
+              
+              <button
+  type="submit"
+  disabled={loading}
+  className="w-full bg-gradient-to-r from-[#8B4513] to-[#6D3410] hover:from-[#6D3410] hover:to-[#8B4513] text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 group animate-slide-up"
+  style={{ animationDelay: "0.4s" }}
+>
+  {loading ? (
+    <>
+      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      Creating account...
+    </>
+  ) : (
+    <>
+      Create Account
+      {/* <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /> */}
+    </>
+  )}
+</button>
+
             </form>
 
             <p className="mt-6 text-center text-sm">
