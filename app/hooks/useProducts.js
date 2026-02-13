@@ -29,7 +29,7 @@ export function useProducts() {
       try {
         setLoading(true);
         const res = await api.get("ecom/products");
-
+      console.log("test",res)
         if (!isMounted) return;
 
         const data = res.data;

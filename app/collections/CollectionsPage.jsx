@@ -165,10 +165,8 @@
 
 
 "use client";
-
 import { useSearchParams } from "next/navigation";
 import { useState, useMemo } from "react";
-
 import SidebarFilters from "../components/SidebarFilters";
 import ProductGrid from "../components/ProductGrid";
 import MobileFilterDrawer from "../components/MobileFilterDrawer";
@@ -195,7 +193,10 @@ function ProductsSkeleton() {
 }
 export default function CollectionsPage() {
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("category");  /* ---------------- USE PRODUCTS HOOK ---------------- */
+  const categoryParam = searchParams.get("category"); 
+  console.log("testsss",categoryParam)
+  
+  /* ---------------- USE PRODUCTS HOOK ---------------- */
   const { products = [], loading } = useProducts();
 
   /* ---------------- FILTER STATES ---------------- */
@@ -206,7 +207,6 @@ export default function CollectionsPage() {
 
   /* ---------------- GRID STATES ---------------- */
   const [columns] = useState(3);
-    console.log("Products in CollectionsPage:", products); 
   /* ---------------- NORMALIZE PRODUCT DATA ---------------- */
   const normalizedProducts = useMemo(() => {
     return products.map((p) => {
@@ -245,7 +245,10 @@ export default function CollectionsPage() {
       return matchesCategory && matchesStock && matchesPrice;
     });
   }, [normalizedProducts, categoryParam, inStock, appliedPrice]);
-  console.log("normalizedProducts",normalizedProducts);
+ console.log("test",filteredProducts)
+
+
+
   /* ---------------- RENDER ---------------- */
   return (
     <WishlistProvider>
