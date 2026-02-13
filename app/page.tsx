@@ -1,16 +1,21 @@
-import Image from "next/image";
-import HeroSection from "./components/HeroSection";
-import KanjivaramBanners from "./components/KanjivaramBanners";
-import SoftSilkBanner from "./components/SoftSilkBanner";
-import Maps from "./components/Maps";
+import HeroCarousel from "./components/HomePage/HeroCarousel";
+import ShopByCategory from "./components/HomePage/ShopByCategory";
+import BestSellers from "./components/HomePage/BestSellers";
+import PromoBanner from "./components/HomePage/PromoBanner";
+import NewArrivals from "./components/HomePage/NewArrivals";
+import InstagramCarousel from "./components/HomePage/InstagramCarousel";
+import Features from "./components/HomePage/Features";
 
 export default function Home() {
   return (
-    <div className="bg-zinc-50 dark:bg-black font-sans min-h-screen">
-      <HeroSection/>
-   <KanjivaramBanners/>
-   <SoftSilkBanner/>
-   <Maps/>
+    <div className="bg-[#F5F5DC] min-h-screen">
+      <HeroCarousel />
+      <ShopByCategory />
+      <BestSellers />
+      <PromoBanner />
+      <NewArrivals />
+      <InstagramCarousel />
+      <Features />
     </div>
   );
 }

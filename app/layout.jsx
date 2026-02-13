@@ -96,9 +96,9 @@
 
 import "./globals.css";
 import "./globals-responsive.css";
-import Header from "./components/Header";
+import HeaderNew from "./components/HeaderNew";
 import Footer from "./components/Footer";
-import { Source_Sans_3 } from "next/font/google";
+import { Source_Sans_3, Playfair_Display } from "next/font/google";
 import { AuthProvider } from "./components/context/AuthProvider";
 import { CartProvider } from "./providers/CartProvider";
 import { Toaster } from "react-hot-toast";
@@ -118,10 +118,17 @@ const sourceSans = Source_Sans_3({
   variable: "--font-source-sans",
 });
 
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-playfair",
+});
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={sourceSans.variable}>
-      <body className="font-sans">{/* Apply font globally */}
+    <html lang="en" className={`${sourceSans.variable} ${playfair.variable}`}>
+      <body className="font-playfair">{/* Apply Playfair Display globally */}
         {/* ✅ Razorpay Script */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
@@ -133,7 +140,7 @@ export default function RootLayout({ children }) {
             <WishlistProvider>
               <SocialMediaProvider>
               <ClientPrefetch />
-              <Header />
+              <HeaderNew />
               <main className="min-h-[60vh]">{children}</main>
               <Footer className="bg-[#232323] text-[#f8f8f8]" />
               </SocialMediaProvider>

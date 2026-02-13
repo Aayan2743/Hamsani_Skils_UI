@@ -1,52 +1,43 @@
 import { useState, useEffect } from "react";
 import api from "../utils/apiInstance";
 
-// Shared products cache
-let productsCache = null;
-let cacheTimestamp = null;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-export function useProducts() {
+export function useProducts(page = 1, perPage = 8) {
+  const [allProducts, setAllProducts] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 8,
+    total: 0,
+    from: 0,
+    to: 0,
+  });
 
+  // Fetch all products once
   useEffect(() => {
     let isMounted = true;
 
-    const fetchProducts = async () => {
-      // Check if cache is valid
-      if (
-        productsCache &&
-        cacheTimestamp &&
-        Date.now() - cacheTimestamp < CACHE_DURATION
-      ) {
-        setProducts(productsCache);
-        setLoading(false);
-        return;
-      }
-
+    const fetchAllProducts = async () => {
       try {
         setLoading(true);
-        const res = await api.get("ecom/products");
-      console.log("test",res)
+        
+        // Fetch all products by requesting a large per_page or fetching all pages
+        const res = await api.get(`ecom/products?per_page=100`);
+
         if (!isMounted) return;
 
-        const data = res.data;
-        const productsData = data?.data?.data || data?.data || data || [];
-        console.log("Test", productsData);
+        const data = res.data?.data;
+        const productsData = data?.data || [];
         const validProducts = Array.isArray(productsData) ? productsData : [];
-
-        // Update cache
-        productsCache = validProducts;
-        cacheTimestamp = Date.now();
-
-        setProducts(validProducts);
+        
+        setAllProducts(validProducts);
         setError(null);
       } catch (err) {
         if (!isMounted) return;
         setError(err.message || "Failed to load products");
-        setProducts([]);
+        setAllProducts([]);
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -54,18 +45,44 @@ export function useProducts() {
       }
     };
 
-    fetchProducts();
+    fetchAllProducts();
 
     return () => {
       isMounted = false;
     };
   }, []);
 
-  return { products, loading, error };
-}
+  // Handle client-side pagination
+  useEffect(() => {
+    if (allProducts.length === 0) {
+      setProducts([]);
+      setPagination({
+        current_page: 1,
+        last_page: 1,
+        per_page: perPage,
+        total: 0,
+        from: 0,
+        to: 0,
+      });
+      return;
+    }
 
-// Clear cache function
-export function clearProductsCache() {
-  productsCache = null;
-  cacheTimestamp = null;
+    const total = allProducts.length;
+    const lastPage = Math.ceil(total / perPage);
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    const paginatedProducts = allProducts.slice(startIndex, endIndex);
+
+    setProducts(paginatedProducts);
+    setPagination({
+      current_page: page,
+      last_page: lastPage,
+      per_page: perPage,
+      total: total,
+      from: startIndex + 1,
+      to: Math.min(endIndex, total),
+    });
+  }, [allProducts, page, perPage]);
+
+  return { products, loading, error, pagination };
 }

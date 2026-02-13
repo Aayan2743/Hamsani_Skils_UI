@@ -306,7 +306,7 @@ export default function Footer() {
         setCustomerCare(res.data.data);
       }
     } catch (error) {
-      console.error("Error fetching customer care:", error);
+      // Error fetching customer care
     }
   }
 

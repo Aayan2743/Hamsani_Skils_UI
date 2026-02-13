@@ -27,7 +27,7 @@ export function SocialMediaProvider({ children }) {
         }
       } catch (err) {
         if (!isMounted) return;
-        console.error("Social media API error:", err);
+        // Social media API error
         setError("Failed to load social media links");
       } finally {
         if (isMounted) setLoading(false);
