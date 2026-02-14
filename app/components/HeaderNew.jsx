@@ -35,12 +35,15 @@ export default function HeaderNew() {
   const [menuLoading, setMenuLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [mounted, setMounted] = useState(false);
+  const accountDropdownTimer = useRef(null);
 
   const { count, cartOpen, setCartOpen } = useCart();
   const router = useRouter();
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== "undefined") {
       setToken(localStorage.getItem("token"));
     }
@@ -76,7 +79,12 @@ export default function HeaderNew() {
       }
     };
     document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      if (accountDropdownTimer.current) {
+        clearTimeout(accountDropdownTimer.current);
+      }
+    };
   }, []);
 
   const logout = () => {
@@ -86,15 +94,60 @@ export default function HeaderNew() {
   };
 
   const handleSearch = (e) => {
-  e.preventDefault();
-  if (searchQuery.trim()) {
-    router.push(`/collections?search=${encodeURIComponent(searchQuery)}`);
-    setSearchQuery(""); // 👈 ADD THIS LINE
-  }
-};
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/collections?search=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery("");
+    }
+  };
+
+  const handleAccountMouseEnter = () => {
+    if (accountDropdownTimer.current) {
+      clearTimeout(accountDropdownTimer.current);
+    }
+    if (token) {
+      setAccountOpen(true);
+    }
+  };
+
+  const handleAccountMouseLeave = () => {
+    accountDropdownTimer.current = setTimeout(() => {
+      setAccountOpen(false);
+    }, 200);
+  };
 
 
   const visibleMenus = menuData.slice(0, 6);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="sticky top-0 z-50">
+        <header className="bg-[#F5F5DC]">
+          <div className="max-w-[1400px] mx-auto px-4 py-3">
+            <div className="flex items-center justify-between gap-6">
+              <Link href="/" className="flex-shrink-0">
+                <Image
+                  src="/image.png"
+                  alt="hamsini silks"
+                  width={120}
+                  height={80}
+                  priority
+                  className="h-15 w-auto"
+                />
+              </Link>
+              <div className="flex-1" />
+              <div className="flex items-center gap-4 md:gap-6">
+                <div className="w-6 h-6" />
+                <div className="w-6 h-6" />
+                <div className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -143,8 +196,8 @@ export default function HeaderNew() {
               <div
                 ref={dropdownRef}
                 className="relative"
-                onMouseEnter={() => token && setAccountOpen(true)}
-                onMouseLeave={() => setAccountOpen(false)}
+                onMouseEnter={handleAccountMouseEnter}
+                onMouseLeave={handleAccountMouseLeave}
               >
                 <button
                   onClick={() => !token && router.push("/account/login")}
@@ -154,31 +207,35 @@ export default function HeaderNew() {
                   <span className="text-xs hidden md:block">Account</span>
                 </button>
 
-                {token && accountOpen && (
-                  <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    variants={dropdownMenu}
-                    className="absolute right-0 top-full mt-2 w-44 bg-white shadow-lg rounded-sm z-50"
-                  >
-                    <button
-                      onClick={() => {
-                        router.push("/dashboard");
-                        setAccountOpen(false);
-                      }}
-                      className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
+                <AnimatePresence>
+                  {token && accountOpen && (
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={dropdownMenu}
+                      onMouseEnter={handleAccountMouseEnter}
+                      onMouseLeave={handleAccountMouseLeave}
+                      className="absolute right-0 top-full mt-2 w-44 bg-white shadow-lg rounded-sm z-50"
                     >
-                      Dashboard
-                    </button>
-                    <button
-                      onClick={logout}
-                      className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50"
-                    >
-                      Logout
-                    </button>
-                  </motion.div>
-                )}
+                      <button
+                        onClick={() => {
+                          router.push("/dashboard");
+                          setAccountOpen(false);
+                        }}
+                        className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={logout}
+                        className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50 transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* WISHLIST */}

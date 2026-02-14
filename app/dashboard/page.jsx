@@ -11,6 +11,8 @@ import {
   ClockIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useCart } from "../providers/CartProvider";
+import api from "../utils/apiInstance";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -34,18 +36,103 @@ const itemVariants = {
   }
 };
 
+const getStatusConfig = (status) => {
+  const configs = {
+    delivered: {
+      color: "text-green-600",
+      bg: "bg-green-50"
+    },
+    "in transit": {
+      color: "text-blue-600",
+      bg: "bg-blue-50"
+    },
+    processing: {
+      color: "text-amber-600",
+      bg: "bg-amber-50"
+    },
+    cancelled: {
+      color: "text-red-600",
+      bg: "bg-red-50"
+    }
+  };
+  
+  return configs[status?.toLowerCase()] || configs.processing;
+};
+
 export default function DashboardHome() {
   const [mounted, setMounted] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  const { count: cartCount } = useCart();
 
   useEffect(() => {
     setMounted(true);
+    fetchDashboardData();
   }, []);
 
-  /* ---------- STATIC UI DATA ---------- */
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+      
+      if (!token || !userStr) {
+        setLoading(false);
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      const userId = user?.id;
+
+      // Fetch wishlist count
+      const wishlistRes = await api.get("/user-dashboard/get-wishlist", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (wishlistRes.data.success) {
+        setWishlistCount(wishlistRes.data.data?.length || 0);
+      }
+
+      // Fetch orders
+      if (userId) {
+        const ordersRes = await api.get(`/admin-dashboard/orders?user_id=${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (ordersRes.data.success) {
+          const ordersData = ordersRes.data.data || [];
+          
+          setOrdersCount(ordersData.length);
+          
+          // Get last 3 orders
+          setRecentOrders(ordersData.slice(0, 3).map(order => ({
+            id: `#ORD-${order.id}`,
+            date: new Date(order.created_at).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            }),
+            status: order.status || 'Processing',
+            amount: `₹${Number(order.total_amount).toLocaleString()}`,
+            items: order.items?.length || 0,
+            ...getStatusConfig(order.status)
+          })));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!mounted) return null;
+
+  /* ---------- DYNAMIC STATS DATA ---------- */
   const stats = [
     {
       title: "Products in Cart",
-      value: "03",
+      value: loading ? "..." : String(cartCount).padStart(2, '0'),
       icon: ShoppingCartIcon,
       color: "bg-blue-50",
       iconColor: "text-blue-600",
@@ -53,7 +140,7 @@ export default function DashboardHome() {
     },
     {
       title: "Wishlist Items",
-      value: "05",
+      value: loading ? "..." : String(wishlistCount).padStart(2, '0'),
       icon: HeartIcon,
       color: "bg-rose-50",
       iconColor: "text-rose-600",
@@ -61,45 +148,13 @@ export default function DashboardHome() {
     },
     {
       title: "Total Orders",
-      value: "12",
+      value: loading ? "..." : String(ordersCount).padStart(2, '0'),
       icon: ShoppingBagIcon,
       color: "bg-emerald-50",
       iconColor: "text-emerald-600",
       link: "/dashboard/purchase-history"
     }
   ];
-
-  const recentOrders = [
-    {
-      id: "#ORD-2024-001",
-      date: "Feb 10, 2026",
-      status: "Delivered",
-      amount: "₹4,299",
-      items: 2,
-      statusColor: "text-green-600",
-      statusBg: "bg-green-50"
-    },
-    {
-      id: "#ORD-2024-002",
-      date: "Feb 08, 2026",
-      status: "In Transit",
-      amount: "₹6,899",
-      items: 1,
-      statusColor: "text-blue-600",
-      statusBg: "bg-blue-50"
-    },
-    {
-      id: "#ORD-2024-003",
-      date: "Feb 05, 2026",
-      status: "Processing",
-      amount: "₹3,499",
-      items: 3,
-      statusColor: "text-amber-600",
-      statusBg: "bg-amber-50"
-    }
-  ];
-
-  if (!mounted) return null;
 
   return (
     <div className="min-h-screen">
@@ -152,36 +207,57 @@ export default function DashboardHome() {
           </div>
           
           <div className="divide-y divide-gray-100">
-            {recentOrders.map((order, index) => (
-              <motion.div
-                key={order.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <p className="font-semibold text-[#2C1810]">{order.id}</p>
-                      <span className={`${order.statusBg} ${order.statusColor} text-xs px-3 py-1 rounded-full font-medium`}>
-                        {order.status}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span className="flex items-center gap-1">
-                        <ClockIcon className="w-4 h-4" />
-                        {order.date}
-                      </span>
-                      <span>{order.items} {order.items === 1 ? 'item' : 'items'}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-[#2C1810]">{order.amount}</p>
-                  </div>
+            {loading ? (
+              // Loading skeleton
+              [1, 2, 3].map((i) => (
+                <div key={i} className="p-6 animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-1/3 mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
                 </div>
-              </motion.div>
-            ))}
+              ))
+            ) : recentOrders.length === 0 ? (
+              // Empty state
+              <div className="p-12 text-center">
+                <ShoppingBagIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No orders yet</p>
+                <Link href="/collections" className="text-sm text-[#8B4513] hover:underline mt-2 inline-block">
+                  Start Shopping
+                </Link>
+              </div>
+            ) : (
+              // Orders list
+              recentOrders.map((order, index) => (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => window.location.href = '/dashboard/purchase-history'}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <p className="font-semibold text-[#2C1810]">{order.id}</p>
+                        <span className={`${order.bg} ${order.color} text-xs px-3 py-1 rounded-full font-medium capitalize`}>
+                          {order.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <span className="flex items-center gap-1">
+                          <ClockIcon className="w-4 h-4" />
+                          {order.date}
+                        </span>
+                        <span>{order.items} {order.items === 1 ? 'item' : 'items'}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-[#2C1810]">{order.amount}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
         </motion.div>
 

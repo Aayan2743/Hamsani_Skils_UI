@@ -449,6 +449,13 @@ export default function OTPAuthModal({ open, onClose, onSuccess }) {
               </button>
             </form>
           )}
+          <div className="mt-6 text-center">
+            <p
+              className="text-sm text-black-600 hover:underline"
+            >
+              Please provide WhatsApp Number
+            </p>
+          </div>
 
           {/* USERNAME LOGIN LINK */}
           <div className="mt-6 text-center">

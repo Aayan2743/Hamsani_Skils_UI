@@ -166,7 +166,7 @@
 
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import SidebarFilters from "../components/SidebarFilters";
 import ProductGrid from "../components/ProductGrid";
 import MobileFilterDrawer from "../components/MobileFilterDrawer";
@@ -262,8 +262,8 @@ export default function CollectionsPage() {
   /* ---------------- PAGINATION STATE ---------------- */
   const [currentPage, setCurrentPage] = useState(1);
   
-  /* ---------------- USE PRODUCTS HOOK WITH PAGINATION (12 per page) ---------------- */
-  const { products = [], loading, pagination } = useProducts(currentPage, 12);
+  /* ---------------- USE PRODUCTS HOOK WITH PAGINATION AND SEARCH (12 per page) ---------------- */
+  const { products = [], loading, pagination } = useProducts(currentPage, 12, searchQuery || "");
 
   /* ---------------- FILTER STATES ---------------- */
   const [filterOpen, setFilterOpen] = useState(false);
@@ -292,7 +292,7 @@ export default function CollectionsPage() {
     });
   }, [products]);
 
-  /* ---------------- FILTER LOGIC WITH SEARCH ---------------- */
+  /* ---------------- FILTER LOGIC (Search is now handled by API) ---------------- */
   const filteredProducts = useMemo(() => {
     return normalizedProducts.filter((p) => {
       const matchesCategory =
@@ -303,21 +303,20 @@ export default function CollectionsPage() {
       const matchesPrice =
         p.price >= appliedPrice.min && p.price <= appliedPrice.max;
 
-      // Search filter - check product name, category, and description
-      const matchesSearch = !searchQuery || 
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.raw?.description?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      return matchesCategory && matchesStock && matchesPrice && matchesSearch;
+      return matchesCategory && matchesStock && matchesPrice;
     });
-  }, [normalizedProducts, categoryParam, inStock, appliedPrice, searchQuery]);
+  }, [normalizedProducts, categoryParam, inStock, appliedPrice]);
 
   /* ---------------- HANDLE PAGE CHANGE ---------------- */
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  /* ---------------- RESET PAGE WHEN SEARCH CHANGES ---------------- */
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   /* ---------------- RENDER ---------------- */
   return (

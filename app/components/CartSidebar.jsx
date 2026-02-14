@@ -744,6 +744,8 @@ import toast from "react-hot-toast";
 import { useCart } from "../providers/CartProvider";
 import AddAddessModal from "./AddAddressModal";
 import OTPAuthModal from "./OTPAuthModal";
+import PaymentLoader from "./PaymentLoader";
+import OrderSuccessModal from "./OrderSuccessModal";
 import api from "../utils/apiInstance";
 
 export default function CartSidebar({ open, onClose }) {
@@ -766,6 +768,11 @@ export default function CartSidebar({ open, onClose }) {
   /* COUPON STATES */
   const [coupon, setCoupon] = useState("");
   const [couponData, setCouponData] = useState(null);
+
+  /* PAYMENT LOADING STATES */
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Processing...");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   /* LOAD TOKEN ON MOUNT */
   useEffect(() => {
@@ -850,10 +857,18 @@ export default function CartSidebar({ open, onClose }) {
       return;
     }
 
+    setPaymentLoading(true);
+    setLoadingMessage("Initializing payment...");
+
     const loaded = await loadRazorpayScript();
-    if (!loaded) return toast.error("Razorpay failed");
+    if (!loaded) {
+      setPaymentLoading(false);
+      return toast.error("Razorpay failed");
+    }
 
     try {
+      setLoadingMessage("Creating order...");
+      
       const createRes = await api.post(
         "/user-dashboard/cart/create-order",
         { amount: finalTotal },
@@ -861,6 +876,8 @@ export default function CartSidebar({ open, onClose }) {
       );
 
       const order = createRes.data.order;
+
+      setPaymentLoading(false);
 
       const options = {
         key: "rzp_test_RywTw9KUnaPKxd",
@@ -870,12 +887,17 @@ export default function CartSidebar({ open, onClose }) {
         order_id: order.id,
 
         handler: async (response) => {
+          setPaymentLoading(true);
+          setLoadingMessage("Verifying payment...");
+          
           try {
             await api.post(
               "/user-dashboard/cart/verify-payment",
               response,
               { headers: { Authorization: `Bearer ${token}` } }
             );
+
+            setLoadingMessage("Completing your order...");
 
             const payload = {
               user_id: userId,
@@ -904,18 +926,29 @@ export default function CartSidebar({ open, onClose }) {
               headers: { Authorization: `Bearer ${token}` },
             });
 
-            toast.success("Order placed successfully 🎉");
-            clearCart();
-            onClose();
-            router.push("/");
+            setLoadingMessage("Order placed successfully!");
+            
+            setTimeout(() => {
+              setPaymentLoading(false);
+              setShowSuccessModal(true);
+              clearCart();
+              onClose();
+            }, 1000);
           } catch {
+            setPaymentLoading(false);
             toast.error("Order processing failed");
           }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentLoading(false);
+          },
         },
       };
 
       new window.Razorpay(options).open();
     } catch {
+      setPaymentLoading(false);
       toast.error("Payment failed");
     }
   };
@@ -931,8 +964,18 @@ export default function CartSidebar({ open, onClose }) {
   };
 
   return (
-   <div className={`fixed inset-0 z-[9999] ${open ? "visible" : "invisible"}`}>
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+    <>
+      {/* PAYMENT LOADER */}
+      {paymentLoading && <PaymentLoader message={loadingMessage} />}
+      
+      {/* SUCCESS MODAL */}
+      <OrderSuccessModal
+        open={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+      />
+      
+      <div className={`fixed inset-0 z-[9999] ${open ? "visible" : "invisible"}`}>
+        <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       <div className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white p-5 overflow-y-auto">
         <h2 className="text-xl font-semibold mb-3">
@@ -965,49 +1008,71 @@ export default function CartSidebar({ open, onClose }) {
 
         {/* ADDRESS SECTION */}
         {cartItems.length>0&&<div className="mt-5">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="font-semibold">Delivery Address</h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-gray-800">Delivery Address</h3>
 
             <button
               onClick={() => {
                 setEditAddress(null);
                 setShowAddAddress(true);
               }}
-              className="flex items-center gap-1 text-sm text-blue-600"
+              className="flex items-center gap-1.5 text-sm bg-gradient-to-r from-[#8B4513] to-[#C4A962] text-white px-3 py-1.5 rounded-lg hover:shadow-md transition-all font-medium"
             >
-              <FiPlus /> Add
+              <FiPlus className="w-4 h-4" /> Add New
             </button>
           </div>
 
           {addresses.length === 0 && (
-            <p className="text-sm text-gray-500">No address found</p>
+            <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+              <p className="text-sm text-gray-500 mb-3">No address found</p>
+              <button
+                onClick={() => {
+                  setEditAddress(null);
+                  setShowAddAddress(true);
+                }}
+                className="text-sm text-[#8B4513] font-medium hover:underline"
+              >
+                Add your first address
+              </button>
+            </div>
           )}
 
           {addresses.map((addr) => (
             <div
               key={addr.id}
               onClick={() => setSelectedAddress(addr)}
-              className={`border p-3 rounded mb-2 cursor-pointer ${
+              className={`border-2 p-3 rounded-lg mb-2 cursor-pointer transition-all ${
                 selectedAddress?.id === addr.id
-                  ? "border-red-700 bg-red-50"
-                  : "border-gray-200"
+                  ? "border-[#8B4513] bg-[#F5F5DC] shadow-md"
+                  : "border-gray-200 hover:border-gray-300"
               }`}
             >
-              <p className="font-medium">{addr.name}</p>
-              <p className="text-sm text-gray-600">
-                {addr.address}, {addr.city}, {addr.state} - {addr.pincode}
-              </p>
+              <div className="flex items-start gap-2">
+                <input
+                  type="radio"
+                  checked={selectedAddress?.id === addr.id}
+                  onChange={() => setSelectedAddress(addr)}
+                  className="mt-1 accent-[#8B4513]"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-800">{addr.name}</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {addr.address}, {addr.city}, {addr.state} - {addr.pincode}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">Ph: {addr.phone}</p>
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditAddress(addr);
-                  setShowAddAddress(true);
-                }}
-                className="text-xs text-blue-600 mt-1 flex items-center gap-1"
-              >
-                <FiEdit /> Edit
-              </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditAddress(addr);
+                      setShowAddAddress(true);
+                    }}
+                    className="text-xs text-[#8B4513] font-medium mt-2 flex items-center gap-1 hover:underline"
+                  >
+                    <FiEdit className="w-3 h-3" /> Edit Address
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>}
@@ -1070,8 +1135,15 @@ export default function CartSidebar({ open, onClose }) {
       <AddAddessModal
         open={showAddAddress}
         editData={editAddress}
-        onClose={() => setShowAddAddress(false)}
-        onSuccess={fetchAddresses}
+        onClose={() => {
+          setShowAddAddress(false);
+          setEditAddress(null);
+        }}
+        onSuccess={() => {
+          fetchAddresses(); // Refresh addresses immediately
+          setShowAddAddress(false);
+          setEditAddress(null);
+        }}
       />
 
       {/* OTP AUTH MODAL */}
@@ -1086,6 +1158,7 @@ export default function CartSidebar({ open, onClose }) {
           fetchAddresses();
         }}
       />
-    </div>
+      </div>
+    </>
   );
 }

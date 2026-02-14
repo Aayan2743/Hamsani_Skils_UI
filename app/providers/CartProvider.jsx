@@ -305,13 +305,39 @@
 
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
+const CART_STORAGE_KEY = "hamsini_cart_items";
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  /* ================= LOAD FROM LOCALSTORAGE ON MOUNT ================= */
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedCart) {
+        setItems(JSON.parse(savedCart));
+      }
+    } catch (error) {
+      console.error("Failed to load cart from localStorage:", error);
+    }
+  }, []);
+
+  /* ================= SAVE TO LOCALSTORAGE WHENEVER ITEMS CHANGE ================= */
+  useEffect(() => {
+    if (mounted) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      } catch (error) {
+        console.error("Failed to save cart to localStorage:", error);
+      }
+    }
+  }, [items, mounted]);
 
   /* ================= ADD ================= */
   function addToCart(product, qty = 1) {
@@ -353,6 +379,7 @@ export function CartProvider({ children }) {
   function clearCart() {
     setItems({});
     setCartOpen(false);
+    localStorage.removeItem(CART_STORAGE_KEY);
   }
 
   /* ================= TOTAL ================= */
@@ -374,7 +401,7 @@ export function CartProvider({ children }) {
         addToCart,
         removeFromCart,
         updateQty,
-        clearCart, // 👈 exposed here
+        clearCart,
         total,
         count,
         cartOpen,

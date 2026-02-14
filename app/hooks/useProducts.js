@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../utils/apiInstance";
 
-export function useProducts(page = 1, perPage = 12) {
+export function useProducts(page = 1, perPage = 12, searchQuery = "") {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,8 +21,16 @@ export function useProducts(page = 1, perPage = 12) {
       try {
         setLoading(true);
         
-        // Fetch products with server-side pagination
-        const res = await api.get(`ecom/products?page=${page}&per_page=${perPage}`);
+        // Build query params
+        let url = `ecom/products?page=${page}&per_page=${perPage}`;
+        
+        // Add search query if provided
+        if (searchQuery && searchQuery.trim()) {
+          url += `&search=${encodeURIComponent(searchQuery.trim())}`;
+        }
+        
+        // Fetch products with server-side pagination and search
+        const res = await api.get(url);
 
         if (!isMounted) return;
 
@@ -61,7 +69,7 @@ export function useProducts(page = 1, perPage = 12) {
     return () => {
       isMounted = false;
     };
-  }, [page, perPage]);
+  }, [page, perPage, searchQuery]);
 
   return { products, loading, error, pagination };
 }

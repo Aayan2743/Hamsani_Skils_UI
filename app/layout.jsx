@@ -127,8 +127,8 @@ const playfair = Playfair_Display({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${sourceSans.variable} ${playfair.variable}`}>
-      <body className="font-playfair">{/* Apply Playfair Display globally */}
+    <html lang="en" className={`${sourceSans.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <body className="font-playfair" suppressHydrationWarning>{/* Apply Playfair Display globally */}
         {/* ✅ Razorpay Script */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
