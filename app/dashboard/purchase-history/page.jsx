@@ -286,7 +286,7 @@ export default function OrderDetailsPage() {
           setLoading(false);
           return;
         }
-        const res = await api.get(`/admin-dashboard/orders?user_id=${userId}`, {
+        const res = await api.get(`/user-dashboard/orders`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",

@@ -167,7 +167,6 @@ export default function AddAddressModal({
         setShowOTPAuth(true);
         return;
       }
-
       if (typeof apiData?.errors === "string") {
         toast.error(apiData.errors);
         return;

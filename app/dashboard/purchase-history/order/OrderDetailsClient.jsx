@@ -28,7 +28,7 @@ export default function OrderDetailsClient() {
         setError(null);
 
         // Fetch order details from API
-        const res = await api.get(`/ecom/orders/${orderId}`);
+        const res = await api.get(`user-dashboard/orders`);
 
         if (!isMounted) return;
 
