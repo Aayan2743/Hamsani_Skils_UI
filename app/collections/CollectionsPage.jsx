@@ -326,7 +326,7 @@ export default function CollectionsPage() {
           {/* PAGE TITLE */}
           {searchQuery ? (
             <div className="mb-6">
-              <h1 className="text-2xl sm:text-3xl font-normal text-[#2C1810] mb-2">
+              <h1 className="text-2xl sm:text-3xl font-normal text-[#2C1810] mb-2 font-display">
                 Search Results for "{searchQuery}"
               </h1>
               <p className="text-sm text-gray-600">
@@ -334,7 +334,7 @@ export default function CollectionsPage() {
               </p>
             </div>
           ) : categoryParam ? (
-            <h1 className="text-2xl sm:text-3xl font-normal text-[#2C1810] mb-6 capitalize">
+            <h1 className="text-2xl sm:text-3xl font-normal text-[#2C1810] mb-6 capitalize font-display">
               {categoryParam.replace(/-/g, " ")}
             </h1>
           ) : null}
@@ -373,7 +373,7 @@ export default function CollectionsPage() {
                 <ProductsSkeleton />
               ) : filteredProducts.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-lg">
-                  <h2 className="text-xl font-semibold mb-2 text-[#2C1810]">
+                  <h2 className="text-xl font-semibold mb-2 text-[#2C1810] font-display">
                     No products available
                   </h2>
                   <p className="text-gray-500">

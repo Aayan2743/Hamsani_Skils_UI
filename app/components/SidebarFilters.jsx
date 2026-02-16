@@ -131,7 +131,7 @@ export default function SidebarFilters({
       
       {/* CATEGORIES */}
       <div className="bg-white rounded-xl shadow-md p-6">
-        <h3 className="text-lg font-semibold mb-4 text-[#2C1810]" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h3 className="text-lg font-semibold mb-4 text-[#2C1810] font-display">
           Categories
         </h3>
         
@@ -209,7 +209,7 @@ export default function SidebarFilters({
 
       {/* PRICE FILTER */}
       <div className="bg-white rounded-xl shadow-md p-6">
-        <h3 className="text-lg font-semibold mb-4 text-[#2C1810]" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h3 className="text-lg font-semibold mb-4 text-[#2C1810] font-display">
           Price Range
         </h3>
         

@@ -267,7 +267,7 @@ export default function ProductCard({ product }) {
           SILK SAREES
         </p>
         
-        <h3 className="text-[15px] font-normal text-[#2C1810] mb-2 line-clamp-1">
+        <h3 className="text-[15px] font-normal text-[#2C1810] mb-2 line-clamp-1 font-display">
           {product.title}
         </h3>
 

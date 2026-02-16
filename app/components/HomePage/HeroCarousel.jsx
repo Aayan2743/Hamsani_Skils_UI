@@ -158,8 +158,7 @@ export default function HeroCarousel() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight font-display"
               >
                 {slide.title}
                 <br />

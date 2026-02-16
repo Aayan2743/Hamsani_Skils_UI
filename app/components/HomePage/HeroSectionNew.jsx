@@ -122,8 +122,7 @@ export default function HeroSectionNew() {
             {/* Small Heading */}
             <motion.h2
               variants={fadeInUp}
-              className="text-xl md:text-2xl font-normal mb-3 leading-snug"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-xl md:text-2xl font-normal mb-3 leading-snug font-display"
             >
               Timeless Elegance
             </motion.h2>
@@ -131,8 +130,7 @@ export default function HeroSectionNew() {
             {/* Main Heading */}
             <motion.h2
               variants={fadeInUp}
-              className="text-2xl md:text-3xl font-normal mb-4 leading-tight"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-2xl md:text-3xl font-normal mb-4 leading-tight font-display"
             >
               The Art of <br />
               Handwoven <br />

@@ -22,8 +22,7 @@ export default function PromoBanner() {
 
         <motion.h2
           variants={fadeInUp}
-          className="text-3xl md:text-5xl font-normal mb-6"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          className="text-3xl md:text-5xl font-normal mb-6 font-display"
         >
           Flat 30% Off on Bridal Collection
         </motion.h2>

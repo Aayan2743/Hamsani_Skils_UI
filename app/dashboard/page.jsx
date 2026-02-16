@@ -166,7 +166,7 @@ export default function DashboardHome() {
       >
         {/* Welcome Section */}
         <motion.div variants={itemVariants} className="bg-gradient-to-r from-[#8B4513] to-[#C4A962] rounded-2xl p-8 text-white shadow-lg">
-          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-3xl font-bold mb-2 font-display">
             Welcome Back!
           </h1>
           <p className="text-white/90">Manage your orders, wishlist, and profile from your dashboard</p>
@@ -199,7 +199,7 @@ export default function DashboardHome() {
         <motion.div variants={itemVariants} className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-[#2C1810]">Recent Orders</h2>
+              <h2 className="text-xl font-semibold text-[#2C1810] font-display">Recent Orders</h2>
               <Link href="/dashboard/purchase-history" className="text-sm text-[#8B4513] hover:text-[#C4A962] font-medium">
                 View All →
               </Link>
@@ -271,7 +271,7 @@ export default function DashboardHome() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-              <h3 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h3 className="text-3xl font-bold mb-2 font-display">
                 Exclusive Silk Collection
               </h3>
               <p className="text-white/90 mb-4">Discover our handpicked selection of premium silk sarees</p>

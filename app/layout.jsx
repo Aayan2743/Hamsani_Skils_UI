@@ -98,7 +98,7 @@ import "./globals.css";
 import "./globals-responsive.css";
 import HeaderNew from "./components/HeaderNew";
 import Footer from "./components/Footer";
-import { Source_Sans_3, Playfair_Display } from "next/font/google";
+import { Funnel_Display, Funnel_Sans } from "next/font/google";
 import { AuthProvider } from "./components/context/AuthProvider";
 import { CartProvider } from "./providers/CartProvider";
 import { Toaster } from "react-hot-toast";
@@ -111,24 +111,24 @@ export const metadata = {
   title: "Hamsini Silks",
 };
 
-const sourceSans = Source_Sans_3({
+const funnelDisplay = Funnel_Display({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-source-sans",
+  variable: "--font-funnel-display",
 });
 
-const playfair = Playfair_Display({
+const funnelSans = Funnel_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-playfair",
+  variable: "--font-funnel-sans",
 });
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${sourceSans.variable} ${playfair.variable}`} suppressHydrationWarning>
-      <body className="font-playfair" suppressHydrationWarning>{/* Apply Playfair Display globally */}
+    <html lang="en" className={`${funnelDisplay.variable} ${funnelSans.variable}`} suppressHydrationWarning>
+      <body className="font-sans" suppressHydrationWarning>{/* Apply Funnel Sans globally */}
         {/* ✅ Razorpay Script */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"

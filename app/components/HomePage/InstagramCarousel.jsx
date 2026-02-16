@@ -69,14 +69,12 @@ export default function InstagramCarousel() {
           className="text-center mb-12"
         >
           <h2 
-            className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-3"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-3 font-display"
           >
             Follow Us on Instagram
           </h2>
           <h2 
-            className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-3"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-3 font-display"
           >
               @hamsinisilks
           </h2>

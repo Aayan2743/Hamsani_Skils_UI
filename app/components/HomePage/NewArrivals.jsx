@@ -24,8 +24,7 @@ export default function NewArrivals() {
         <div className="flex items-end justify-between mb-8">
           <div>
             <h2 
-              className="text-2xl md:text-3xl font-normal text-[#2C1810] mb-1"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-2xl md:text-3xl font-normal text-[#2C1810] mb-1 font-display"
             >
               New Arrivals
             </h2>

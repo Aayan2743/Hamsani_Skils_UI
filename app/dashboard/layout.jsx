@@ -65,7 +65,7 @@ export default function DashboardLayout({ children }) {
               >
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-xl font-bold text-[#2C1810]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <h2 className="text-xl font-bold text-[#2C1810] font-display">
                       Dashboard
                     </h2>
                     <button onClick={() => setMobileMenuOpen(false)} className="text-gray-500 hover:text-gray-700">
@@ -117,7 +117,7 @@ export default function DashboardLayout({ children }) {
 
               {/* Sidebar Header */}
               <div className="bg-gradient-to-r from-[#8B4513] to-[#C4A962] px-6 py-8 text-white">
-                <h2 className="text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h2 className="text-2xl font-bold mb-1 font-display">
                   My Account
                 </h2>
                 <p className="text-white/80 text-sm">Manage your profile & orders</p>

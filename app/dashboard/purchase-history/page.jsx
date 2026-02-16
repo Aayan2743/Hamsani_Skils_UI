@@ -328,7 +328,7 @@ export default function OrderDetailsPage() {
         className="bg-white rounded-2xl p-12 shadow-md text-center"
       >
         <ShoppingBagIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">No Orders Yet</h3>
+        <h3 className="text-xl font-semibold text-gray-700 mb-2 font-display">No Orders Yet</h3>
         <p className="text-gray-500 mb-6">Start shopping to see your orders here</p>
         <button
           onClick={() => router.push("/collections")}
@@ -354,7 +354,7 @@ export default function OrderDetailsPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#2C1810]" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-2xl font-bold text-[#2C1810] font-display">
             Purchase History
           </h1>
           <p className="text-gray-600 text-sm mt-1">

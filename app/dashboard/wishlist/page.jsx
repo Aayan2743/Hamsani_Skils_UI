@@ -148,7 +148,7 @@ export default function WishlistPage() {
         >
           <HeartIcon className="w-20 h-20 text-rose-400" />
         </motion.div>
-        <h3 className="text-2xl font-bold text-[#2C1810] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h3 className="text-2xl font-bold text-[#2C1810] mb-2 font-display">
           Your Wishlist is Empty
         </h3>
         <p className="text-gray-600 mb-6">Save your favorite items here</p>
@@ -174,7 +174,7 @@ export default function WishlistPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#2C1810] flex items-center gap-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-2xl font-bold text-[#2C1810] flex items-center gap-3 font-display">
             <HeartSolidIcon className="w-8 h-8 text-rose-500" />
             My Wishlist
           </h1>

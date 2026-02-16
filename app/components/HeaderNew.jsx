@@ -312,7 +312,7 @@ export default function HeaderNew() {
                   onMouseEnter={() => setActiveDropdown(menu.key)}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  <button className="flex items-center gap-1 text-sm font-medium hover:text-[#8B4513] transition-colors py-2">
+                  <button className="flex items-center gap-1 text-sm font-medium hover:text-[#8B4513] transition-colors py-2 font-display">
                     {menu.label}
                     {menu.items?.length > 0 && (
                       <ChevronDownIcon className="w-4 h-4" />
@@ -351,13 +351,13 @@ export default function HeaderNew() {
             {/* NEW ARRIVALS & BESTSELLERS */}
             <Link
               href="/collections?filter=new"
-              className="text-sm font-medium text-[#C4A962] hover:text-[#B39952] transition-colors"
+              className="text-sm font-medium text-[#C4A962] hover:text-[#B39952] transition-colors font-display"
             >
               New Arrivals
             </Link>
             <Link
               href="/collections?filter=bestsellers"
-              className="text-sm font-medium hover:text-[#8B4513] transition-colors"
+              className="text-sm font-medium hover:text-[#8B4513] transition-colors font-display"
             >
               Bestsellers
             </Link>
@@ -386,7 +386,7 @@ export default function HeaderNew() {
             >
               <div className="p-5">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-bold">Menu</h2>
+                  <h2 className="text-lg font-bold font-display">Menu</h2>
                   <button onClick={() => setMenuOpen(false)} className="text-2xl">
                     ✕
                   </button>
@@ -395,7 +395,7 @@ export default function HeaderNew() {
                 <div className="space-y-4">
                   {menuData.map((menu) => (
                     <div key={menu.key}>
-                      <h4 className="font-semibold text-sm mb-2">{menu.label}</h4>
+                      <h4 className="font-semibold text-sm mb-2 font-display">{menu.label}</h4>
                       <ul className="space-y-2 ml-2">
                         {menu.items?.map((item) => (
                           <li key={item}>

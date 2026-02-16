@@ -47,8 +47,7 @@ export default function ShopByCategory() {
             Shop by Category
           </h2> */}
           <h2 
-              className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-2"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-2 font-display"
             >
               Shop by Category
             </h2>

@@ -105,7 +105,7 @@ function ProductDetailsContent() {
   if (error || !product || !selectedVariant) {
     return (
       <div className="max-w-[1400px] mx-auto px-6 py-20 text-center">
-        <h2 className="text-2xl font-bold mb-4 text-[#2C1810]">
+        <h2 className="text-2xl font-bold mb-4 text-[#2C1810] font-display">
           {error || "Product not found"}
         </h2>
         <button
@@ -248,7 +248,7 @@ function ProductDetailsContent() {
 
           <div className="space-y-5">
             
-            <h1 className="text-3xl md:text-4xl font-normal text-[#2C1810]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h1 className="text-3xl md:text-4xl font-normal text-[#2C1810] font-display">
               {product.name}
             </h1>
 
@@ -625,7 +625,7 @@ function SimilarProductsCarousel({ categorySlug, currentProductId }) {
   if (loading) {
     return (
       <div className="mt-16">
-        <h2 className="text-2xl font-bold text-[#2C1810] mb-6">Similar Products</h2>
+        <h2 className="text-2xl font-bold text-[#2C1810] mb-6 font-display">Similar Products</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="animate-pulse">
@@ -645,7 +645,7 @@ function SimilarProductsCarousel({ categorySlug, currentProductId }) {
 
   return (
     <div className="mt-16">
-      <h2 className="text-3xl font-normal text-[#2C1810] mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <h2 className="text-3xl font-normal text-[#2C1810] mb-8 font-display">
         You May Also Like
       </h2>
       

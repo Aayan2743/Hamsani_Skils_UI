@@ -4,15 +4,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-source-sans: "Source Sans 3", sans-serif;
-  --font-playfair: "Playfair Display", serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-source-sans);
-  --font-playfair: var(--font-playfair);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,10 +18,6 @@
   }
 }
 
-* {
-  font-family: var(--font-playfair);
-}
-
 body {
   width: 100%;
   min-height: 100%;
@@ -33,7 +25,15 @@ body {
   padding: 0;
   background-color: #ffffff; /* GLOBAL WHITE */
   color: #000000;
-  font-family: var(--font-playfair);
+  font-family: var(--font-funnel-sans);
+}
+
+.font-display {
+  font-family: var(--font-funnel-display);
+}
+
+.font-sans {
+  font-family: var(--font-funnel-sans);
 }
 
 

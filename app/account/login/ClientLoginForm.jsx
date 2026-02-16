@@ -70,7 +70,7 @@ export default function LoginPage() {
             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
           />
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-white p-8">
-            <h2 className="text-4xl font-bold mb-4 text-center drop-shadow-lg animate-fade-in">
+            <h2 className="text-4xl font-bold mb-4 text-center drop-shadow-lg animate-fade-in font-display">
               Welcome Back
             </h2>
             <p className="text-lg text-center drop-shadow-md animate-fade-in-delayed">
@@ -85,7 +85,7 @@ export default function LoginPage() {
             
             {/* Header */}
             <div className="text-center lg:text-left">
-              <h1 className="text-4xl font-bold text-[#2C1810] mb-2 animate-slide-down">
+              <h1 className="text-4xl font-bold text-[#2C1810] mb-2 animate-slide-down font-display">
                 Sign In
               </h1>
               <p className="text-gray-600 animate-slide-down-delayed">
