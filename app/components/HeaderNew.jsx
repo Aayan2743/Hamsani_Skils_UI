@@ -334,7 +334,9 @@ export default function HeaderNew() {
                           <li key={item}>
                             <Link
                               href={`/collections?category=${slugify(item)}`}
-                              className="block px-4 py-2.5 text-sm hover:bg-[#F5F5DC] hover:text-[#8B4513] transition-colors"
+                              // className="block px-4 py-2.5 text-sm hover:bg-[#F5F5DC] hover:text-[#8B4513] transition-colors"
+                              className="block px-4 py-2.5 text-lg font-medium hover:bg-[#F5F5DC] hover:text-[#8B4513] transition-colors"
+
                               onClick={() => setActiveDropdown(null)}
                             >
                               {item}
