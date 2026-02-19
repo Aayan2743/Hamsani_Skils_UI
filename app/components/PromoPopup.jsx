@@ -8,20 +8,13 @@ export default function PromoPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    // Check if user has seen the popup in this session
-    const hasSeenPopup = sessionStorage.getItem("hasSeenPromoPopup");
-    
-    if (!hasSeenPopup) {
-      // Show popup after 2.5 seconds
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-        sessionStorage.setItem("hasSeenPromoPopup", "true");
-      }, 2500);
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setIsOpen(true);
+  }, 2500);
 
-      return () => clearTimeout(timer);
-    }
-  }, []);
+  return () => clearTimeout(timer);
+}, []);
 
   const handleClose = () => {
     setIsOpen(false);
