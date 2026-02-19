@@ -98,6 +98,7 @@ import "./globals.css";
 import "./globals-responsive.css";
 import HeaderNew from "./components/HeaderNew";
 import Footer from "./components/Footer";
+import PromoPopup from "./components/PromoPopup";
 import { Funnel_Display, Funnel_Sans } from "next/font/google";
 import { AuthProvider } from "./components/context/AuthProvider";
 import { CartProvider } from "./providers/CartProvider";
@@ -143,6 +144,7 @@ export default function RootLayout({ children }) {
               <HeaderNew />
               <main className="min-h-[60vh]">{children}</main>
               <Footer className="bg-[#232323] text-[#f8f8f8]" />
+              <PromoPopup />
               </SocialMediaProvider>
             </WishlistProvider>
           </CartProvider>

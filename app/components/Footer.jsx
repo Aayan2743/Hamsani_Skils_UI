@@ -374,8 +374,9 @@ export default function Footer() {
             <input
               className="px-4 py-3 text-black w-[260px] bg-white"
               placeholder="Enter your Email address"
+              suppressHydrationWarning
             />
-            <button className="border border-white px-10 py-3 uppercase font-bold font-sans">
+            <button className="border border-white px-10 py-3 uppercase font-bold font-sans" suppressHydrationWarning>
               Submit
             </button>
           </div>

@@ -99,6 +99,7 @@ export default function InstagramCarousel() {
             }`}
             aria-label="Previous"
             disabled={!canScrollLeft}
+            suppressHydrationWarning
           >
             <ChevronLeftIcon className="w-6 h-6 text-gray-700" />
           </button>
@@ -111,6 +112,7 @@ export default function InstagramCarousel() {
             }`}
             aria-label="Next"
             disabled={!canScrollRight}
+            suppressHydrationWarning
           >
             <ChevronRightIcon className="w-6 h-6 text-gray-700" />
           </button>

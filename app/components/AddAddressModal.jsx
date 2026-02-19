@@ -170,8 +170,7 @@ export default function AddAddressModal({
       if (typeof apiData?.errors === "string") {
         toast.error(apiData.errors);
         return;
-      }
-
+      } 
       if (typeof apiData?.errors === "object") {
         const firstKey = Object.keys(apiData.errors)[0];
         toast.error(apiData.errors[firstKey]?.[0] || "Invalid input");

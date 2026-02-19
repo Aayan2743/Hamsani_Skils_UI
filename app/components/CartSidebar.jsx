@@ -738,7 +738,7 @@
 
 "use client";
 import React, { useEffect, useState } from "react";
-import { FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
+import { FiTrash2, FiEdit, FiPlus, FiShoppingBag } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useCart } from "../providers/CartProvider";
@@ -981,33 +981,65 @@ export default function CartSidebar({ open, onClose }) {
         <h2 className="text-xl font-semibold mb-3">
           Your Cart ({cartItems.length})
         </h2>
-        {/* CART ITEMS */}
-        {cartItems.map((item, i) => (
-          <div key={i} className="flex gap-3 border p-2 rounded mb-2">
-            <img
-              src={item.img || "/placeholder.png"}
-              className="w-16 h-16 object-cover"
-              alt=""
-            />
-            <div className="flex-1">
-              <p className="font-medium">{item.name}</p>
-              <p>₹{item.price} × {item.qty}</p>
 
-              <div className="flex gap-2 mt-1">
-                <button onClick={() => handleQtyChange(item.product_id, -1)}>-</button>
-                <span>{item.qty}</span>
-                <button onClick={() => handleQtyChange(item.product_id, 1)}>+</button>
+        {/* EMPTY CART MESSAGE */}
+        {cartItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="relative mb-6">
+              <FiShoppingBag className="w-24 h-24 text-gray-300" />
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                0
               </div>
             </div>
-
-            <button onClick={() => removeFromCart(item.product_id)}>
-              <FiTrash2 />
+            
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Your Cart is Empty
+            </h3>
+            
+            <p className="text-gray-500 text-center mb-6 max-w-xs">
+              Please add products to continue shopping
+            </p>
+            
+            <button
+              onClick={() => {
+                onClose();
+                router.push("/collections");
+              }}
+              className="bg-gradient-to-r from-[#8B4513] to-[#C4A962] text-white px-8 py-3 rounded-lg font-medium hover:shadow-lg transition-all flex items-center gap-2"
+            >
+              <FiShoppingBag className="w-5 h-5" />
+              Start Shopping
             </button>
           </div>
-        ))}
+        ) : (
+          <>
+            {/* CART ITEMS */}
+            {cartItems.map((item, i) => (
+              <div key={i} className="flex gap-3 border p-2 rounded mb-2">
+                <img
+                  src={item.img || "/placeholder.png"}
+                  className="w-16 h-16 object-cover"
+                  alt=""
+                />
+                <div className="flex-1">
+                  <p className="font-medium">{item.name}</p>
+                  <p>₹{item.price} × {item.qty}</p>
+
+                  <div className="flex gap-2 mt-1">
+                    <button onClick={() => handleQtyChange(item.product_id, -1)}>-</button>
+                    <span>{item.qty}</span>
+                    <button onClick={() => handleQtyChange(item.product_id, 1)}>+</button>
+                  </div>
+                </div>
+
+                <button onClick={() => removeFromCart(item.product_id)}>
+                  <FiTrash2 />
+                </button>
+              </div>
+            ))}
 
         {/* ADDRESS SECTION */}
-        {cartItems.length>0&&<div className="mt-5">
+        <div className="mt-5">
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-semibold text-gray-800">Delivery Address</h3>
 
@@ -1075,10 +1107,10 @@ export default function CartSidebar({ open, onClose }) {
               </div>
             </div>
           ))}
-        </div>}
+        </div>
 
         {/* COUPON */}
-        {cartItems.length>0&&<div className="mt-4">
+        <div className="mt-4">
           <h3 className="font-semibold mb-2">Apply Coupon</h3>
 
           <div className="flex gap-2">
@@ -1103,7 +1135,7 @@ export default function CartSidebar({ open, onClose }) {
               Discount Applied: ₹{discount}
             </p>
           )}
-        </div>}
+        </div>
 
         {/* TOTAL */}
         <div className="mt-5 border-t pt-3 text-sm space-y-1">
@@ -1123,12 +1155,26 @@ export default function CartSidebar({ open, onClose }) {
           </div>
         </div>
 
+        <div className="flex gap-3 mt-3">
+          <button
+            onClick={() => {
+              onClose();
+              router.push("/collections");
+            }}
+            className="flex-1 bg-white border-2 border-[#8B4513] text-[#8B4513] py-3 rounded hover:bg-[#F5F5DC] transition-colors font-medium"
+          >
+            Continue Shopping
+          </button>
+          
           <button
             onClick={handleRazorpayPayment}
-            className="w-full bg-red-800 text-white py-3 mt-3"
+            className="flex-1 bg-red-800 text-white py-3 rounded hover:bg-red-900 transition-colors font-medium"
           >
             Place My Order
           </button>
+        </div>
+          </>
+        )}
       </div>
       
       {/* ADD ADDRESS MODAL */}
