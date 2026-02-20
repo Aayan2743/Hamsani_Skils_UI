@@ -39,15 +39,31 @@ export default function HeaderNewClient({ initialMenuData = [] }) {
   const router = useRouter();
   const dropdownRef = useRef(null);
 
-  // Use the pre-fetched menu data passed as prop
-  const menuData = initialMenuData;
+  // Use the pre-fetched menu data passed as prop, or fetch on client
+  const [menuData, setMenuData] = useState(initialMenuData);
 
   useEffect(() => {
     setMounted(true);
     if (typeof window !== "undefined") {
       setToken(localStorage.getItem("token"));
+      
+      // Fetch fresh menu data from API on client side only
+      const fetchMenu = async () => {
+        try {
+          // Dynamically import api to avoid SSR issues
+          const { default: api } = await import("../utils/apiInstance");
+          const response = await api.get('/ecom/menu');
+          const data = response.data;
+          const menuItems = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : initialMenuData);
+          setMenuData(menuItems);
+        } catch (error) {
+          // Silently use fallback menu - expected if API is unavailable
+        }
+      };
+      
+      fetchMenu();
     }
-  }, []);
+  }, [initialMenuData]);
 
   useEffect(() => {
     const close = (e) => {

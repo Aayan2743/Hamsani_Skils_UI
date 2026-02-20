@@ -96,7 +96,7 @@
 
 import "./globals.css";
 import "./globals-responsive.css";
-import HeaderNewServer from "./components/HeaderNewServer";
+import HeaderNewClient from "./components/HeaderNewClient";
 import Footer from "./components/Footer";
 import PromoPopup from "./components/PromoPopup";
 import { Funnel_Display, Funnel_Sans } from "next/font/google";
@@ -126,6 +126,35 @@ const funnelSans = Funnel_Sans({
   variable: "--font-funnel-sans",
 });
 
+// Fallback menu for static export
+const FALLBACK_MENU = [
+  {
+    key: 'silk-sarees',
+    label: 'Silk Sarees',
+    items: ['Banarasi Silk', 'Kanchipuram Jacquard', 'Kanchipuram Traditional', 'Soft Silks']
+  },
+  {
+    key: 'silk-sarees-casual',
+    label: 'Silk Sarees Casual',
+    items: ['Chiniya Silk', 'Georgette Sarees', 'Kadhi Tussar Silk']
+  },
+  {
+    key: 'silk-cotton',
+    label: 'Silk Cotton',
+    items: ['Patola Silk Cotton', 'Soft Silk']
+  },
+  {
+    key: 'fancy-sarees',
+    label: 'Fancy Sarees',
+    items: ['Ikkat Sarees']
+  },
+  {
+    key: 'new-silk-saree',
+    label: 'New Silk saree',
+    items: ['Latest Sarees']
+  }
+];
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${funnelDisplay.variable} ${funnelSans.variable}`} suppressHydrationWarning>
@@ -141,7 +170,8 @@ export default function RootLayout({ children }) {
             <WishlistProvider>
               <SocialMediaProvider>
               <ClientPrefetch />
-              <HeaderNewServer />
+              {/* Use client component with fallback menu for static export */}
+              <HeaderNewClient initialMenuData={FALLBACK_MENU} />
               <main className="min-h-[60vh]">{children}</main>
               <Footer className="bg-[#232323] text-[#f8f8f8]" />
               <PromoPopup />

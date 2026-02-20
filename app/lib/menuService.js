@@ -34,6 +34,12 @@ const FALLBACK_MENU = [
 
 // Cache the menu fetch for the entire build/request
 export const getMenuData = cache(async () => {
+  // During build time, return fallback immediately
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_BASE_URL) {
+    console.log('Build time: Using fallback menu');
+    return FALLBACK_MENU;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/ecom/menu`, {
       // Cache for 1 hour in production, revalidate every hour
@@ -44,6 +50,8 @@ export const getMenuData = cache(async () => {
       headers: {
         'Content-Type': 'application/json',
       },
+      // Add timeout to prevent hanging during build
+      signal: AbortSignal.timeout(5000), // 5 second timeout
     });
 
     if (!response.ok) {
@@ -59,7 +67,7 @@ export const getMenuData = cache(async () => {
     
     return menuData;
   } catch (error) {
-    console.error('Failed to fetch menu:', error);
+    // console.error('Failed to fetch menu:', error.message);
     // Return fallback menu if API fails
     return FALLBACK_MENU;
   }
