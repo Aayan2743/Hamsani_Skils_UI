@@ -3,7 +3,7 @@ import axios from "axios";
 import { clearToken, getToken } from "../utils/auth";
 
 const apiAuthClient = axios.create({
-     baseURL: "https://api.9nutz.com/api/web",
+    //  baseURL: "https://api.9nutz.com/api/web",
   //baseURL: "http://192.168.29.46:8083/api/web",
   headers: {
     "Content-Type": "application/json",

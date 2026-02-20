@@ -790,6 +790,7 @@ import Link from "next/link";
 
 import CartSidebar from "../components/CartSidebar";
 import { useCart } from "../providers/CartProvider";
+import TestComponent from "./TestComponent";
 import api from "../utils/apiInstance";
 
 import { UserCircleIcon } from "@heroicons/react/24/outline";

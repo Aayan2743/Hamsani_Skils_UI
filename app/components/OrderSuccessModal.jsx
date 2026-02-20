@@ -144,12 +144,12 @@ export default function OrderSuccessModal({ open, onClose }) {
                 transition={{ delay: 1 }}
                 className="space-y-3"
               >
-                <button
+                {/* <button
                   onClick={handleViewOrders}
                   className="w-full bg-[#8B4513] hover:bg-[#6B3410] text-white py-3 rounded-lg font-semibold transition-colors"
                 >
                   View My Orders
-                </button>
+                </button> */}
                 <button
                   onClick={handleContinueShopping}
                   className="w-full border-2 border-[#8B4513] text-[#8B4513] hover:bg-[#8B4513] hover:text-white py-3 rounded-lg font-semibold transition-colors"

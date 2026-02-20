@@ -367,7 +367,7 @@ export default function Footer() {
 
         {/* NEWSLETTER + SOCIAL */}
         <div className="hidden md:flex justify-between items-center mt-16">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 visibility-hidden">
             <h3 className="text-[20px] font-bold font-sans">
               Newsletter Sign Up
             </h3>

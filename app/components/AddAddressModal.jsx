@@ -150,14 +150,21 @@ export default function AddAddressModal({
         },
       });
 
-      toast.success(
-        editData
-          ? "Address updated successfully 🎉"
-          : "Address added successfully 🎉"
-      );
+      const successMessage = editData
+        ? "Address updated successfully 🎉"
+        : "Address added successfully 🎉";
+      
+      toast.success(successMessage);
 
-      onSuccess(res.data?.data || form);
+      // Pass the updated/new address data to parent
+      const addressData = res.data?.data || { ...form, id: res.data?.id || Date.now() };
+      
+      // Close modal first for better UX
       onClose();
+      
+      // Then trigger success callback with data
+      onSuccess(addressData);
+      
     } catch (err) {
       const apiData = err.response?.data;
 

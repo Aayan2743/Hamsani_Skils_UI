@@ -240,9 +240,9 @@ function ProductDetailsContent() {
             </div>
 
             <div className="text-center">
-              <button className="text-sm text-[#8B4513] hover:underline font-medium">
+              {/* <button className="text-sm text-[#8B4513] hover:underline font-medium">
                 VIEW FULL SIZE
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -274,15 +274,15 @@ function ProductDetailsContent() {
 
             {product.variant_combinations.length > 0 && (
               <div>
-                <div className="flex items-center justify-between mb-3">
+                {/* <div className="flex items-center justify-between mb-3">
                   <p className="font-semibold text-[#2C1810] uppercase text-sm">Select Color</p>
                   {selectedVariant.values?.[0] && (
                     <span className="text-sm text-gray-600">
                       {selectedVariant.values[0].value}
                     </span>
                   )}
-                </div>
-                <div className="flex gap-3 flex-wrap">
+                </div> */}
+                {/* <div className="flex gap-3 flex-wrap">
                   {product.variant_combinations.map((variant) => {
                     const color = variant.values?.[0];
                     return (
@@ -299,20 +299,9 @@ function ProductDetailsContent() {
                       />
                     );
                   })}
-                </div>
+                </div> */}
               </div>
             )}
-
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <p className="font-semibold text-[#2C1810] uppercase text-sm">Select Size</p>
-              </div>
-              <div className="flex gap-3 flex-wrap">
-                <button className="border-2 border-[#8B4513] bg-[#8B4513]/5 px-6 py-2 rounded-lg font-medium text-sm">
-                  Standard
-                </button>
-              </div>
-            </div>
 
             <div className="bg-green-50 border border-green-200 rounded-lg p-3">
               {selectedVariant.quantity > 0 ? (
@@ -520,69 +509,63 @@ function ProductDetailsContent() {
                 )}
               </div>
 
-              <div className="border-b border-gray-200">
-                <button
-                  onClick={() => toggleSection("declaration")}
-                  className="w-full flex items-center justify-between py-3 text-left"
-                >
-                  <span className="font-semibold text-[#2C1810] uppercase text-sm">Product Declaration</span>
-                  {expandedSection === "declaration" ? (
-                    <ChevronUp size={20} className="text-gray-600" />
-                  ) : (
-                    <ChevronDown size={20} className="text-gray-600" />
-                  )}
-                </button>
-                {expandedSection === "declaration" && (
-                  <div className="pb-4 text-sm text-gray-700">
-                    {product.extra_details?.['Product Declaration'] ? (
-                      typeof product.extra_details['Product Declaration'] === 'string' && product.extra_details['Product Declaration'].includes('<') ? (
+              {/* Product Declaration - Only show if API has content */}
+              {product.extra_details?.['Product Declaration'] && (
+                <div className="border-b border-gray-200">
+                  <button
+                    onClick={() => toggleSection("declaration")}
+                    className="w-full flex items-center justify-between py-3 text-left"
+                  >
+                    <span className="font-semibold text-[#2C1810] uppercase text-sm">Product Declaration</span>
+                    {expandedSection === "declaration" ? (
+                      <ChevronUp size={20} className="text-gray-600" />
+                    ) : (
+                      <ChevronDown size={20} className="text-gray-600" />
+                    )}
+                  </button>
+                  {expandedSection === "declaration" && (
+                    <div className="pb-4 text-sm text-gray-700">
+                      {typeof product.extra_details['Product Declaration'] === 'string' && product.extra_details['Product Declaration'].includes('<') ? (
                         <div 
                           className="leading-relaxed prose prose-sm max-w-none"
                           dangerouslySetInnerHTML={{ __html: product.extra_details['Product Declaration'] }}
                         />
                       ) : (
                         <p className="leading-relaxed">{String(product.extra_details['Product Declaration'])}</p>
-                      )
-                    ) : (
-                      <p className="leading-relaxed text-gray-500">
-                        Product declaration information not available.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="border-b border-gray-200">
-                <button
-                  onClick={() => toggleSection("shipping")}
-                  className="w-full flex items-center justify-between py-3 text-left"
-                >
-                  <span className="font-semibold text-[#2C1810] uppercase text-sm">Shipping & Returns</span>
-                  {expandedSection === "shipping" ? (
-                    <ChevronUp size={20} className="text-gray-600" />
-                  ) : (
-                    <ChevronDown size={20} className="text-gray-600" />
+                      )}
+                    </div>
                   )}
-                </button>
-                {expandedSection === "shipping" && (
-                  <div className="pb-4 text-sm text-gray-700 space-y-3">
-                    {product.extra_details?.['Return & Exchange'] ? (
-                      typeof product.extra_details['Return & Exchange'] === 'string' && product.extra_details['Return & Exchange'].includes('<') ? (
+                </div>
+              )}
+
+              {/* Shipping & Returns - Only show if API has content */}
+              {product.extra_details?.['Return & Exchange'] && (
+                <div className="border-b border-gray-200">
+                  <button
+                    onClick={() => toggleSection("shipping")}
+                    className="w-full flex items-center justify-between py-3 text-left"
+                  >
+                    <span className="font-semibold text-[#2C1810] uppercase text-sm">Shipping & Returns</span>
+                    {expandedSection === "shipping" ? (
+                      <ChevronUp size={20} className="text-gray-600" />
+                    ) : (
+                      <ChevronDown size={20} className="text-gray-600" />
+                    )}
+                  </button>
+                  {expandedSection === "shipping" && (
+                    <div className="pb-4 text-sm text-gray-700 space-y-3">
+                      {typeof product.extra_details['Return & Exchange'] === 'string' && product.extra_details['Return & Exchange'].includes('<') ? (
                         <div 
                           className="leading-relaxed prose prose-sm max-w-none"
                           dangerouslySetInnerHTML={{ __html: product.extra_details['Return & Exchange'] }}
                         />
                       ) : (
                         <p className="leading-relaxed">{String(product.extra_details['Return & Exchange'])}</p>
-                      )
-                    ) : (
-                      <p className="leading-relaxed text-gray-500">
-                        Shipping and returns information not available.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
           </div>

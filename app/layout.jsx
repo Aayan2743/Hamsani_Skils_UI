@@ -96,7 +96,7 @@
 
 import "./globals.css";
 import "./globals-responsive.css";
-import HeaderNew from "./components/HeaderNew";
+import HeaderNewServer from "./components/HeaderNewServer";
 import Footer from "./components/Footer";
 import PromoPopup from "./components/PromoPopup";
 import { Funnel_Display, Funnel_Sans } from "next/font/google";
@@ -129,7 +129,7 @@ const funnelSans = Funnel_Sans({
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${funnelDisplay.variable} ${funnelSans.variable}`} suppressHydrationWarning>
-      <body className="font-sans" suppressHydrationWarning>{/* Apply Funnel Sans globally */}
+      <body className="font-sans" suppressHydrationWarning>
         {/* ✅ Razorpay Script */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
@@ -141,7 +141,7 @@ export default function RootLayout({ children }) {
             <WishlistProvider>
               <SocialMediaProvider>
               <ClientPrefetch />
-              <HeaderNew />
+              <HeaderNewServer />
               <main className="min-h-[60vh]">{children}</main>
               <Footer className="bg-[#232323] text-[#f8f8f8]" />
               <PromoPopup />

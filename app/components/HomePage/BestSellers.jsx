@@ -1,14 +1,33 @@
 "use client";
 import { motion } from "framer-motion";
 import { staggerContainer, productCard } from "../../utils/animations.js";
-import { useProducts } from "../../hooks/useProducts";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import api from "../../utils/apiInstance";
 
 export default function BestSellers() {
-  const { products, loading } = useProducts();
-  
-  // Take first 4 products as bestsellers
-  const bestsellers = products.slice(0, 4);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBestsellers = async () => {
+      try {
+        setLoading(true);
+        // Fetch products with filter for bestsellers
+        const res = await api.get("ecom/products?filter=bestsellers&per_page=4");
+        const data = res.data?.data;
+        const productsData = data?.data || [];
+        setProducts(Array.isArray(productsData) ? productsData : []);
+      } catch (error) {
+        console.error("Failed to fetch bestsellers:", error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBestsellers();
+  }, []);
 
   if (loading) {
     return <BestSellersLoading />;
@@ -25,10 +44,9 @@ export default function BestSellers() {
             >
               Bestsellers
             </h2>
-            {/* <p className="text-gray-600">Handpicked favorites loved by our customers</p> */}
           </div>
           <Link
-            href="/collections"
+            href="/collections?filter=bestsellers"
             className="hidden md:block text-[#8B4513] font-semibold hover:underline"
           >
             View All →
@@ -43,7 +61,7 @@ export default function BestSellers() {
           variants={staggerContainer}
           className="grid grid-cols-2 md:grid-cols-4 gap-6"
         >
-          {bestsellers.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </motion.div>
@@ -51,7 +69,7 @@ export default function BestSellers() {
         {/* Mobile View All */}
         <div className="mt-8 text-center md:hidden">
           <Link
-            href="/collections"
+            href="/collections?filter=bestsellers"
             className="text-[#8B4513] font-semibold hover:underline"
           >
             View All →

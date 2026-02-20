@@ -35,14 +35,14 @@ export default function PromoBanner() {
           <span className="font-semibold">BRIDE30</span> at checkout.
         </motion.p>
 
-        <motion.div variants={fadeInUp}>
+        {/* <motion.div variants={fadeInUp}>
           <Link
             href="/collections?category=bridal"
             className="inline-block bg-[#C4A962] hover:bg-[#B39952] text-[#2C1810] px-10 py-3.5 rounded-sm font-semibold text-sm md:text-base transition-all duration-300 uppercase tracking-wider"
           >
             Shop Bridal Collection
           </Link>
-        </motion.div>
+        </motion.div> */}
       </div>
     </motion.section>
   );

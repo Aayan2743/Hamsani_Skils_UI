@@ -7,9 +7,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { dropdownMenu } from "../utils/animations.js";
 
-import CartSidebar from "./CartSidebar";
 import { useCart } from "../providers/CartProvider";
-import api from "../utils/apiInstance";
 import TestComponent from "./TestComponent";
 
 import { 
@@ -28,12 +26,10 @@ const slugify = (text = "") =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 
-export default function HeaderNew() {
+export default function HeaderNewClient({ initialMenuData = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [menuData, setMenuData] = useState([]);
-  const [menuLoading, setMenuLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mounted, setMounted] = useState(false);
@@ -43,34 +39,14 @@ export default function HeaderNew() {
   const router = useRouter();
   const dropdownRef = useRef(null);
 
+  // Use the pre-fetched menu data passed as prop
+  const menuData = initialMenuData;
+
   useEffect(() => {
     setMounted(true);
     if (typeof window !== "undefined") {
       setToken(localStorage.getItem("token"));
     }
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchMenu() {
-      try {
-        setMenuLoading(true);
-        const res = await api.get("ecom/menu");
-        if (!isMounted) return;
-        setMenuData(Array.isArray(res?.data) ? res.data : []);
-      } catch {
-        if (!isMounted) return;
-        setMenuData([]);
-      } finally {
-        if (isMounted) setMenuLoading(false);
-      }
-    }
-
-    fetchMenu();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   useEffect(() => {
@@ -117,8 +93,7 @@ export default function HeaderNew() {
     }, 200);
   };
 
-
-  const visibleMenus = menuData.slice(0, 6);
+  const visibleMenus = menuData; // Show all menu items from API
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
@@ -298,58 +273,48 @@ export default function HeaderNew() {
         <div className="max-w-[1400px] mx-auto px-4">
           <div className="flex items-center gap-8 py-3">
             
-            {/* CATEGORY DROPDOWNS */}
-            {menuLoading ? (
-              <div className="flex gap-6">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-                ))}
-              </div>
-            ) : (
-              visibleMenus.map((menu) => (
-                <div
-                  key={menu.key}
-                  className="relative group"
-                  onMouseEnter={() => setActiveDropdown(menu.key)}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                >
-                  <button className="flex items-center gap-1 text-sm font-medium hover:text-[#8B4513] transition-colors py-2 font-display">
-                    {menu.label}
-                    {menu.items?.length > 0 && (
-                      <ChevronDownIcon className="w-4 h-4" />
-                    )}
-                  </button>
-
-                  {menu.items?.length > 0 && activeDropdown === menu.key && (
-                    <motion.div
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      variants={dropdownMenu}
-                      onMouseEnter={() => setActiveDropdown(menu.key)}
-                      onMouseLeave={() => setActiveDropdown(null)}
-                      className="absolute top-full left-0 mt-0 w-56 bg-white shadow-xl rounded-lg overflow-hidden z-50"
-                    >
-                      <ul className="py-2">
-                        {menu.items.map((item) => (
-                          <li key={item}>
-                            <Link
-                              href={`/collections?category=${slugify(item)}`}
-                              // className="block px-4 py-2.5 text-sm hover:bg-[#F5F5DC] hover:text-[#8B4513] transition-colors"
-                              className="block px-4 py-2.5 text-lg font-medium hover:bg-[#F5F5DC] hover:text-[#8B4513] transition-colors"
-
-                              onClick={() => setActiveDropdown(null)}
-                            >
-                              {item}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </motion.div>
+            {/* CATEGORY DROPDOWNS - No loading state needed, data is pre-fetched */}
+            {visibleMenus.map((menu) => (
+              <div
+                key={menu.key}
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown(menu.key)}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className="flex items-center gap-1 text-sm font-medium hover:text-[#8B4513] transition-colors py-2 font-display">
+                  {menu.label}
+                  {menu.items?.length > 0 && (
+                    <ChevronDownIcon className="w-4 h-4" />
                   )}
-                </div>
-              ))
-            )}
+                </button>
+
+                {menu.items?.length > 0 && activeDropdown === menu.key && (
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={dropdownMenu}
+                    onMouseEnter={() => setActiveDropdown(menu.key)}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                    className="absolute top-full left-0 mt-0 w-56 bg-white shadow-xl rounded-lg overflow-hidden z-50"
+                  >
+                    <ul className="py-2">
+                      {menu.items.map((item) => (
+                        <li key={item}>
+                          <Link
+                            href={`/collections?category=${slugify(item)}`}
+                            className="block px-4 py-2.5 text-lg font-medium hover:bg-[#F5F5DC] hover:text-[#8B4513] transition-colors"
+                            onClick={() => setActiveDropdown(null)}
+                          >
+                            {item}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+              </div>
+            ))}
 
             {/* NEW ARRIVALS & BESTSELLERS */}
             <Link
@@ -358,12 +323,12 @@ export default function HeaderNew() {
             >
               New Arrivals
             </Link>
-            <Link
+            {/* <Link
               href="/collections?filter=bestsellers"
               className="text-sm font-medium hover:text-[#8B4513] transition-colors font-display"
             >
               Bestsellers
-            </Link>
+            </Link> */}
           </div>
         </div>
       </nav>
@@ -420,8 +385,8 @@ export default function HeaderNew() {
           </div>
         )}
       </AnimatePresence>
-      {/* <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} /> */}
-        <TestComponent open={cartOpen} onClose={() => setCartOpen(false)} />
+
+      <TestComponent open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 }

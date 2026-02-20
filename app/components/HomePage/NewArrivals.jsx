@@ -1,17 +1,35 @@
 "use client";
 import { motion } from "framer-motion";
 import { staggerContainer, productCard } from "../../utils/animations.js";
-import { useProducts } from "../../hooks/useProducts";
 import Link from "next/link";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../../utils/apiInstance";
 
 export default function NewArrivals() {
-  const { products, loading } = useProducts();
-  
-  // Take first 4 products as new arrivals
-  const newArrivals = products.slice(0, 4);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      try {
+        setLoading(true);
+        // Fetch products with filter for new arrivals
+        const res = await api.get("ecom/products?filter=new&per_page=4");
+        const data = res.data?.data;
+        const productsData = data?.data || [];
+        setProducts(Array.isArray(productsData) ? productsData : []);
+      } catch (error) {
+        console.error("Failed to fetch new arrivals:", error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNewArrivals();
+  }, []);
 
   if (loading) {
     return <NewArrivalsLoading />;
@@ -28,9 +46,6 @@ export default function NewArrivals() {
             >
               New Arrivals
             </h2>
-            {/* <p className="text-xs md:text-sm text-gray-600 font-light">
-              Fresh additions to our collection
-            </p> */}
           </div>
           <Link
             href="/collections?filter=new"
@@ -49,7 +64,7 @@ export default function NewArrivals() {
           variants={staggerContainer}
           className="grid grid-cols-2 md:grid-cols-4 gap-6"
         >
-          {newArrivals.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </motion.div>
