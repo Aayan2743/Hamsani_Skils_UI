@@ -32,7 +32,6 @@ export default function BestSellers() {
   if (loading) {
     return <BestSellersLoading />;
   }
-
   return (
     <section className="bg-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,7 +41,7 @@ export default function BestSellers() {
             <h2 
               className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-2 font-display"
             >
-              Trending
+              Trendings
             </h2>
           </div>
           <Link
@@ -79,14 +78,12 @@ export default function BestSellers() {
     </section>
   );
 }
-
 function ProductCard({ product }) {
   const variant = product.variant_combinations?.[0];
   const imageUrl = product.images?.find((img) => img.is_primary)?.image_url || 
                    product.images?.[0]?.image_url || 
                    "/placeholder.svg";
   const price = Number(variant?.extra_price || 0);
-
   return (
     <motion.div variants={productCard}>
       <Link
@@ -114,14 +111,12 @@ function ProductCard({ product }) {
           <h3 className="font-semibold text-[#2C1810] mb-2 line-clamp-2 text-sm md:text-base">
             {product.name}
           </h3>
-          
           {/* Price */}
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-[#8B4513]">
               ₹{price.toLocaleString()}
             </span>
           </div>
-
           {/* Stock Status */}
           {variant?.quantity > 0 ? (
             <p className="text-xs text-green-600 mt-1">In Stock</p>

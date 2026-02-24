@@ -1,8 +1,9 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import { useCart } from "../../providers/CartProvider";
+import { useWishlist } from "../../components/WishlistContext";
 import toast from "react-hot-toast";
 import api from "../../utils/apiInstance";
 import { 
@@ -41,6 +42,8 @@ function ProductLoader() {
 
 function ProductDetailsContent() {
   const { addToCart, setCartOpen } = useCart();
+  const { wishlist, setWishlist } = useWishlist();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const productSlug = searchParams.get("id");
 
@@ -51,6 +54,7 @@ function ProductDetailsContent() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [expandedSection, setExpandedSection] = useState("details");
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     if (!productSlug) {
@@ -99,6 +103,13 @@ function ProductDetailsContent() {
     };
   }, [productSlug]);
 
+  // Check if product is in wishlist
+  useEffect(() => {
+    if (product?.id) {
+      setIsLiked(wishlist.includes(product.id));
+    }
+  }, [wishlist, product?.id]);
+
   if (loading) {
     return <ProductLoader />;
   }
@@ -135,6 +146,83 @@ function ProductDetailsContent() {
       qty: quantity,
     });
     toast.success("Added to cart successfully");
+  }
+
+  async function handleWishlist() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Please login to manage wishlist");
+      router.push("/account/login");
+      return;
+    }
+
+    // Optimistically update UI
+    const wasLiked = isLiked;
+    setIsLiked(!isLiked);
+
+    try {
+      const res = await api.post(
+        "user-dashboard/wishlist-toggle",
+        { product_id: product.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("Wishlist API Response:", res);
+
+      if (res?.success) {
+        if (res.action === "added") {
+          setWishlist([...wishlist, product.id]);
+          toast.success("Item added to favourites", {
+            icon: "❤️",
+            style: {
+              borderRadius: "10px",
+              background: "#fff",
+              color: "#333",
+              padding: "16px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            },
+          });
+        } else {
+          setWishlist(wishlist.filter((id) => id !== product.id));
+          toast.success("Item removed from wishlist", {
+            icon: "🗑️",
+            style: {
+              borderRadius: "10px",
+              background: "#fff",
+              color: "#333",
+              padding: "16px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            },
+          });
+        }
+      } else {
+        // Revert on failure
+        setIsLiked(wasLiked);
+        // toast.error("Failed to update wishlist", {
+        //   style: {
+        //     borderRadius: "10px",
+        //     background: "#fff",
+        //     color: "#333",
+        //     padding: "16px",
+        //     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+        //   },
+        // });
+      }
+    } catch (error) {
+      console.error("Wishlist error:", error);
+      // Revert on error
+      setIsLiked(wasLiked);
+      // toast.error("Failed to update wishlist", {
+      //   style: {
+      //     borderRadius: "10px",
+      //     background: "#fff",
+      //     color: "#333",
+      //     padding: "16px",
+      //     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+      //   },
+      // });
+    }
   }
 
   function handleBuyNow() {
@@ -215,8 +303,14 @@ function ProductDetailsContent() {
                 />
                 
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <button className="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition">
-                    <Heart size={20} className="text-gray-700" />
+                  <button 
+                    onClick={handleWishlist}
+                    className="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition hover:scale-110"
+                  >
+                    <Heart 
+                      size={20} 
+                      className={isLiked ? "fill-rose-600 text-rose-600" : "text-gray-700"}
+                    />
                   </button>
                   <button className="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition">
                     <Share2 size={20} className="text-gray-700" />
@@ -333,8 +427,8 @@ function ProductDetailsContent() {
               </button>
             </div>
 
-            <div className="border border-gray-300 rounded-lg p-4">
-              {/* <div className="flex gap-2">
+            {/* <div className="border border-gray-300 rounded-lg p-4">
+              <div className="flex gap-2">
                 <input
                   type="text"
                   placeholder="Enter pincode"
@@ -343,10 +437,9 @@ function ProductDetailsContent() {
                 <button className="bg-[#8B4513] text-white px-6 py-2 rounded font-medium text-sm hover:bg-[#6D3410] transition">
                   CHECK
                 </button>
-              </div> */}
-            </div>
-
-            <div className="space-y-3 pt-2">
+              </div>
+            </div> */}
+            {/* <div className="space-y-3 pt-2">
               <div className="flex items-start gap-3 text-sm">
                 <Package size={20} className="text-[#8B4513] mt-0.5 flex-shrink-0" />
                 <div>
@@ -361,7 +454,7 @@ function ProductDetailsContent() {
                   <p className="text-gray-600">In 10 Days</p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="border-t border-gray-300 pt-6 space-y-3">
               

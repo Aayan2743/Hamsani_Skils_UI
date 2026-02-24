@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import api from "../../utils/apiInstance";
 
-const slides = [
+// Fallback slides when API data is not available
+const FALLBACK_SLIDES = [
   {
     id: 1,
     image: "https://www.psrsilks.com/cdn/shop/files/shrestha_kanjivaram.webp?v=1741094440",
@@ -62,16 +64,58 @@ const slides = [
 export default function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [slides, setSlides] = useState(FALLBACK_SLIDES);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch banners from API
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const response = await api.get('/ecom/landing-banners');
+        const bannersData = response.data?.data || [];
+        
+        // If API returns data, use it; otherwise keep fallback
+        if (bannersData.length > 0) {
+          // Transform API data to slides format
+          const transformedSlides = bannersData.map((banner) => ({
+            id: banner.id,
+            image: banner.image_url,
+            tag: banner.small_text || "",
+            title: banner.title || "",
+            titleHighlight: banner.subtitle || "",
+            titleEnd: "",
+            description: "",
+            primaryBtn: banner.button_text || "",
+            secondaryBtn: "",
+            primaryLink: banner.button_link || "/collections",
+            secondaryLink: "",
+          }));
+          
+          setSlides(transformedSlides);
+        }
+        // If no data from API, slides will remain as FALLBACK_SLIDES
+      } catch (error) {
+        console.error('Failed to fetch banners, using fallback data');
+        // Keep fallback slides on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBanners();
+  }, []);
 
   // Auto-play carousel
   useEffect(() => {
+    if (slides.length === 0) return;
+    
     const timer = setInterval(() => {
       setDirection(1);
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const goToSlide = (index) => {
     setDirection(index > currentSlide ? 1 : -1);
@@ -102,6 +146,15 @@ export default function HeroCarousel() {
       opacity: 0,
     }),
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section className="relative w-full h-[500px] md:h-[600px] bg-[#2C1810] animate-pulse">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+      </section>
+    );
+  }
 
   const slide = slides[currentSlide];
 
@@ -144,14 +197,16 @@ export default function HeroCarousel() {
               className="max-w-2xl text-white"
             >
               {/* Tag */}
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-xs md:text-sm uppercase tracking-[0.3em] mb-4 text-[#C4A962] font-medium"
-              >
-                {slide.tag}
-              </motion.p>
+              {slide.tag && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-xs md:text-sm uppercase tracking-[0.3em] mb-4 text-[#C4A962] font-medium"
+                >
+                  {slide.tag}
+                </motion.p>
+              )}
 
               {/* Title */}
               <motion.h1
@@ -161,44 +216,58 @@ export default function HeroCarousel() {
                 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight font-display"
               >
                 {slide.title}
-                <br />
-                <span className="text-[#C4A962]">{slide.titleHighlight}</span>
-                <br />
-                {slide.titleEnd}
+                {slide.titleHighlight && (
+                  <>
+                    <br />
+                    <span className="text-[#C4A962]">{slide.titleHighlight}</span>
+                  </>
+                )}
+                {slide.titleEnd && (
+                  <>
+                    <br />
+                    {slide.titleEnd}
+                  </>
+                )}
               </motion.h1>
 
               {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-sm md:text-base mb-8 text-gray-200 max-w-xl leading-relaxed"
-              >
-                {slide.description}
-              </motion.p>
-
-              {/* Buttons */}
-              {/* <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="flex flex-wrap gap-4"
-              >
-                <Link
-                  href={slide.primaryLink}
-                  className="bg-[#C4A962] hover:bg-[#B39952] text-white px-8 py-3 rounded-sm font-semibold text-sm md:text-base transition-all duration-300 flex items-center gap-2"
+              {slide.description && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-sm md:text-base mb-8 text-gray-200 max-w-xl leading-relaxed"
                 >
-                  {slide.primaryBtn}
-                  <span>→</span>
-                </Link>
+                  {slide.description}
+                </motion.p>
+              )}
 
-                <Link
-                  href={slide.secondaryLink}
-                  className="border-2 border-white text-white hover:bg-white hover:text-[#2C1810] px-8 py-3 rounded-sm font-semibold text-sm md:text-base transition-all duration-300"
+              {/* Buttons - Commented out as per previous request */}
+              {/* {slide.primaryBtn && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="flex flex-wrap gap-4"
                 >
-                  {slide.secondaryBtn}
-                </Link>
-              </motion.div> */}
+                  <Link
+                    href={slide.primaryLink}
+                    className="bg-[#C4A962] hover:bg-[#B39952] text-white px-8 py-3 rounded-sm font-semibold text-sm md:text-base transition-all duration-300 flex items-center gap-2"
+                  >
+                    {slide.primaryBtn}
+                    <span>→</span>
+                  </Link>
+
+                  {slide.secondaryBtn && (
+                    <Link
+                      href={slide.secondaryLink}
+                      className="border-2 border-white text-white hover:bg-white hover:text-[#2C1810] px-8 py-3 rounded-sm font-semibold text-sm md:text-base transition-all duration-300"
+                    >
+                      {slide.secondaryBtn}
+                    </Link>
+                  )}
+                </motion.div>
+              )} */}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -212,8 +281,8 @@ export default function HeroCarousel() {
         suppressHydrationWarning
       >
         <ChevronLeftIcon className="w-6 h-6 text-white" />
-      </button> */}
-{/* 
+      </button>
+
       <button
         onClick={nextSlide}
         className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 rounded-full transition-all duration-300"
@@ -224,21 +293,23 @@ export default function HeroCarousel() {
       </button> */}
 
       {/* Dots Indicator */}
-      {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentSlide
-                ? "bg-[#C4A962] w-8"
-                : "bg-white/50 hover:bg-white/70"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-            suppressHydrationWarning
-          />
-        ))}
-      </div> */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentSlide
+                  ? "bg-[#C4A962] w-8"
+                  : "bg-white/50 hover:bg-white/70"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+              suppressHydrationWarning
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -257,6 +257,7 @@ function Pagination({ currentPage, lastPage, onPageChange }) {
 export default function CollectionsPage() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
+  const sectionParam = searchParams.get("section");
   const searchQuery = searchParams.get("search");
   
   /* ---------------- PAGINATION STATE ---------------- */
@@ -301,17 +302,25 @@ export default function CollectionsPage() {
 
   /* ---------------- FILTER LOGIC (Category filtering now handled by API) ---------------- */
   const filteredProducts = useMemo(() => {
-    return normalizedProducts.filter((p) => {
-      // Category filtering is now done by the API, so we don't need to filter here
-      // Just apply stock and price filters
+    let filtered = normalizedProducts;
+    
+    // If section parameter exists, filter by section
+    if (sectionParam) {
+      filtered = filtered.filter((p) => {
+        const productSections = p.raw?.sections || [];
+        return productSections.some(s => s.slug === sectionParam);
+      });
+    }
+    
+    // Apply stock and price filters
+    filtered = filtered.filter((p) => {
       const matchesStock = inStock === null || p.inStock === inStock;
-
-      const matchesPrice =
-        p.price >= appliedPrice.min && p.price <= appliedPrice.max;
-
+      const matchesPrice = p.price >= appliedPrice.min && p.price <= appliedPrice.max;
       return matchesStock && matchesPrice;
     });
-  }, [normalizedProducts, inStock, appliedPrice]);
+    
+    return filtered;
+  }, [normalizedProducts, sectionParam, inStock, appliedPrice]);
 
   /* ---------------- HANDLE PAGE CHANGE ---------------- */
   const handlePageChange = (page) => {
@@ -322,7 +331,7 @@ export default function CollectionsPage() {
   /* ---------------- RESET PAGE WHEN SEARCH OR CATEGORY CHANGES ---------------- */
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, categoryParam]);
+  }, [searchQuery, categoryParam, sectionParam]);
   /* ---------------- RENDER ---------------- */
   return (
     <WishlistProvider>
@@ -338,6 +347,10 @@ export default function CollectionsPage() {
                 {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
               </p>
             </div>
+          ) : sectionParam ? (
+            <h1 className="text-2xl sm:text-3xl font-normal text-[#2C1810] mb-6 capitalize font-display">
+              {sectionParam.replace(/-/g, " ")}
+            </h1>
           ) : categoryParam ? (
             <h1 className="text-2xl sm:text-3xl font-normal text-[#2C1810] mb-6 capitalize font-display">
               {categoryParam.replace(/-/g, " ")}

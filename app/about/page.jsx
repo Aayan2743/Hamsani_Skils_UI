@@ -38,7 +38,7 @@ export default function WhoWeArePage() {
     </h1>
   </header>
   {/* Image */}
-  <figure className="mb-6 ml-4 flex justify-center border-1">
+  <figure className="mb-6 ml-4 flex justify-center">
     <Image
       src="/about.webp"
       alt="Hamsini Silks handloom heritage and founder legacy"
@@ -52,7 +52,7 @@ export default function WhoWeArePage() {
   {/* Content */}
   <article className="max-w-5xl mx-auto text-[15px] leading-7 space-y-6 font-sans">
    <p>
-            <strong>Hamsini Silks</strong> is a celebration of India’s rich
+            <strong>Hamsini Silks (PN SILKS)</strong> is a celebration of India’s rich
             handloom tradition, built on a deep respect for craftsmanship,
             heritage, and authenticity. Our journey is inspired by generations
             of skilled weavers who have preserved the timeless art of silk

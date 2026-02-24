@@ -86,28 +86,34 @@ export default function DashboardHome() {
       const user = JSON.parse(userStr);
       const userId = user?.id;
 
-      // Fetch wishlist count
-      const wishlistRes = await api.get("/user-dashboard/get-wishlist", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (wishlistRes.data.success) {
-        setWishlistCount(wishlistRes.data.data?.length || 0);
-      }
-
-      // Fetch orders
-      if (userId) {
-        const ordersRes = await api.get(`/admin-dashboard/orders?user_id=${userId}`, {
+      // Fetch wishlist count with individual error handling
+      try {
+        const wishlistRes = await api.get("/user-dashboard/get-wishlist", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (ordersRes.data.success) {
-          const ordersData = ordersRes.data.data || [];
-          
-          setOrdersCount(ordersData.length);
-          
-          // Get last 3 orders
-          setRecentOrders(ordersData.slice(0, 3).map(order => ({
-            id: `#ORD-${order.id}`,
-            date: new Date(order.created_at).toLocaleDateString('en-US', {
+        if (wishlistRes.data.success) {
+          setWishlistCount(wishlistRes.data.data?.length || 0);
+        }
+      } catch (wishlistError) {
+        console.error("Failed to fetch wishlist:", wishlistError);
+        setWishlistCount(0);
+      }
+
+      // Fetch orders with individual error handling
+      if (userId) {
+        try {
+          const ordersRes = await api.get(`/admin-dashboard/orders?user_id=${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (ordersRes.data.success) {
+            const ordersData = ordersRes.data.data || [];
+            
+            setOrdersCount(ordersData.length);
+            
+            // Get last 3 orders
+            setRecentOrders(ordersData.slice(0, 3).map(order => ({
+              id: `#ORD-${order.id}`,
+              date: new Date(order.created_at).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
               year: 'numeric'
@@ -117,6 +123,11 @@ export default function DashboardHome() {
             items: order.items?.length || 0,
             ...getStatusConfig(order.status)
           })));
+        }
+        } catch (ordersError) {
+          console.error("Failed to fetch orders:", ordersError);
+          setOrdersCount(0);
+          setRecentOrders([]);
         }
       }
     } catch (error) {

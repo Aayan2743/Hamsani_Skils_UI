@@ -190,11 +190,13 @@ export default function ProductCard({ product }) {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast.error("Please login");
+      toast.error("Please login to manage wishlist");
       router.push("/account/login");
       return;
     }
 
+    // Optimistically update UI
+    const wasLiked = isLiked;
     setIsLiked((prev) => !prev);
 
     try {
@@ -203,16 +205,61 @@ export default function ProductCard({ product }) {
         { product_id: product.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  console.log("test",test)
+
+      console.log("Wishlist API Response:", res);
+
       if (res?.success) {
-        res.action === "added"
-          ? setWishlist([...wishlist, product.id])
-          : setWishlist(wishlist.filter((id) => id !== product.id));
+        if (res.action === "added") {
+          setWishlist([...wishlist, product.id]);
+          toast.success("Item added to favourites", {
+            icon: "❤️",
+            style: {
+              borderRadius: "10px",
+              background: "#fff",
+              color: "#333",
+              padding: "16px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            },
+          });
+        } else {
+          setWishlist(wishlist.filter((id) => id !== product.id));
+          toast.success("Item removed from wishlist", {
+            icon: "🗑️",
+            style: {
+              borderRadius: "10px",
+              background: "#fff",
+              color: "#333",
+              padding: "16px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            },
+          });
+        }
       } else {
-        setIsLiked((prev) => !prev);
+        // Revert on failure
+        setIsLiked(wasLiked);
+        // toast.error("Failed to update wishlist", {
+        //   style: {
+        //     borderRadius: "10px",
+        //     background: "#fff",
+        //     color: "#333",
+        //     padding: "16px",
+        //     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+        //   },
+        // });
       }
-    } catch {
-      setIsLiked((prev) => !prev);
+    } catch (error) {
+      console.error("Wishlist error:", error);
+      // Revert on error
+      setIsLiked(wasLiked);
+      // toast.error("Failed to update wishlist", {
+      //   style: {
+      //     borderRadius: "10px",
+      //     background: "#fff",
+      //     color: "#333",
+      //     padding: "16px",
+      //     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+      //   },
+      // });
     }
   };
   return (

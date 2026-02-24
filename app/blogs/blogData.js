@@ -2,19 +2,19 @@ export const blogs = [
   {
     slug: "celebrate-every-occasion",
     title:
-      "Celebrate Every Occasion With PSR Silks: From Bridal Bliss To Everyday Elegance",
+      "Celebrate Every Occasion With PN Silks: From Bridal Bliss To Everyday Elegance",
     // date: "Aug 20, 2024",
     author: "PSR Silk Sarees",
     heroImage:
       "https://www.psrsilks.com/cdn/shop/articles/IMG_20210121_102801_116_5_1066x.jpg?v=1724411392",
     content: `
       <p>
-        PSR Silks is a cherished brand brought to life by Thiru P.S. Rangasamy & Sons,
+        PN Silks is a cherished brand brought to life by Thiru P.S. Rangasamy & Sons,
         dedicated to offering pristine silk sarees to our beloved customers.
       </p>
 
       <p>
-        From bridal celebrations to everyday elegance, PSR Silks presents a rich tapestry
+        From bridal celebrations to everyday elegance, PN Silks presents a rich tapestry
         of handwoven silk sarees crafted with passion and tradition.
       </p>
 
@@ -32,15 +32,15 @@ export const blogs = [
   },
 
   {
-    slug: "psr-deepavali",
-    title: "PSR's Deepavali",
+    slug: "PN-deepavali",
+    title: "PN Deepavali",
     // date: "Nov 07, 2023",
-    author: "PSR Silk Sarees",
+    author: "PN Silk Sarees",
     heroImage:
-      "https://www.psrsilks.com/cdn/shop/articles/deepavali_1066x.jpg?v=172441202",
+      "https://tse4.mm.bing.net/th/id/OIP.Mj8v8hApj9xBRgXgPlBmrwHaE8?rs=1&pid=ImgDetMain&o=7&rm=3",
     content: `
       <p>
-        Get ready for the Diwali season as PSR Silks brings festive silk sarees
+        Get ready for the Diwali season as PN Silks brings festive silk sarees
         filled with color, joy, and tradition.
       </p>
     `,
@@ -50,13 +50,13 @@ export const blogs = [
     slug: "sarees-and-teachers",
     title: "Sarees And Teachers",
     // date: "Sep 05, 2023",
-    author: "PSR Silk Sarees",
+    author: "PN Silk Sarees",
     heroImage:
       "https://www.psrsilks.com/cdn/shop/articles/IMG_20210121_102801_116_520x5_a62335c2-7898-4470-b8fd-25e6fe83c485_1066x.jpg?v=1724412089",
     content: `
       <p>
         Teachers are guiding threads that weave knowledge and wisdom.
-        This Teacher’s Day, PSR Silks honors educators with elegant sarees.
+        This Teacher’s Day, PN Silks honors educators with elegant sarees.
       </p>
     `,
   },

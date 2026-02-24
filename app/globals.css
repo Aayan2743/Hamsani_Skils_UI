@@ -74,3 +74,96 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Hide scrollbar for carousel */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Swiper Carousel Custom Styles */
+.product-carousel {
+  position: relative;
+}
+
+.product-carousel .swiper {
+  padding: 0 50px;
+}
+
+.product-carousel .swiper-button-next,
+.product-carousel .swiper-button-prev {
+  background: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  border: 1px solid #E5E7EB;
+}
+
+.product-carousel .swiper-button-next:after,
+.product-carousel .swiper-button-prev:after {
+  font-size: 22px;
+  font-weight: bold;
+  color: #2C1810;
+}
+
+.product-carousel .swiper-button-next:hover,
+.product-carousel .swiper-button-prev:hover {
+  background: #8B4513;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(139, 69, 19, 0.3);
+}
+
+.product-carousel .swiper-button-next:hover:after,
+.product-carousel .swiper-button-prev:hover:after {
+  color: white;
+}
+
+.product-carousel .swiper-button-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.product-carousel .swiper-button-disabled:hover {
+  background: white;
+  transform: scale(1);
+}
+
+.product-carousel .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.product-carousel .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #D1D5DB;
+  opacity: 1;
+  transition: all 0.3s ease;
+  margin: 0 6px !important;
+}
+
+.product-carousel .swiper-pagination-bullet-active {
+  background: #8B4513;
+  width: 28px;
+  border-radius: 5px;
+}
+
+.product-carousel .swiper-pagination-bullet:hover {
+  background: #9CA3AF;
+}
+
+/* Ensure slides don't overflow */
+.product-carousel .swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+.product-carousel .swiper-slide > div {
+  width: 100%;
+}
+

@@ -11,11 +11,11 @@ const faqs = [
   },
   {
     q: "How long does delivery take?",
-    a: "Orders are usually processed within 1–2 business days and delivered within 3–7 working days depending on your location."
+    a: "Orders are usually processed within 3-5 business days and delivered within 5-8 working days depending on your location."
   },
   {
     q: "Can I exchange or return my saree?",
-    a: "Yes. We offer exchanges or returns within 15 days of delivery, provided the saree is unused and in original condition."
+    a: "Yes. We offer exchanges or returns within 7 days of delivery, provided the saree is unused and in original condition."
   },
   {
     q: "Do you offer bridal or bulk orders?",

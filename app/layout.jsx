@@ -159,20 +159,46 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${funnelDisplay.variable} ${funnelSans.variable}`} suppressHydrationWarning>
       <head>
-        {/* Suppress browser extension errors */}
+        {/* Suppress browser extension and tracking errors */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
+                // Filter console.error
                 const originalError = console.error;
                 console.error = function(...args) {
                   const msg = args[0]?.toString() || '';
                   if (msg.includes('chrome-extension://') || 
                       msg.includes('web_accessible_resources') ||
-                      msg.includes('ERR_FAILED')) {
+                      msg.includes('ERR_FAILED') ||
+                      msg.includes('Denying load') ||
+                      msg.includes('contentScript.bundle.js')) {
                     return;
                   }
                   originalError.apply(console, args);
+                };
+                
+                // Filter console.warn
+                const originalWarn = console.warn;
+                console.warn = function(...args) {
+                  const msg = args[0]?.toString() || '';
+                  if (msg.includes('chrome-extension://') || 
+                      msg.includes('Tracking Prevention') ||
+                      msg.includes('cdn.jsdelivr.net')) {
+                    return;
+                  }
+                  originalWarn.apply(console, args);
+                };
+                
+                // Filter console.log for violations
+                const originalLog = console.log;
+                console.log = function(...args) {
+                  const msg = args[0]?.toString() || '';
+                  if (msg.includes('[Violation]') || 
+                      msg.includes('message handler took')) {
+                    return;
+                  }
+                  originalLog.apply(console, args);
                 };
               })();
             `,

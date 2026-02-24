@@ -1,6 +1,6 @@
 import HeroCarousel from "./components/HomePage/HeroCarousel";
 import ShopByCategory from "./components/HomePage/ShopByCategory";
-import BestSellers from "./components/HomePage/BestSellers";
+import DynamicSections from "./components/HomePage/DynamicSections";
 import PromoBanner from "./components/HomePage/PromoBanner";
 import NewArrivals from "./components/HomePage/NewArrivals";
 import InstagramCarousel from "./components/HomePage/InstagramCarousel";
@@ -11,11 +11,11 @@ export default function Home() {
     <div className="bg-[#F5F5DC] min-h-screen">
       <HeroCarousel />
       {/* <ShopByCategory /> */}
-      <BestSellers />
+      <DynamicSections />
       <PromoBanner />
       <NewArrivals />
       <InstagramCarousel />
       <Features />
-    </div>
+    </div> 
   );
 }
