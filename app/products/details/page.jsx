@@ -1,5 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import { useCart } from "../../providers/CartProvider";
 import toast from "react-hot-toast";
@@ -164,16 +165,18 @@ function ProductDetailsContent() {
     <div className="bg-[#F5F5DC] min-h-screen py-8">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
+        {/* Breadcrumb */}
         <div className="mb-6 text-sm text-gray-600">
-          <span className="hover:text-[#8B4513] cursor-pointer">Home</span> 
+          <Link href="/" className="hover:text-[#8B4513] cursor-pointer">
+            Home
+          </Link>
           <span className="mx-2">/</span>
-          <span className="hover:text-[#8B4513] cursor-pointer">
-            {product.category?.parent_id ? "Women" : "Sarees"}
-          </span>
-          <span className="mx-2">/</span>
-          <span className="hover:text-[#8B4513] cursor-pointer">
+          <Link 
+            href={`/collections?category=${product.category?.slug || ''}`}
+            className="hover:text-[#8B4513] cursor-pointer"
+          >
             {product.category?.name || "Category"}
-          </span>
+          </Link>
           <span className="mx-2">/</span>
           <span className="text-[#2C1810] font-medium">{product.name}</span>
         </div>

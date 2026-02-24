@@ -262,8 +262,14 @@ export default function CollectionsPage() {
   /* ---------------- PAGINATION STATE ---------------- */
   const [currentPage, setCurrentPage] = useState(1);
   
-  /* ---------------- USE PRODUCTS HOOK WITH PAGINATION AND SEARCH (12 per page) ---------------- */
-  const { products = [], loading, pagination } = useProducts(currentPage, 12, searchQuery || "");
+  /* ---------------- USE PRODUCTS HOOK WITH CATEGORY SLUG (12 per page) ---------------- */
+  // Pass categoryParam directly to the hook - it will use the collections API endpoint
+  const { products = [], loading, pagination } = useProducts(
+    currentPage, 
+    12, 
+    searchQuery || "", 
+    categoryParam || ""
+  );
 
   /* ---------------- FILTER STATES ---------------- */
   const [filterOpen, setFilterOpen] = useState(false);
@@ -280,6 +286,7 @@ export default function CollectionsPage() {
         id: p.id,
         slug: p.slug,
         title: p.name,
+        // Collections API returns category object with slug, products API returns category_name
         category: p.category?.slug?.toLowerCase() || "",
         image:
           p.images?.find((img) => img.is_primary)?.image_url ??
@@ -292,20 +299,19 @@ export default function CollectionsPage() {
     });
   }, [products]);
 
-  /* ---------------- FILTER LOGIC (Search is now handled by API) ---------------- */
+  /* ---------------- FILTER LOGIC (Category filtering now handled by API) ---------------- */
   const filteredProducts = useMemo(() => {
     return normalizedProducts.filter((p) => {
-      const matchesCategory =
-        !categoryParam || p.category === categoryParam.toLowerCase();
-
+      // Category filtering is now done by the API, so we don't need to filter here
+      // Just apply stock and price filters
       const matchesStock = inStock === null || p.inStock === inStock;
 
       const matchesPrice =
         p.price >= appliedPrice.min && p.price <= appliedPrice.max;
 
-      return matchesCategory && matchesStock && matchesPrice;
+      return matchesStock && matchesPrice;
     });
-  }, [normalizedProducts, categoryParam, inStock, appliedPrice]);
+  }, [normalizedProducts, inStock, appliedPrice]);
 
   /* ---------------- HANDLE PAGE CHANGE ---------------- */
   const handlePageChange = (page) => {
@@ -313,11 +319,10 @@ export default function CollectionsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  /* ---------------- RESET PAGE WHEN SEARCH CHANGES ---------------- */
+  /* ---------------- RESET PAGE WHEN SEARCH OR CATEGORY CHANGES ---------------- */
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
-
+  }, [searchQuery, categoryParam]);
   /* ---------------- RENDER ---------------- */
   return (
     <WishlistProvider>

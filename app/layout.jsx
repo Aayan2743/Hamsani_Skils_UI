@@ -158,6 +158,27 @@ const FALLBACK_MENU = [
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${funnelDisplay.variable} ${funnelSans.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Suppress browser extension errors */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const originalError = console.error;
+                console.error = function(...args) {
+                  const msg = args[0]?.toString() || '';
+                  if (msg.includes('chrome-extension://') || 
+                      msg.includes('web_accessible_resources') ||
+                      msg.includes('ERR_FAILED')) {
+                    return;
+                  }
+                  originalError.apply(console, args);
+                };
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="font-sans" suppressHydrationWarning>
         {/* ✅ Razorpay Script */}
         <Script

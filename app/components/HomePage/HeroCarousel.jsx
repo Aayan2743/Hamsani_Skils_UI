@@ -178,7 +178,7 @@ export default function HeroCarousel() {
               </motion.p>
 
               {/* Buttons */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -198,22 +198,22 @@ export default function HeroCarousel() {
                 >
                   {slide.secondaryBtn}
                 </Link>
-              </motion.div>
+              </motion.div> */}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
 
       {/* Navigation Arrows */}
-      <button
+      {/* <button
         onClick={prevSlide}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 rounded-full transition-all duration-300"
         aria-label="Previous slide"
         suppressHydrationWarning
       >
         <ChevronLeftIcon className="w-6 h-6 text-white" />
-      </button>
-
+      </button> */}
+{/* 
       <button
         onClick={nextSlide}
         className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 rounded-full transition-all duration-300"
@@ -221,10 +221,10 @@ export default function HeroCarousel() {
         suppressHydrationWarning
       >
         <ChevronRightIcon className="w-6 h-6 text-white" />
-      </button>
+      </button> */}
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -238,7 +238,7 @@ export default function HeroCarousel() {
             suppressHydrationWarning
           />
         ))}
-      </div>
+      </div> */}
     </section>
   );
 }

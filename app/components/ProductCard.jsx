@@ -203,7 +203,7 @@ export default function ProductCard({ product }) {
         { product_id: product.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  console.log("test",test)
       if (res?.success) {
         res.action === "added"
           ? setWishlist([...wishlist, product.id])
@@ -215,7 +215,6 @@ export default function ProductCard({ product }) {
       setIsLiked((prev) => !prev);
     }
   };
-
   return (
     <div
       onClick={() => router.push(`/products/details?id=${product.slug}`)}

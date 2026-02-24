@@ -42,7 +42,7 @@ export default function BestSellers() {
             <h2 
               className="text-3xl md:text-4xl font-normal text-[#2C1810] mb-2 font-display"
             >
-              Bestsellers
+              Trending
             </h2>
           </div>
           <Link
