@@ -1,0 +1,8 @@
+1:"$Sreact.fragment"
+2:I[54854,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"ViewportBoundary"]
+4:I[54854,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"MetadataBoundary"]
+5:"$Sreact.suspense"
+7:I[82087,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"IconMark"]
+0:{"buildId":"d3uIUk9g12lo86vTTd3XN","rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":"$@3"}],["$","div",null,{"hidden":true,"children":["$","$L4",null,{"children":["$","$5",null,{"name":"Next.Metadata","children":"$@6"}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"loading":null,"isPartial":false}
+3:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+6:[["$","title","0",{"children":"Hamsini Silk Sarees Exhibition Sale | Upcoming Event"}],["$","meta","1",{"name":"description","content":"Hamsini Silk Sarees Exhibition Sale featuring Kanchipuram silk, cotton sarees, fancy sarees and salwar materials. Dates, venue and timings available."}],["$","link","2",{"rel":"icon","href":"/favicon.ico?favicon.5da1bc55.ico","sizes":"405x368","type":"image/x-icon"}],["$","$L7","3",{}]]

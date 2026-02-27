@@ -1,0 +1,73 @@
+1:"$Sreact.fragment"
+3:I[8128,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],""]
+4:I[11796,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"AuthProvider"]
+5:I[52532,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"CartProvider"]
+6:I[16446,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"WishlistProvider"]
+7:I[8643,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"SocialMediaProvider"]
+8:I[1186,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"default"]
+9:I[9021,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"default"]
+a:I[63127,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"default"]
+b:I[36454,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"default"]
+13:I[23295,[],"default"]
+:HL["/_next/static/chunks/582e8b53f6bc7f71.css","style"]
+:HL["/_next/static/media/d3f3f01dfc015e12-s.p.efb60e83.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/fc566e733948aae3-s.p.3ae9fc60.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+2:T67c,
+              (function() {
+                // Filter console.error
+                const originalError = console.error;
+                console.error = function(...args) {
+                  const msg = args[0]?.toString() || '';
+                  if (msg.includes('chrome-extension://') || 
+                      msg.includes('web_accessible_resources') ||
+                      msg.includes('ERR_FAILED') ||
+                      msg.includes('Denying load') ||
+                      msg.includes('contentScript.bundle.js')) {
+                    return;
+                  }
+                  originalError.apply(console, args);
+                };
+                
+                // Filter console.warn
+                const originalWarn = console.warn;
+                console.warn = function(...args) {
+                  const msg = args[0]?.toString() || '';
+                  if (msg.includes('chrome-extension://') || 
+                      msg.includes('Tracking Prevention') ||
+                      msg.includes('cdn.jsdelivr.net')) {
+                    return;
+                  }
+                  originalWarn.apply(console, args);
+                };
+                
+                // Filter console.log for violations
+                const originalLog = console.log;
+                console.log = function(...args) {
+                  const msg = args[0]?.toString() || '';
+                  if (msg.includes('[Violation]') || 
+                      msg.includes('message handler took')) {
+                    return;
+                  }
+                  originalLog.apply(console, args);
+                };
+              })();
+            0:{"P":null,"b":"d3uIUk9g12lo86vTTd3XN","c":["","events",""],"q":"","i":false,"f":[[["",{"children":["events",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/582e8b53f6bc7f71.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/1b3d6f9d186d7b11.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/1494ee108572db1a.js","async":true,"nonce":"$undefined"}],["$","script","script-2",{"src":"/_next/static/chunks/5d300a3b4eac7a01.js","async":true,"nonce":"$undefined"}],["$","script","script-3",{"src":"/_next/static/chunks/f79f68f4c9fdc50f.js","async":true,"nonce":"$undefined"}],["$","script","script-4",{"src":"/_next/static/chunks/18cf914c7f80ced2.js","async":true,"nonce":"$undefined"}],["$","script","script-5",{"src":"/_next/static/chunks/29792bce77a8cbe6.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"funnel_display_33a8bcd8-module__OtIEfW__variable funnel_sans_153aa012-module__LnYH2G__variable","suppressHydrationWarning":true,"children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}]}],["$","body",null,{"className":"font-sans","suppressHydrationWarning":true,"children":[["$","$L3",null,{"src":"https://checkout.razorpay.com/v1/checkout.js","strategy":"afterInteractive"}],["$","$L4",null,{"children":["$","$L5",null,{"children":["$","$L6",null,{"children":["$","$L7",null,{"children":[["$","$L8",null,{}],["$","$L9",null,{"initialMenuData":[{"key":"silk-sarees","label":"Silk Sarees","items":["Banarasi Silk","Kanchipuram Jacquard","Kanchipuram Traditional","Soft Silks"]},{"key":"silk-sarees-casual","label":"Silk Sarees Casual","items":["Chiniya Silk","Georgette Sarees","Kadhi Tussar Silk"]},{"key":"silk-cotton","label":"Silk Cotton","items":["Patola Silk Cotton","Soft Silk"]},{"key":"fancy-sarees","label":"Fancy Sarees","items":["Ikkat Sarees"]},{"key":"new-silk-saree","label":"New Silk saree","items":["Latest Sarees"]}]}],["$","main",null,{"className":"min-h-[60vh]","children":["$","$La",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Lb",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$Lc","forbidden":"$undefined","unauthorized":"$undefined"}]}],"$Ld","$Le"]}]}]}]}],"$Lf"]}]]}]]}],{"children":["$L10",{"children":["$L11",{},null,false,false]},null,false,false]},null,false,false],"$L12",false]],"m":"$undefined","G":["$13",[]],"S":true}
+14:I[11255,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"default"]
+15:I[61247,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"default"]
+16:I[24058,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"Toaster"]
+17:I[21681,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/5d300a3b4eac7a01.js","/_next/static/chunks/f79f68f4c9fdc50f.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"Image"]
+18:I[54854,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"OutletBoundary"]
+19:"$Sreact.suspense"
+1b:I[54854,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"ViewportBoundary"]
+1d:I[54854,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"MetadataBoundary"]
+c:[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]
+d:["$","$L14",null,{"className":"bg-[#232323] text-[#f8f8f8]"}]
+e:["$","$L15",null,{}]
+f:["$","$L16",null,{"position":"top-right","toastOptions":{"duration":2000,"style":{"fontSize":"14px"}}}]
+10:["$","$1","c",{"children":[null,["$","$La",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Lb",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]
+11:["$","$1","c",{"children":[["$","main",null,{"className":"bg-white","children":[["$","section",null,{"className":" py-10 text-center text-white","children":["$","h1",null,{"className":"text-4xl font-bold text-green-600","children":"Events"}]}],["$","section",null,{"className":"max-w-5xl mx-auto","children":["$","article",null,{"className":"border border-[#c9a66b] p-3","children":[["$","$L17",null,{"src":"/evnts.png","alt":"hamsini Silk Sarees Exhibition Sale at Cumbum from 18 April to 20 April 2025","width":900,"height":1300,"className":"w-full h-auto","priority":true}],["$","div",null,{"className":"sr-only","children":[["$","h2",null,{"children":"hamsini Silk Sarees Exhibition Sale"}],["$","p",null,{"children":"Date: 18 April 2025 to 20 April 2025"}],["$","p",null,{"children":"Time: 10 AM to 8 PM"}],["$","p",null,{"children":"Venue: Hotel Thatti Vilas, Meeting Hall A/C, No.250, L.F. Kumuli Main Road, Near Thambee Theater, Cumbum – 625516"}],["$","p",null,{"children":"Categories: Silk Sarees, Cotton Sarees, Fancy Sarees, Salwar Materials"}],["$","p",null,{"children":"Regions: Tamil Nadu, Puducherry, Karnataka"}]]}]]}]}]]}],null,["$","$L18",null,{"children":["$","$19",null,{"name":"Next.MetadataOutlet","children":"$@1a"}]}]]}]
+12:["$","$1","h",{"children":[null,["$","$L1b",null,{"children":"$@1c"}],["$","div",null,{"hidden":true,"children":["$","$L1d",null,{"children":["$","$19",null,{"name":"Next.Metadata","children":"$@1e"}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]
+1c:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+1f:I[82087,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"IconMark"]
+1e:[["$","title","0",{"children":"Hamsini Silk Sarees Exhibition Sale | Upcoming Event"}],["$","meta","1",{"name":"description","content":"Hamsini Silk Sarees Exhibition Sale featuring Kanchipuram silk, cotton sarees, fancy sarees and salwar materials. Dates, venue and timings available."}],["$","link","2",{"rel":"icon","href":"/favicon.ico?favicon.5da1bc55.ico","sizes":"405x368","type":"image/x-icon"}],["$","$L1f","3",{}]]
+1a:null
