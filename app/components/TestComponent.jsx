@@ -1804,19 +1804,22 @@ export default function TestComponent({ open, onClose }) {
     if (!token) return;
     if (paymentStatusChecked.current) return;
 
-    const verifyPayment = async () => {
+    const order_id = localStorage.getItem("phonepe_order_id");
+    if (!order_id) return;
 
-      const order_id = localStorage.getItem("phonepe_order_id");
+    // Mark as checked to prevent duplicate polling
+    paymentStatusChecked.current = true;
 
-      if (!order_id) return;
+    let pollCount = 0;
+    const maxPolls = 20; // Poll for max 60 seconds (20 * 3 seconds)
+    let pollInterval = null;
 
-      // Mark as checked to prevent duplicate calls
-      paymentStatusChecked.current = true;
+    const pollPaymentStatus = async () => {
 
       try {
 
         setPaymentLoading(true);
-        setLoadingMessage("Verifying payment...");
+        setLoadingMessage(`Verifying payment... (${pollCount + 1}/${maxPolls})`);
 
         const res = await api.post(
           "/user-dashboard/payment/status",
@@ -1831,13 +1834,15 @@ export default function TestComponent({ open, onClose }) {
         console.log("Payment status response:", res.data);
 
         // Check if payment was successful
-        // Handle both wrapped response and direct PhonePe response
         const isSuccess = res.data.success 
           || res.data.code === "PAYMENT_SUCCESS"
           || res.data.state === "COMPLETED"
-          || (res.data.merchantTransactionId && res.data.amount); // PhonePe direct response
+          || (res.data.merchantTransactionId && res.data.amount);
 
         if (isSuccess) {
+
+          // Stop polling
+          if (pollInterval) clearInterval(pollInterval);
 
           // Clean up localStorage
           localStorage.removeItem("phonepe_order_id");
@@ -1852,20 +1857,30 @@ export default function TestComponent({ open, onClose }) {
 
           toast.success("Payment successful! 🎉");
 
+          // Redirect to purchase history after 2 seconds
+          setTimeout(() => {
+            router.push("/dashboard/purchase-history");
+          }, 2000);
+
         } else if (res.data.code === "PAYMENT_PENDING" || res.data.state === "PENDING") {
 
-          setPaymentLoading(false);
+          pollCount++;
 
-          toast("Payment is pending. Please wait...", {
-            icon: "⏳",
-            duration: 5000
-          });
-
-          // Don't remove order_id yet, user might need to retry
+          if (pollCount >= maxPolls) {
+            // Stop polling after max attempts
+            if (pollInterval) clearInterval(pollInterval);
+            setPaymentLoading(false);
+            toast.error("Payment verification timeout. Please check your order history.");
+          } else {
+            // Continue polling
+            console.log(`Polling attempt ${pollCount}/${maxPolls} - Payment still pending...`);
+          }
 
         } else {
 
           // Payment failed or cancelled
+          if (pollInterval) clearInterval(pollInterval);
+
           setPaymentLoading(false);
 
           localStorage.removeItem("phonepe_order_id");
@@ -1878,24 +1893,38 @@ export default function TestComponent({ open, onClose }) {
 
         console.error("Payment verification error:", err);
 
-        setPaymentLoading(false);
+        pollCount++;
 
-        // Don't remove order_id on network error - allow retry
-        if (err.response?.status >= 500 || !err.response) {
-          toast.error("Network error. Please refresh to retry verification.");
-        } else {
-          // Remove order_id for client errors
-          localStorage.removeItem("phonepe_order_id");
-          toast.error(err.response?.data?.message || "Payment verification failed");
+        if (pollCount >= maxPolls) {
+          // Stop polling after max attempts
+          if (pollInterval) clearInterval(pollInterval);
+          setPaymentLoading(false);
+
+          // Don't remove order_id on network error - allow manual retry
+          if (err.response?.status >= 500 || !err.response) {
+            toast.error("Network error. Please refresh to retry verification.");
+          } else {
+            localStorage.removeItem("phonepe_order_id");
+            toast.error(err.response?.data?.message || "Payment verification failed");
+          }
         }
 
       }
 
     };
 
-    verifyPayment();
+    // Start polling immediately
+    pollPaymentStatus();
 
-  }, [token, clearCart]);
+    // Then poll every 3 seconds
+    pollInterval = setInterval(pollPaymentStatus, 3000);
+
+    // Cleanup on unmount
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+    };
+
+  }, [token, clearCart, router]);
 
   /* ================= FETCH ADDRESS ================= */
 
@@ -2038,49 +2067,180 @@ export default function TestComponent({ open, onClose }) {
 
   /* ================= PHONEPE ================= */
 
-  const handlePhonePePayment = async () => {
+  // const handlePhonePePayment = async () => {
 
+  //   setPaymentLoading(true);
+  //   setLoadingMessage("Creating PhonePe order...");
+
+  //   try {
+
+  //     // Validate cart items
+  //     if (cartItems.length === 0) {
+  //       throw new Error("Cart is empty");
+  //     }
+
+  //     // Get current URL for redirect
+  //     const currentUrl = typeof window !== "undefined" ? window.location.origin : "";
+  //     const redirectUrl = `${currentUrl}/`; // Redirect to home page after payment
+
+  //     const payload = {
+
+  //       user_id: userId,
+
+  //       address_id: selectedAddress.id,
+
+  //       payment: {
+  //         method: "phonepe",
+  //         amount: finalTotal,
+  //         redirect_url: redirectUrl, // Add redirect URL
+  //         callback_url: `${currentUrl}/api/phonepe/callback` // Optional: for webhook
+  //       },
+
+  //       price_details: {
+  //         subtotal,
+  //         discount,
+  //         coupon_code: couponData?.coupon_code || null,
+  //         total_amount: finalTotal
+  //       },
+
+  //       items: cartItems.map(item => ({
+  //         product_id: item.product_id,
+  //         quantity: item.qty,
+  //         price: item.price,
+  //         total: item.price * item.qty
+  //       }))
+
+  //     };
+
+  //     console.log("PhonePe payload:", payload);
+
+  //     const res = await api.post(
+  //       "/user-dashboard/create-phone-order",
+  //       payload,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`
+  //         }
+  //       }
+  //     );
+
+  //     console.log("PhonePe response:", res.data);
+
+  //     // Validate response
+  //     if (!res.data.success) {
+  //       throw new Error(res.data.message || "Failed to create order");
+  //     }
+
+  //     if (!res.data.checkout_url) {
+  //       throw new Error("Checkout URL not received from server");
+  //     }
+
+  //     // CRITICAL: Get order_id from response
+  //     // Try multiple possible field names
+  //     let orderId = res.data.order_id 
+  //       || res.data.merchantTransactionId 
+  //       || res.data.transaction_id
+  //       || res.data.orderId;
+      
+  //     // TEMPORARY: Use static order_id for testing
+  //     if (!orderId) {
+  //       console.warn("⚠️ Backend didn't return order_id. Using static test order_id...");
+  //       // Static order ID for testing
+  //       orderId = "TEST_ORDER_123";
+  //       toast("⚠️ Using static test order_id: TEST_ORDER_123", {
+  //         icon: "⚠️",
+  //         duration: 4000
+  //       });
+  //       console.log("Using static order_id:", orderId);
+  //     }
+
+  //     localStorage.setItem("phonepe_order_id", orderId);
+
+  //     console.log("✅ Stored order_id:", orderId);
+  //     console.log("🔗 Redirecting to:", res.data.checkout_url);
+
+  //     setLoadingMessage("Redirecting to PhonePe...");
+
+  //     // Small delay to show the message
+  //     setTimeout(() => {
+  //       window.location.href = res.data.checkout_url;
+  //     }, 500);
+
+  //   } catch (error) {
+
+  //     console.error("PhonePe error:", error);
+  //     setPaymentLoading(false);
+      
+  //     const errorMessage = error.response?.data?.message 
+  //       || error.message 
+  //       || "PhonePe payment failed";
+      
+  //     toast.error(errorMessage);
+
+  //   }
+
+  // };
+
+
+
+  const handlePhonePePayment = async () => {
     setPaymentLoading(true);
-    setLoadingMessage("Creating PhonePe order...");
+    setLoadingMessage("Creating order...");
 
     try {
-
-      // Validate cart items
-      if (cartItems.length === 0) {
+      // Validations
+      if (!cartItems || cartItems.length === 0) {
         throw new Error("Cart is empty");
       }
 
-      // Get current URL for redirect
+      if (!selectedAddress?.id) {
+        throw new Error("Please select delivery address");
+      }
+
+      // Step 1: Create order first to get order ID
+      setLoadingMessage("Creating order...");
+      
+      const createOrderRes = await api.post(
+        "/user-dashboard/cart/create-order",
+        { amount: finalTotal },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const order = createOrderRes.data.order;
+      
+      if (!order || !order.id) {
+        throw new Error("Failed to create order - order ID missing");
+      }
+
+      console.log("Order created:", order);
+
       const currentUrl = typeof window !== "undefined" ? window.location.origin : "";
-      const redirectUrl = `${currentUrl}/`; // Redirect to home page after payment
+
+      // Step 2: Create PhonePe payment with the order ID
+      setLoadingMessage("Creating PhonePe payment...");
 
       const payload = {
-
         user_id: userId,
-
         address_id: selectedAddress.id,
-
+        order_id: order.id,  // Include the order ID from step 1
         payment: {
           method: "phonepe",
           amount: finalTotal,
-          redirect_url: redirectUrl, // Add redirect URL
-          callback_url: `${currentUrl}/api/phonepe/callback` // Optional: for webhook
+          redirect_url: `${currentUrl}/`,
+          callback_url: `${currentUrl}/api/phonepe/callback`,
         },
-
         price_details: {
           subtotal,
           discount,
           coupon_code: couponData?.coupon_code || null,
-          total_amount: finalTotal
+          total_amount: finalTotal,
         },
-
-        items: cartItems.map(item => ({
+        items: cartItems.map((item) => ({
           product_id: item.product_id,
           quantity: item.qty,
           price: item.price,
-          total: item.price * item.qty
-        }))
-
+          total: item.price * item.qty,
+        })),
       };
 
       console.log("PhonePe payload:", payload);
@@ -2090,71 +2250,50 @@ export default function TestComponent({ open, onClose }) {
         payload,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       console.log("PhonePe response:", res.data);
 
-      // Validate response
-      if (!res.data.success) {
-        throw new Error(res.data.message || "Failed to create order");
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to create PhonePe payment");
       }
 
-      if (!res.data.checkout_url) {
-        throw new Error("Checkout URL not received from server");
+      const { checkout_url } = res.data;
+
+      if (!checkout_url) {
+        console.error("❌ Missing checkout_url in response:", res.data);
+        throw new Error("Checkout URL missing from server");
       }
 
-      // CRITICAL: Get order_id from response
-      // Try multiple possible field names
-      let orderId = res.data.order_id 
-        || res.data.merchantTransactionId 
-        || res.data.transaction_id
-        || res.data.orderId;
-      
-      // TEMPORARY: Use static order_id for testing
-      if (!orderId) {
-        console.warn("⚠️ Backend didn't return order_id. Using static test order_id...");
-        
-        // Static order ID for testing
-        orderId = "TEST_ORDER_123";
-        
-        toast("⚠️ Using static test order_id: TEST_ORDER_123", {
-          icon: "⚠️",
-          duration: 4000
-        });
-        
-        console.log("Using static order_id:", orderId);
-      }
+      // Store the order ID (from step 1) for verification after redirect
+      localStorage.setItem("phonepe_order_id", order.id);
 
-      localStorage.setItem("phonepe_order_id", orderId);
-
-      console.log("✅ Stored order_id:", orderId);
-      console.log("🔗 Redirecting to:", res.data.checkout_url);
+      console.log("✅ Stored order_id:", order.id);
+      console.log("🔗 Redirecting to:", checkout_url);
 
       setLoadingMessage("Redirecting to PhonePe...");
 
-      // Small delay to show the message
+      // Redirect to PhonePe checkout
+      // The useEffect polling will handle status checking after user returns
       setTimeout(() => {
-        window.location.href = res.data.checkout_url;
+        window.location.href = checkout_url;
       }, 500);
 
     } catch (error) {
-
       console.error("PhonePe error:", error);
       setPaymentLoading(false);
-      
-      const errorMessage = error.response?.data?.message 
-        || error.message 
-        || "PhonePe payment failed";
-      
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "PhonePe payment failed";
+
       toast.error(errorMessage);
-
     }
-
-  };
-
+  };;
   /* ================= COD ================= */
 
   const handleCODPayment = async () => {
@@ -2369,7 +2508,6 @@ export default function TestComponent({ open, onClose }) {
         onClose={()=>setShowAddAddress(false)}
         onSuccess={fetchAddresses}
       />
-
       <OTPAuthModal
         open={showOTPAuth}
         onClose={()=>setShowOTPAuth(false)}
