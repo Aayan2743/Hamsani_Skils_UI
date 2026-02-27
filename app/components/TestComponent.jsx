@@ -2197,15 +2197,34 @@ export default function TestComponent({ open, onClose }) {
         throw new Error("Please select delivery address");
       }
 
+      // Step 1: Create order first to get order.id
+      setLoadingMessage("Creating order...");
+      
+      const createOrderRes = await api.post(
+        "/user-dashboard/cart/create-order",
+        { amount: finalTotal },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const order = createOrderRes.data.order;
+      
+      if (!order || !order.id) {
+        console.error("❌ Order creation failed:", createOrderRes.data);
+        throw new Error("Failed to create order - order ID missing");
+      }
+
+      console.log("✅ Order created with ID:", order.id);
+
       // Get current URL for redirect
       const currentUrl = typeof window !== "undefined" ? window.location.origin : "";
 
-      // Step 1: Create PhonePe payment order
+      // Step 2: Create PhonePe payment with the order.id
       setLoadingMessage("Creating PhonePe payment...");
 
       const payload = {
         user_id: userId,
         address_id: selectedAddress.id,
+        order_id: order.id,  // Pass the order.id from step 1
         payment: {
           method: "phonepe",
           amount: finalTotal,
@@ -2245,26 +2264,18 @@ export default function TestComponent({ open, onClose }) {
         throw new Error(res.data?.message || "Failed to create PhonePe payment");
       }
 
-      const { checkout_url, order_id, merchantOrderId } = res.data;
+      const { checkout_url } = res.data;
 
       if (!checkout_url) {
         console.error("❌ Missing checkout_url in response:", res.data);
         throw new Error("Checkout URL missing from server");
       }
 
-      // Store order ID for verification after redirect
-      // Try multiple possible field names from backend response
-      const orderId = order_id || merchantOrderId || res.data.merchantTransactionId;
-      
-      if (!orderId) {
-        console.error("❌ No order_id in response:", res.data);
-        throw new Error("Order ID missing from server response");
-      }
+      // Store the order.id (from step 1) for verification after redirect
+      localStorage.setItem("phonepe_order_id", order.id);
 
-      localStorage.setItem("phonepe_order_id", orderId);
-
-      console.log("✅ Stored order_id:", orderId);
-      console.log("🔗 Redirecting to:", checkout_url);
+      console.log("✅ Stored order_id in localStorage:", order.id);
+      console.log("🔗 Redirecting to PhonePe:", checkout_url);
 
       setLoadingMessage("Redirecting to PhonePe...");
 
