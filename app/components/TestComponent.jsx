@@ -1822,7 +1822,7 @@ export default function TestComponent({ open, onClose }) {
         setLoadingMessage(`Verifying payment... (${pollCount + 1}/${maxPolls})`);
 
         const res = await api.post(
-          "/user-dashboard/payment/status",
+          "https://api.phonepe.com/apis/pg/checkout/ui/v2/status",
           { order_id },
           {
             headers: {
@@ -1834,10 +1834,10 @@ export default function TestComponent({ open, onClose }) {
         console.log("Payment status response:", res.data);
 
         // Check if payment was successful
-        const isSuccess = res.data.success 
-          || res.data.code === "PAYMENT_SUCCESS"
-          || res.data.state === "COMPLETED"
-          || (res.data.merchantTransactionId && res.data.amount);
+        // Backend returns PhonePe response: { merchantId, merchantOrderId, orderId, state: "COMPLETED", amount, paymentMode }
+        const isSuccess = res.data.state === "COMPLETED"
+          || res.data.success === true
+          || res.data.code === "PAYMENT_SUCCESS";
 
         if (isSuccess) {
 
@@ -2197,32 +2197,15 @@ export default function TestComponent({ open, onClose }) {
         throw new Error("Please select delivery address");
       }
 
-      // Step 1: Create order first to get order ID
-      setLoadingMessage("Creating order...");
-      
-      const createOrderRes = await api.post(
-        "/user-dashboard/cart/create-order",
-        { amount: finalTotal },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const order = createOrderRes.data.order;
-      
-      if (!order || !order.id) {
-        throw new Error("Failed to create order - order ID missing");
-      }
-
-      console.log("Order created:", order);
-
+      // Get current URL for redirect
       const currentUrl = typeof window !== "undefined" ? window.location.origin : "";
 
-      // Step 2: Create PhonePe payment with the order ID
+      // Step 1: Create PhonePe payment order
       setLoadingMessage("Creating PhonePe payment...");
 
       const payload = {
         user_id: userId,
         address_id: selectedAddress.id,
-        order_id: order.id,  // Include the order ID from step 1
         payment: {
           method: "phonepe",
           amount: finalTotal,
@@ -2257,21 +2240,30 @@ export default function TestComponent({ open, onClose }) {
 
       console.log("PhonePe response:", res.data);
 
+      // Validate response
       if (!res.data?.success) {
         throw new Error(res.data?.message || "Failed to create PhonePe payment");
       }
 
-      const { checkout_url } = res.data;
+      const { checkout_url, order_id, merchantOrderId } = res.data;
 
       if (!checkout_url) {
         console.error("❌ Missing checkout_url in response:", res.data);
         throw new Error("Checkout URL missing from server");
       }
 
-      // Store the order ID (from step 1) for verification after redirect
-      localStorage.setItem("phonepe_order_id", order.id);
+      // Store order ID for verification after redirect
+      // Try multiple possible field names from backend response
+      const orderId = order_id || merchantOrderId || res.data.merchantTransactionId;
+      
+      if (!orderId) {
+        console.error("❌ No order_id in response:", res.data);
+        throw new Error("Order ID missing from server response");
+      }
 
-      console.log("✅ Stored order_id:", order.id);
+      localStorage.setItem("phonepe_order_id", orderId);
+
+      console.log("✅ Stored order_id:", orderId);
       console.log("🔗 Redirecting to:", checkout_url);
 
       setLoadingMessage("Redirecting to PhonePe...");
@@ -2293,7 +2285,9 @@ export default function TestComponent({ open, onClose }) {
 
       toast.error(errorMessage);
     }
-  };;
+  };
+
+
   /* ================= COD ================= */
 
   const handleCODPayment = async () => {

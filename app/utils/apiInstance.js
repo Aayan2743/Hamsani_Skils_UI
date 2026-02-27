@@ -6,7 +6,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const api = axios.create({
   // baseURL: "https://api-hamsini.easybizcart.com/public/api/",
-  baseURL: "http://192.168.1.6:8000/api/",
+  baseURL: "http://192.168.1.3:8000/api/",
   timeout: 8000, // Reduced from 15s to 8s
   headers: {
     "Content-Type": "application/json",
