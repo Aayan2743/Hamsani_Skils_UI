@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import api from "../../utils/apiInstance";
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+import { Phone, ArrowRight, Hash } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -12,38 +12,75 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect") || "/";
   
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [step, setStep] = useState("phone"); // "phone" | "otp"
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async (e) => {
+  // Send OTP
+  const handleSendOTP = async (e) => {
     e.preventDefault();
+
+    if (!phone || phone.length !== 10) {
+      return toast.error("Enter valid 10-digit phone number");
+    }
+
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/user-login", {
-        login: email,
-        password: password,
+      const res = await api.post("/auth/send-otp", {
+        identifier: phone,
       });
 
-      const json = res.data;
+      if (res.data?.status) {
+        toast.success(res.data.message || "OTP sent successfully");
+        setStep("otp");
+      } else {
+        toast.error(res.data?.message || "Failed to send OTP");
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Server error. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      localStorage.setItem("token", json.token);
-      localStorage.setItem("token_type", json.token_type);
-      localStorage.setItem("user", JSON.stringify(json.user));
+  // Verify OTP
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
 
-      toast.success("Login successful! Welcome back 🎉");
-      router.push(redirect);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "Login failed";
-      toast.error(message);
+    if (!otp || otp.length !== 6) {
+      return toast.error("Enter valid 6-digit OTP");
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await api.post("/auth/verify-login-otp", {
+        identifier: phone,
+        otp: otp,
+      });
+
+      if (res.data?.status && res.data?.token) {
+        const { token, user } = res.data;
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        toast.success(res.data.message || "Login successful! Welcome back 🎉");
+        router.push(redirect);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        toast.error(res.data?.message || "Invalid OTP");
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "OTP verification failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -89,89 +126,115 @@ export default function LoginPage() {
                 Sign In
               </h1>
               <p className="text-gray-600 animate-slide-down-delayed">
-                Enter your credentials to access your account
+                 Enter your mobile number to access your account
               </p>
             </div>
 
             {/* Form */}
-            <form onSubmit={onSubmit} className="space-y-5">
-              
-              {/* Email/Mobile Input */}
-              <div className="space-y-2 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                <label className="block text-sm font-semibold text-[#2C1810]">
-                  Mobile / Email
-                </label>
-                <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#8B4513] transition-colors" />
-                  <input
-                    type="text"
-                    placeholder="Enter your mobile or email"
-                    className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-[#8B4513] focus:ring-4 focus:ring-[#8B4513]/10 outline-none transition-all duration-300 bg-white/50"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
+            {step === "phone" ? (
+              <form onSubmit={handleSendOTP} className="space-y-5">
+                
+                {/* Phone Number Input */}
+                <div className="space-y-2 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                  <label className="block text-sm font-semibold text-[#2C1810]">
+                    Please Provide WhatsApp number 
+                  </label>
+                  <div className="relative group">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#8B4513] transition-colors" />
+                    <input
+                      type="tel"
+                      placeholder="Enter 10-digit phone number"
+                      className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-[#8B4513] focus:ring-4 focus:ring-[#8B4513]/10 outline-none transition-all duration-300 bg-white/50"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      maxLength={10}
+                      required
+                    />
+                  </div>
+                  {/* <p className="text-xs text-gray-500 mt-1">
+                    Please provide WhatsApp Number
+                  </p> */}
                 </div>
-              </div>
 
-              {/* Password Input */}
-              <div className="space-y-2 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                <label className="block text-sm font-semibold text-[#2C1810]">
-                  Password
-                </label>
-                <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#8B4513] transition-colors" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl focus:border-[#8B4513] focus:ring-4 focus:ring-[#8B4513]/10 outline-none transition-all duration-300 bg-white/50"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#8B4513] transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Forgot Password */}
-              <div className="flex justify-end animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                <Link 
-                  href="/account/forgot-password" 
-                  className="text-sm text-[#8B4513] hover:text-[#6D3410] font-medium transition-colors"
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-[#8B4513] to-[#6D3410] hover:from-[#6D3410] hover:to-[#8B4513] text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 group animate-slide-up"
+                  style={{ animationDelay: '0.2s' }}
                 >
-                  Forgot Password?
-                </Link>
-              </div>
+                  {loading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Sending OTP...
+                    </>
+                  ) : (
+                    <>
+                      Send OTP
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOTP} className="space-y-5">
+                
+                {/* OTP Input */}
+                <div className="space-y-2 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                  <label className="block text-sm font-semibold text-[#2C1810]">
+                    Enter OTP
+                  </label>
+                  <div className="relative group">
+                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#8B4513] transition-colors" />
+                    <input
+                      type="text"
+                      placeholder="Enter 6-digit OTP"
+                      className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-[#8B4513] focus:ring-4 focus:ring-[#8B4513]/10 outline-none transition-all duration-300 bg-white/50 text-center text-2xl tracking-widest"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      maxLength={6}
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    OTP sent to {phone}
+                  </p>
+                </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-[#8B4513] to-[#6D3410] hover:from-[#6D3410] hover:to-[#8B4513] text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 group animate-slide-up"
-                style={{ animationDelay: '0.4s' }}
-              >
-                {loading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  <>
-                    Sign In
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </button>
-            </form>
+                {/* Change Phone Number */}
+                <button
+                  type="button"
+                  onClick={() => setStep("phone")}
+                  className="text-sm text-[#8B4513] hover:text-[#6D3410] font-medium transition-colors animate-slide-up"
+                  style={{ animationDelay: '0.2s' }}
+                >
+                  ← Change Phone Number
+                </button>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-[#8B4513] to-[#6D3410] hover:from-[#6D3410] hover:to-[#8B4513] text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 group animate-slide-up"
+                  style={{ animationDelay: '0.3s' }}
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      Verify & Sign In
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
 
             {/* Register Link */}
-            <div className="text-center pt-4 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+            {/* <div className="text-center pt-4 animate-fade-in" style={{ animationDelay: '0.5s' }}>
               <p className="text-gray-600">
                 Don't have an account?{" "}
                 <Link
@@ -181,7 +244,7 @@ export default function LoginPage() {
                   Create Account
                 </Link>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

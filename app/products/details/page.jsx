@@ -701,24 +701,8 @@ function SimilarProductsCarousel({ categorySlug, currentProductId }) {
     }
   }, [categorySlug, currentProductId]);
 
-  if (loading) {
-    return (
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold text-[#2C1810] mb-6 font-display">Similar Products</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="aspect-[3/4] bg-gray-200 rounded-lg mb-3" />
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-1/2" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (similarProducts.length === 0) {
+  // Don't show anything while loading or if no products
+  if (loading || similarProducts.length === 0) {
     return null;
   }
 
