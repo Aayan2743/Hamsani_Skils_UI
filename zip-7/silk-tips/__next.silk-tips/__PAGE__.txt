@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[21681,["/_next/static/chunks/1b3d6f9d186d7b11.js","/_next/static/chunks/1494ee108572db1a.js","/_next/static/chunks/0567f35945351758.js","/_next/static/chunks/6b735bd5cfaf88bf.js","/_next/static/chunks/18cf914c7f80ced2.js","/_next/static/chunks/29792bce77a8cbe6.js"],"Image"]
-3:I[54854,["/_next/static/chunks/e0eeaa3e908d9b13.js","/_next/static/chunks/37e43653c704d9eb.js"],"OutletBoundary"]
-4:"$Sreact.suspense"
-0:{"buildId":"891hskicC4N0oXE878ndS","rsc":["$","$1","c",{"children":[["$","main",null,{"className":"bg-[#faf7f4] text-gray-800","children":["$","section",null,{"className":"max-w-6xl mx-auto px-6 py-14","children":[["$","header",null,{"className":"text-center mb-12","children":[["$","h1",null,{"className":"text-3xl md:text-4xl font-bold tracking-wide mb-3","children":"Safety & Skill Tips"}],["$","p",null,{"className":"text-sm tracking-widest text-gray-500 uppercase","children":"Hamisni Skills"}]]}],["$","div",null,{"className":"flex justify-center mb-14","children":["$","$L2",null,{"src":"/skills-tips.webp","alt":"Hamisni Skills learning safety and professional tips","width":500,"height":600,"className":"rounded-lg shadow-sm","priority":true}]}]]}]}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
-5:null

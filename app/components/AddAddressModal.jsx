@@ -11,6 +11,7 @@ export default function AddAddressModal({
   onClose,
   onSuccess,
   editData = null,
+  currentAddressCount = 0,
 }) {
   const [form, setForm] = useState({
     name: "",
@@ -130,6 +131,12 @@ export default function AddAddressModal({
       return;
     }
 
+    // Check address limit only for new addresses (not edits)
+    if (!editData && currentAddressCount >= 2) {
+      toast.error("Maximum 2 addresses allowed. Please edit an existing address.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please login to continue");
@@ -156,14 +163,16 @@ export default function AddAddressModal({
       
       toast.success(successMessage);
 
-      // Pass the updated/new address data to parent
+      // Get the address data from response
       const addressData = res.data?.data || { ...form, id: res.data?.id || Date.now() };
       
-      // Close modal first for better UX
-      onClose();
+      // Trigger success callback and wait for it to complete
+      if (onSuccess) {
+        await onSuccess(addressData);
+      }
       
-      // Then trigger success callback with data
-      onSuccess(addressData);
+      // Close modal after refresh completes
+      onClose();
       
     } catch (err) {
       const apiData = err.response?.data;

@@ -812,10 +812,15 @@ export default function CartSidebar({ open, onClose }) {
       });
 
       const data = res?.data?.data || [];
-      // console.log("FEtch",data) 
-      setAddresses(data);
+      console.log("Total addresses from API:", data.length);
+      
+      // Limit to only 2 addresses
+      const limitedAddresses = data.slice(0, 2);
+      console.log("Limited addresses:", limitedAddresses.length);
+      
+      setAddresses(limitedAddresses);
       setSelectedAddress(
-        data.find((a) => a.is_default === 1) || data[0] || null
+        limitedAddresses.find((a) => a.is_default === 1) || limitedAddresses[0] || null
       );
     } catch {
       toast.error("Failed to load addresses");
@@ -1048,11 +1053,22 @@ export default function CartSidebar({ open, onClose }) {
                 setEditAddress(null);
                 setShowAddAddress(true);
               }}
-              className="flex items-center gap-1.5 text-sm bg-gradient-to-r from-[#8B4513] to-[#C4A962] text-white px-3 py-1.5 rounded-lg hover:shadow-md transition-all font-medium"
+              disabled={addresses.length >= 2}
+              className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg font-medium transition-all ${
+                addresses.length >= 2
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-[#8B4513] to-[#C4A962] text-white hover:shadow-md"
+              }`}
             >
               <FiPlus className="w-4 h-4" /> Add New
             </button>
           </div>
+
+          {addresses.length >= 2 && (
+            <p className="text-xs text-orange-600 mb-2 bg-orange-50 p-2 rounded border border-orange-200">
+              Maximum 2 addresses allowed. Please edit or delete an existing address.
+            </p>
+          )}
 
           {addresses.length === 0 && (
             <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
@@ -1093,16 +1109,38 @@ export default function CartSidebar({ open, onClose }) {
                   </p>
                   <p className="text-sm text-gray-500 mt-1">Ph: {addr.phone}</p>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditAddress(addr);
-                      setShowAddAddress(true);
-                    }}
-                    className="text-xs text-[#8B4513] font-medium mt-2 flex items-center gap-1 hover:underline"
-                  >
-                    <FiEdit className="w-3 h-3" /> Edit Address
-                  </button>
+                  <div className="flex gap-3 mt-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditAddress(addr);
+                        setShowAddAddress(true);
+                      }}
+                      className="text-xs text-[#8B4513] font-medium flex items-center gap-1 hover:underline"
+                    >
+                      <FiEdit className="w-3 h-3" /> Edit
+                    </button>
+                    
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!confirm("Delete this address?")) return;
+                        
+                        try {
+                          await api.delete(`/user-dashboard/cart/delete-address/${addr.id}`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
+                          toast.success("Address deleted successfully");
+                          await fetchAddresses();
+                        } catch (error) {
+                          toast.error("Failed to delete address");
+                        }
+                      }}
+                      className="text-xs text-red-600 font-medium flex items-center gap-1 hover:underline"
+                    >
+                      <FiTrash2 className="w-3 h-3" /> Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1181,12 +1219,14 @@ export default function CartSidebar({ open, onClose }) {
       <AddAddessModal
         open={showAddAddress}
         editData={editAddress}
+        currentAddressCount={addresses.length}
         onClose={() => {
           setShowAddAddress(false);
           setEditAddress(null);
         }}
-        onSuccess={() => {
-          fetchAddresses(); // Refresh addresses immediately
+        onSuccess={async (newAddress) => {
+          // Refresh addresses immediately after adding/updating
+          await fetchAddresses();
           setShowAddAddress(false);
           setEditAddress(null);
         }}

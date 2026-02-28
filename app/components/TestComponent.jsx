@@ -33,6 +33,8 @@ export default function TestComponent({ open, onClose }) {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddAddress, setShowAddAddress] = useState(false);
   const [editAddress, setEditAddress] = useState(null);
+  const [addressLoading, setAddressLoading] = useState(false);
+  const [addressRefreshTrigger, setAddressRefreshTrigger] = useState(0);
 
   /* COUPON STATES */
   const [coupon, setCoupon] = useState("");
@@ -93,23 +95,54 @@ export default function TestComponent({ open, onClose }) {
     if (!token) return;
 
     try {
-      const res = await api.get("/user-dashboard/cart/get-address", {
+      setAddressLoading(true);
+      
+      // Add cache busting parameter
+      const timestamp = new Date().getTime();
+      const res = await api.get(`/user-dashboard/cart/get-address?_t=${timestamp}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = res?.data?.data || [];
-      setAddresses(data);
-      setSelectedAddress(
-        data.find((a) => a.is_default === 1) || data[0] || null
-      );
-    } catch {
+      console.log("Total addresses from API:", data.length);
+      console.log("Address data:", data);
+      
+      // Limit to only 2 addresses
+      const limitedAddresses = data.slice(0, 2);
+      console.log("Limited addresses:", limitedAddresses.length);
+      
+      // Force state update by creating new array
+      setAddresses([...limitedAddresses]);
+      
+      // Update selected address if it exists in the new list, otherwise select first or default
+      if (selectedAddress) {
+        const stillExists = limitedAddresses.find(a => a.id === selectedAddress.id);
+        if (stillExists) {
+          setSelectedAddress({...stillExists});
+        } else {
+          setSelectedAddress(
+            limitedAddresses.find((a) => a.is_default === 1) || limitedAddresses[0] || null
+          );
+        }
+      } else {
+        setSelectedAddress(
+          limitedAddresses.find((a) => a.is_default === 1) || limitedAddresses[0] || null
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch addresses:", error);
       toast.error("Failed to load addresses");
+    } finally {
+      setAddressLoading(false);
     }
   };
 
   useEffect(() => {
-    if (open && token) fetchAddresses();
-  }, [open, token]);
+    if (open && token) {
+      console.log("Cart opened, fetching addresses...");
+      fetchAddresses();
+    }
+  }, [open, token, addressRefreshTrigger,close]);
 
   /* APPLY COUPON */
   const handleApplyCoupon = async () => {
@@ -508,13 +541,29 @@ export default function TestComponent({ open, onClose }) {
                 setEditAddress(null);
                 setShowAddAddress(true);
               }}
-              className="flex items-center gap-1.5 text-sm bg-gradient-to-r from-[#8B4513] to-[#C4A962] text-white px-3 py-1.5 rounded-lg hover:shadow-md transition-all font-medium"
+              disabled={addresses.length >= 2 || addressLoading}
+              className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg font-medium transition-all ${
+                addresses.length >= 2 || addressLoading
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-[#8B4513] to-[#C4A962] text-white hover:shadow-md"
+              }`}
             >
               <FiPlus className="w-4 h-4" /> Add New
             </button>
           </div>
 
-          {addresses.length === 0 && (
+          {addresses.length >= 2 && !addressLoading && (
+            <p className="text-xs text-orange-600 mb-2 bg-orange-50 p-2 rounded border border-orange-200">
+              Maximum 2 addresses allowed. Please edit an existing address If Required.
+            </p>
+          )}
+
+          {addressLoading ? (
+            <div className="py-8 text-center">
+              <div className="inline-block w-8 h-8 border-4 border-[#8B4513] border-t-transparent rounded-full animate-spin mb-3"></div>
+              <p className="text-sm text-gray-500">Loading addresses...</p>
+            </div>
+          ) : addresses.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
               <p className="text-sm text-gray-500 mb-3">No address found</p>
               <button
@@ -527,11 +576,10 @@ export default function TestComponent({ open, onClose }) {
                 Add your first address
               </button>
             </div>
-          )}
-
-          {addresses.map((addr) => (
+          ) : (
+            addresses.map((addr, index) => (
             <div
-              key={addr.id}
+              key={`${addr.id}-${addr.name}-${index}`}
               onClick={() => setSelectedAddress(addr)}
               className={`border-2 p-3 rounded-lg mb-2 cursor-pointer transition-all ${
                 selectedAddress?.id === addr.id
@@ -553,20 +601,45 @@ export default function TestComponent({ open, onClose }) {
                   </p>
                   <p className="text-sm text-gray-500 mt-1">Ph: {addr.phone}</p>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditAddress(addr);
-                      setShowAddAddress(true);
-                    }}
-                    className="text-xs text-[#8B4513] font-medium mt-2 flex items-center gap-1 hover:underline"
-                  >
-                    <FiEdit className="w-3 h-3" /> Edit Address
-                  </button>
+                  <div className="flex gap-3 mt-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditAddress(addr);
+                        setShowAddAddress(true);
+                      }}
+                      className="text-xs text-[#8B4513] font-medium flex items-center gap-1 hover:underline"
+                    >
+                      <FiEdit className="w-3 h-3" /> Edit
+                    </button>
+                    
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!confirm("Delete this address?")) return;
+                        
+                        try {
+                          setAddressLoading(true);
+                          await api.delete(`/user-dashboard/cart/delete-address/${addr.id}`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
+                          toast.success("Address deleted successfully");
+                          await fetchAddresses();
+                        } catch (error) {
+                          setAddressLoading(false);
+                          toast.error("Failed to delete address");
+                        }
+                      }}
+                      className="text-xs text-red-600 font-medium flex items-center gap-1 hover:underline"
+                    >
+                      {/* <FiTrash2 className="w-3 h-3" /> Delete */}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
 
         {/* COUPON */}
@@ -648,29 +721,25 @@ export default function TestComponent({ open, onClose }) {
       <AddAddessModal
         open={showAddAddress}
         editData={editAddress}
+        currentAddressCount={addresses.length}
         onClose={() => {
           setShowAddAddress(false);
           setEditAddress(null);
         }}
-        onSuccess={(newAddressData) => {
-          // Optimistically update the addresses list without full refetch
-          if (editAddress) {
-            // Update existing address
-            setAddresses(prev => 
-              prev.map(addr => addr.id === editAddress.id ? newAddressData : addr)
-            );
-            setSelectedAddress(newAddressData);
-          } else {
-            // Add new address
-            setAddresses(prev => [...prev, newAddressData]);
-            setSelectedAddress(newAddressData);
+        onSuccess={async (newAddressData) => {
+          console.log("Address saved, refreshing list...");
+          
+          // Immediately fetch fresh addresses
+          try {
+            await fetchAddresses();
+            console.log("Address list refreshed successfully");
+          } catch (error) {
+            console.error("Failed to refresh addresses:", error);
           }
           
+          // Close the address modal
           setShowAddAddress(false);
           setEditAddress(null);
-          
-          // Fetch fresh data in background to ensure sync
-          fetchAddresses();
         }}
       />
 
