@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import api from "../../utils/apiInstance";
 import { Phone, ArrowRight, Hash } from "lucide-react";
 import Link from "next/link";
+import { setToken, setUser } from "../../utils/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -66,14 +67,13 @@ export default function LoginPage() {
       if (res.data?.status && res.data?.token) {
         const { token, user } = res.data;
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        // Use the setToken function which also sets expiry time
+        setToken(token);
+        setUser(user);
 
         toast.success(res.data.message || "Login successful! Welcome back 🎉");
-        router.push(redirect);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        // Redirect to home page after successful login
+        router.push("/");
       } else {
         toast.error(res.data?.message || "Invalid OTP");
       }
