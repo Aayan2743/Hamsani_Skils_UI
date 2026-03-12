@@ -160,14 +160,16 @@ export default function ProductCard({ product }) {
     "/placeholder.svg";
 
   const variant = product.raw?.variant_combinations?.[0];
-  const basePrice = Number(variant?.purchase_price || 0);
   const sellingPrice = Number(variant?.extra_price || product.price || 0);
-  const discount = variant?.discount ? Number(variant.discount) : 0;
+  const discountAmount = variant?.discount ? Number(variant.discount) : 0;
   
-  // Calculate final price after discount
-  const finalPrice = discount > 0 
-    ? sellingPrice - (sellingPrice * discount / 100)
-    : sellingPrice;
+  // Calculate discount percentage from rupees
+  const discountPercentage = sellingPrice > 0 
+    ? Math.round((discountAmount / sellingPrice) * 100)
+    : 0;
+  
+  // Final price is selling price minus discount amount
+  const finalPrice = sellingPrice - discountAmount;
 
   // Determine badges
   const isBestseller = product.raw?.is_bestseller || false;
@@ -288,9 +290,9 @@ export default function ProductCard({ product }) {
               NEW
             </span>
           )}
-          {discount > 0 && (
+          {discountPercentage > 0 && (
             <span className="bg-[#E74C3C] text-white text-[10px] font-bold px-2 py-1 rounded">
-              -{discount}%
+              -{discountPercentage}%
             </span>
           )}
         </div>
@@ -309,9 +311,9 @@ export default function ProductCard({ product }) {
 
       {/* PRODUCT INFO */}
       <div className="p-4">
-        <p className="text-[11px] text-[#8B7355] uppercase tracking-wide mb-1">
+        {/* <p className="text-[11px] text-[#8B7355] uppercase tracking-wide mb-1">
           SILK SAREES
-        </p>
+        </p> */}
         
         <h3 className="text-[15px] font-normal text-[#2C1810] mb-2 line-clamp-1 font-display">
           {product.title}
@@ -337,7 +339,7 @@ export default function ProductCard({ product }) {
           <span className="text-[18px] font-semibold text-[#2C1810]">
             ₹{finalPrice.toLocaleString()}
           </span>
-          {discount > 0 && (
+          {discountPercentage > 0 && (
             <span className="text-[14px] text-gray-400 line-through">
               ₹{sellingPrice.toLocaleString()}
             </span>

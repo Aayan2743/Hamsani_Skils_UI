@@ -359,7 +359,7 @@ function ProductDetailsContent() {
                     ₹{Number(selectedVariant.extra_price).toLocaleString()}
                   </span>
                   <span className="bg-green-100 text-green-700 text-sm font-semibold px-2 py-1 rounded">
-                    {selectedVariant.discount}% OFF
+                  ₹ {selectedVariant.discount} OFF
                   </span>
                 </>
               )}
