@@ -158,18 +158,33 @@ export default function ProductCard({ product }) {
     product.raw?.images?.[0]?.image_url ||
     product.image ||
     "/placeholder.svg";
-
   const variant = product.raw?.variant_combinations?.[0];
   const sellingPrice = Number(variant?.extra_price || product.price || 0);
-  const discountAmount = variant?.discount ? Number(variant.discount) : 0;
+  const discountValue = variant?.discount ? Number(variant.discount) : 0;
   
-  // Calculate discount percentage from rupees
+  // Determine if discount is percentage or rupees
+  // If discount_price exists, discount is percentage; otherwise it's rupees
+  const isDiscountPercentage = !!variant?.discount_price;
+  
+  // Use discount_price if available (from percentage API), otherwise calculate
+  let finalPrice;
+  if (variant?.discount_price) {
+    // New API with discount_price
+    finalPrice = Math.floor(Number(variant.discount_price));
+  } else if (discountValue > 0 && discountValue < 100) {
+    // Discount is percentage (0-100)
+    finalPrice = Math.floor(sellingPrice - (sellingPrice * discountValue / 100));
+  } else if (discountValue > 0) {
+    // Discount is rupees (larger than 100)
+    finalPrice = Math.floor(sellingPrice - discountValue);
+  } else {
+    finalPrice = Math.floor(sellingPrice);
+  }
+  
+  // Calculate discount percentage
   const discountPercentage = sellingPrice > 0 
-    ? Math.round((discountAmount / sellingPrice) * 100)
+    ? Math.round(((sellingPrice - finalPrice) / sellingPrice) * 100)
     : 0;
-  
-  // Final price is selling price minus discount amount
-  const finalPrice = sellingPrice - discountAmount;
 
   // Determine badges
   const isBestseller = product.raw?.is_bestseller || false;
@@ -320,7 +335,7 @@ export default function ProductCard({ product }) {
         </h3>
 
         {/* RATING */}
-        <div className="flex items-center gap-1 mb-2">
+        {/* <div className="flex items-center gap-1 mb-2">
           {[...Array(5)].map((_, i) => (
             <svg
               key={i}
@@ -331,8 +346,7 @@ export default function ProductCard({ product }) {
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
           ))}
-          <span className="text-[11px] text-gray-500 ml-1">(234)</span>
-        </div>
+        </div> */}
 
         {/* PRICE */}
         <div className="flex items-center gap-2">

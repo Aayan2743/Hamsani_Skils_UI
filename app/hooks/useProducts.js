@@ -28,7 +28,7 @@ export function useProducts(page = 1, perPage = 12, searchQuery = "", categorySl
           url = `ecom/collections?category=${encodeURIComponent(categorySlug.trim())}&page=${page}&per_page=${perPage}`;
         } else {
           // Otherwise use products endpoint
-          url = `ecom/products?page=${page}&per_page=${perPage}`;
+          url = `ecom/products-percentage?page=${page}&per_page=${perPage}`;
           
           // Add search query if provided
           if (searchQuery && searchQuery.trim()) {

@@ -377,7 +377,6 @@ export default function CollectionsPage() {
                 selectedCategory={categoryParam}
               />
             </div>
-
             {/* PRODUCTS */}
             <div className="flex-1">
               {/* Results Count */}
@@ -386,7 +385,6 @@ export default function CollectionsPage() {
                   Showing {pagination.from}-{pagination.to} of {pagination.total} products
                 </div>
               )}
-
               {loading ? (
                 <ProductsSkeleton />
               ) : filteredProducts.length === 0 ? (

@@ -68,7 +68,7 @@ function ProductDetailsContent() {
         setLoading(true);
         setError(null);
         
-        const res = await api.get(`ecom/products?slug=${productSlug}`);
+        const res = await api.get(`ecom/products-percentage?slug=${productSlug}`);
 
         if (!isMounted) return;
 
@@ -133,9 +133,11 @@ function ProductDetailsContent() {
   const images = product.images || [];
   const currentImage = images[selectedImage]?.image_url || "/placeholder.svg";
   
-  const finalPrice = selectedVariant.discount > 0
-    ? selectedVariant.amount
-    : Number(selectedVariant.extra_price);
+  const finalPrice = selectedVariant.discount_price
+    ? Math.floor(Number(selectedVariant.discount_price))
+    : (selectedVariant.discount > 0
+      ? Math.floor(selectedVariant.amount)
+      : Math.floor(Number(selectedVariant.extra_price)));
 
   function handleAddToCart() {
     addToCart({
@@ -342,9 +344,7 @@ function ProductDetailsContent() {
               </button> */}
             </div>
           </div>
-
           <div className="space-y-5">
-            
             <h1 className="text-3xl md:text-4xl font-normal text-[#2C1810] font-display">
               {product.name}
             </h1>
@@ -359,7 +359,7 @@ function ProductDetailsContent() {
                     ₹{Number(selectedVariant.extra_price).toLocaleString()}
                   </span>
                   <span className="bg-green-100 text-green-700 text-sm font-semibold px-2 py-1 rounded">
-                  ₹ {selectedVariant.discount} OFF
+                   {selectedVariant.discount} % OFF
                   </span>
                 </>
               )}
