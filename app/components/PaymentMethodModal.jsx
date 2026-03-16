@@ -25,16 +25,12 @@ export default function PaymentMethodModal({ open, onClose, onSelectMethod }) {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       
-      console.log("Payment Gateways API Response:", response.data);
-      
       // Handle both response.data.data and response.data structures
       const gatewayData = response.data.data || response.data;
-      console.log("Gateway Data:", gatewayData);
       
       setPaymentGateways(gatewayData);
     } catch (error) {
       toast.error("Failed to load payment methods");
-      console.error("Payment gateways fetch error:", error);
     } finally {
       setLoading(false);
     }
@@ -45,8 +41,6 @@ export default function PaymentMethodModal({ open, onClose, onSelectMethod }) {
   // Build payment methods array based on API response
   const getAvailablePaymentMethods = () => {
     if (!paymentGateways) return [];
-
-    console.log("Building payment methods from:", paymentGateways);
 
     const methods = [];
 
@@ -95,7 +89,6 @@ export default function PaymentMethodModal({ open, onClose, onSelectMethod }) {
     //   });
     // }
 
-    console.log("Available payment methods:", methods);
     return methods;
   };
 

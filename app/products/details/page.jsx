@@ -9,8 +9,6 @@ import api from "../../utils/apiInstance";
 import { 
   ChevronLeft, 
   ChevronRight, 
-  Heart, 
-  Share2, 
   ChevronDown, 
   ChevronUp, 
   Package, 
@@ -140,13 +138,19 @@ function ProductDetailsContent() {
       : Math.floor(Number(selectedVariant.extra_price)));
 
   function handleAddToCart() {
-    addToCart({
+    const cartItem = {
       product_id: product.id,
       title: product.name,
       price: finalPrice,
       img: currentImage,
       qty: quantity,
-    });
+      size: selectedVariant.values?.[1]?.value || "One Size",
+      color: selectedVariant.values?.[0]?.value || "Default",
+      colorCode: selectedVariant.values?.[0]?.color_code || "#cccccc",
+      sku: selectedVariant.sku,
+      allVariants: product.variant_combinations || [],
+    };
+    addToCart(cartItem);
     toast.success("Added to cart successfully");
   }
 
@@ -169,8 +173,6 @@ function ProductDetailsContent() {
         { product_id: product.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log("Wishlist API Response:", res);
 
       if (res?.success) {
         if (res.action === "added") {
@@ -212,7 +214,6 @@ function ProductDetailsContent() {
         // });
       }
     } catch (error) {
-      console.error("Wishlist error:", error);
       // Revert on error
       setIsLiked(wasLiked);
       // toast.error("Failed to update wishlist", {
@@ -234,6 +235,11 @@ function ProductDetailsContent() {
       price: finalPrice,
       img: currentImage,
       qty: quantity,
+      size: selectedVariant.values?.[1]?.value || "One Size",
+      color: selectedVariant.values?.[0]?.value || "Default",
+      colorCode: selectedVariant.values?.[0]?.color_code || "#cccccc",
+      sku: selectedVariant.sku,
+      allVariants: product.variant_combinations || [],
     });
     toast.success("Added to cart successfully");
     setCartOpen(true);
@@ -305,18 +311,6 @@ function ProductDetailsContent() {
                 />
                 
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <button 
-                    onClick={handleWishlist}
-                    className="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition hover:scale-110"
-                  >
-                    <Heart 
-                      size={20} 
-                      className={isLiked ? "fill-rose-600 text-rose-600" : "text-gray-700"}
-                    />
-                  </button>
-                  <button className="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition">
-                    <Share2 size={20} className="text-gray-700" />
-                  </button>
                 </div>
 
                 {images.length > 1 && (
@@ -690,7 +684,7 @@ function SimilarProductsCarousel({ categorySlug, currentProductId }) {
         
         setSimilarProducts(filtered);
       } catch (error) {
-        console.error("Failed to load similar products");
+        // Failed to load similar products
       } finally {
         setLoading(false);
       }
@@ -824,18 +818,16 @@ function SimilarProductCard({ product }) {
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        
         {discount > 0 && (
           <div className="absolute top-3 left-3 bg-[#E74C3C] text-white text-xs font-bold px-2 py-1 rounded">
             -{discount}%
           </div>
         )}
       </div>
-
       <div className="p-4">
-        <p className="text-xs text-[#8B7355] uppercase tracking-wide mb-1">
+        {/* <p className="text-xs text-[#8B7355] uppercase tracking-wide mb-1">
           SILK SAREES
-        </p>
+        </p> */}
         <h3 className="font-semibold text-[#2C1810] mb-2 line-clamp-2 text-sm group-hover:text-[#8B4513] transition-colors">
           {product.name}
         </h3>

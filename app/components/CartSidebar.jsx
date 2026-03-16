@@ -746,14 +746,15 @@ import AddAddessModal from "./AddAddressModal";
 import OTPAuthModal from "./OTPAuthModal";
 import PaymentLoader from "./PaymentLoader";
 import OrderSuccessModal from "./OrderSuccessModal";
+import { useAuth } from "./context/AuthProvider";
 import api from "../utils/apiInstance";
 
 export default function CartSidebar({ open, onClose }) {
   const { items, updateQty, removeFromCart, clearCart } = useCart();
+  const { user } = useAuth();
   const cartItems = Object.values(items ?? {});
   const router = useRouter();
 
-  const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
 
   /* OTP AUTH MODAL */
@@ -777,7 +778,6 @@ export default function CartSidebar({ open, onClose }) {
   /* LOAD TOKEN ON MOUNT */
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setToken(localStorage.getItem("token"));
       setUserId(localStorage.getItem("user_id"));
     }
   }, []);
@@ -804,19 +804,17 @@ export default function CartSidebar({ open, onClose }) {
 
   /* FETCH ADDRESS */
   const fetchAddresses = async () => {
-    if (!token) return;
+    if (!user) return;
 
     try {
       const res = await api.get("/user-dashboard/cart/get-address", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
       });
 
       const data = res?.data?.data || [];
-      console.log("Total addresses from API:", data.length);
       
       // Limit to only 2 addresses
       const limitedAddresses = data.slice(0, 2);
-      console.log("Limited addresses:", limitedAddresses.length);
       
       setAddresses(limitedAddresses);
       setSelectedAddress(
@@ -828,8 +826,8 @@ export default function CartSidebar({ open, onClose }) {
   };
 
   useEffect(() => {
-    if (open && token) fetchAddresses();
-  }, [open, token]);
+    if (open && user) fetchAddresses();
+  }, [open, user]);
 
   /* APPLY COUPON */
   const handleApplyCoupon = async () => {
@@ -839,7 +837,7 @@ export default function CartSidebar({ open, onClose }) {
       const res = await api.post(
         "/user-dashboard/cart/apply-coupon",
         { code: coupon.trim(), amount: subtotal },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
       setCouponData(res.data);
@@ -852,7 +850,7 @@ export default function CartSidebar({ open, onClose }) {
 
   /* PLACE ORDER */
   const handleRazorpayPayment = async () => {
-    if (!token) {
+    if (!user) {
       setShowOTPAuth(true);
       return;
     }
@@ -877,7 +875,7 @@ export default function CartSidebar({ open, onClose }) {
       const createRes = await api.post(
         "/user-dashboard/cart/create-order",
         { amount: finalTotal },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
       const order = createRes.data.order;
@@ -899,7 +897,7 @@ export default function CartSidebar({ open, onClose }) {
             await api.post(
               "/user-dashboard/cart/verify-payment",
               response,
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${user.token}` } }
             );
 
             setLoadingMessage("Completing your order...");
@@ -1020,25 +1018,91 @@ export default function CartSidebar({ open, onClose }) {
           <>
             {/* CART ITEMS */}
             {cartItems.map((item, i) => (
-              <div key={i} className="flex gap-3 border p-2 rounded mb-2">
+              <div key={i} className="flex gap-3 border p-3 rounded mb-3 bg-white hover:shadow-md transition">
                 <img
                   src={item.img || "/placeholder.png"}
-                  className="w-16 h-16 object-cover"
-                  alt=""
+                  className="w-16 h-16 object-cover rounded"
+                  alt={item.title || item.name}
                 />
                 <div className="flex-1">
-                  <p className="font-medium">{item.name}</p>
-                  <p>₹{item.price} × {item.qty}</p>
+                  <p className="font-semibold text-gray-800 text-sm">{item.title || item.name}</p>
+                  
+                  {/* Size */}
+                  {item.size && (
+                    <div className="text-xs text-gray-600 mt-1">
+                      <span className="font-medium">Size:</span> {item.size}
+                    </div>
+                  )}
 
-                  <div className="flex gap-2 mt-1">
-                    <button onClick={() => handleQtyChange(item.product_id, -1)}>-</button>
-                    <span>{item.qty}</span>
-                    <button onClick={() => handleQtyChange(item.product_id, 1)}>+</button>
+                  {/* Price with Color Swatch */}
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-[#8B4513]">₹{item.price}</p>
+                      {item.color ? (
+                        <div className="flex items-center gap-1.5">
+                          <div
+                            className="w-6 h-6 rounded-full border-2 border-gray-300"
+                            style={{ backgroundColor: item.colorCode || "#cccccc" }}
+                            title={item.color}
+                          />
+                          <span className="text-xs text-gray-600">{item.color}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">No color</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1">
+                      <button 
+                        onClick={() => handleQtyChange(item.product_id, -1)}
+                        className="text-gray-600 hover:text-gray-800 font-bold"
+                      >
+                        −
+                      </button>
+                      <span className="w-6 text-center font-medium text-sm">{item.qty}</span>
+                      <button 
+                        onClick={() => handleQtyChange(item.product_id, 1)}
+                        className="text-gray-600 hover:text-gray-800 font-bold"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Available Colors */}
+                  {item.allVariants && item.allVariants.length > 1 && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-xs font-medium text-gray-600">Other colors:</span>
+                      <div className="flex gap-1.5">
+                        {item.allVariants.map((variant, idx) => {
+                          const colorValue = variant.values?.[0]?.value;
+                          const colorCode = variant.values?.[0]?.color_code;
+                          const isSelected = colorValue === item.color;
+                          return (
+                            <div
+                              key={idx}
+                              className={`w-5 h-5 rounded-full border-2 hover:border-gray-600 cursor-pointer transition ${
+                                isSelected ? "border-[#8B4513] ring-2 ring-[#8B4513]" : "border-gray-300"
+                              }`}
+                              style={{ backgroundColor: colorCode || "#cccccc" }}
+                              title={colorValue || "Color"}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Total for this item */}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Total: ₹{(item.price * item.qty).toFixed(2)}
+                  </p>
                 </div>
 
-                <button onClick={() => removeFromCart(item.product_id)}>
-                  <FiTrash2 />
+                <button 
+                  onClick={() => removeFromCart(item.product_id)}
+                  className="text-red-500 hover:text-red-700 transition"
+                >
+                  <FiTrash2 size={18} />
                 </button>
               </div>
             ))}

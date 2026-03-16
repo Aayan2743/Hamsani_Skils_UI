@@ -137,21 +137,12 @@
 import SafeImage from "./SafeImage";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/app/providers/CartProvider";
-import { useWishlist } from "@/app/components/WishlistContext";
-import { Heart } from "lucide-react";
 import toast from "react-hot-toast";
-import api from "../utils/apiInstance";
 import { useEffect, useState } from "react";
 
 export default function ProductCard({ product }) {
   const router = useRouter();
   const { addToCart } = useCart();
-  const { wishlist, setWishlist } = useWishlist();
-  const [isLiked, setIsLiked] = useState(false);
-
-  useEffect(() => {
-    setIsLiked(wishlist.includes(product.id));
-  }, [wishlist, product.id]);
 
   const imageUrl =
     product.raw?.images?.find((img) => img.is_primary)?.image_url ||
@@ -161,10 +152,6 @@ export default function ProductCard({ product }) {
   const variant = product.raw?.variant_combinations?.[0];
   const sellingPrice = Number(variant?.extra_price || product.price || 0);
   const discountValue = variant?.discount ? Number(variant.discount) : 0;
-  
-  // Determine if discount is percentage or rupees
-  // If discount_price exists, discount is percentage; otherwise it's rupees
-  const isDiscountPercentage = !!variant?.discount_price;
   
   // Use discount_price if available (from percentage API), otherwise calculate
   let finalPrice;
@@ -201,84 +188,6 @@ export default function ProductCard({ product }) {
     });
     toast.success("Added to cart");
   };
-
-  const handleWishlist = async (e) => {
-    e.stopPropagation();
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.error("Please login to manage wishlist");
-      router.push("/account/login");
-      return;
-    }
-
-    // Optimistically update UI
-    const wasLiked = isLiked;
-    setIsLiked((prev) => !prev);
-
-    try {
-      const res = await api.post(
-        "user-dashboard/wishlist-toggle",
-        { product_id: product.id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      console.log("Wishlist API Response:", res);
-
-      if (res?.success) {
-        if (res.action === "added") {
-          setWishlist([...wishlist, product.id]);
-          toast.success("Item added to favourites", {
-            icon: "❤️",
-            style: {
-              borderRadius: "10px",
-              background: "#fff",
-              color: "#333",
-              padding: "16px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-            },
-          });
-        } else {
-          setWishlist(wishlist.filter((id) => id !== product.id));
-          toast.success("Item removed from wishlist", {
-            icon: "🗑️",
-            style: {
-              borderRadius: "10px",
-              background: "#fff",
-              color: "#333",
-              padding: "16px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-            },
-          });
-        }
-      } else {
-        // Revert on failure
-        setIsLiked(wasLiked);
-        // toast.error("Failed to update wishlist", {
-        //   style: {
-        //     borderRadius: "10px",
-        //     background: "#fff",
-        //     color: "#333",
-        //     padding: "16px",
-        //     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        //   },
-        // });
-      }
-    } catch (error) {
-      console.error("Wishlist error:", error);
-      // Revert on error
-      setIsLiked(wasLiked);
-      // toast.error("Failed to update wishlist", {
-      //   style: {
-      //     borderRadius: "10px",
-      //     background: "#fff",
-      //     color: "#333",
-      //     padding: "16px",
-      //     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-      //   },
-      // });
-    }
-  };
   return (
     <div
       onClick={() => router.push(`/products/details?id=${product.slug}`)}
@@ -311,17 +220,6 @@ export default function ProductCard({ product }) {
             </span>
           )}
         </div>
-
-        {/* WISHLIST HEART */}
-        <button
-          onClick={handleWishlist}
-          className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:scale-110 transition-transform"
-        >
-          <Heart
-            size={18}
-            className={isLiked ? "fill-rose-600 text-rose-600" : "text-zinc-700"}
-          />
-        </button>
       </div>
 
       {/* PRODUCT INFO */}

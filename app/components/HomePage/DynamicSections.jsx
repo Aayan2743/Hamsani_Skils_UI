@@ -15,10 +15,6 @@ export default function DynamicSections() {
         
         const response = await api.get("ecom/home-sections");
         
-        console.log("=== HOME SECTIONS API DEBUG ===");
-        console.log("Full Response:", response);
-        console.log("Response.data:", response.data);
-        
         let sectionsArray = [];
         
         if (response.data) {
@@ -29,18 +25,12 @@ export default function DynamicSections() {
           }
         }
         
-        console.log("Extracted sections array:", sectionsArray);
-        
         const validSections = sectionsArray.filter(
           section => section && section.products && Array.isArray(section.products) && section.products.length > 0
         );
         
-        console.log("Valid sections with products:", validSections);
-        
         setSections(validSections);
       } catch (err) {
-        console.error("=== HOME SECTIONS API ERROR ===");
-        console.error("Error:", err);
         setError(err.message);
         setSections([]);
       } finally {

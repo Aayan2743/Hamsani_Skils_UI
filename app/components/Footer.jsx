@@ -393,7 +393,7 @@ export default function Footer() {
       href={socialLinks.linkedin}
       target="_blank"
       rel="noopener noreferrer"
-      // className="w-10 h-10 bg-white text-black flex items-center justify-center hover:opacity-80 transition"
+      className="w-10 h-10 bg-white text-black flex items-center justify-center hover:opacity-80 transition"
     >
       <FaLinkedinIn />
     </a>
@@ -404,7 +404,7 @@ export default function Footer() {
       href={socialLinks.instagram}
       target="_blank"
       rel="noopener noreferrer"
-      // className="w-10 h-10 bg-white text-black flex items-center justify-center hover:opacity-80 transition"
+      className="w-10 h-10 bg-white text-black flex items-center justify-center hover:opacity-80 transition"
     >
       <FaInstagram />
     </a>
@@ -415,7 +415,7 @@ export default function Footer() {
       href={socialLinks.dribbble}
       target="_blank"
       rel="noopener noreferrer"
-      // className="w-10 h-10 bg-white text-black flex items-center justify-center hover:opacity-80 transition"
+      className="w-10 h-10 bg-white text-black flex items-center justify-center hover:opacity-80 transition"
     >
       <FaDribbble />
     </a>

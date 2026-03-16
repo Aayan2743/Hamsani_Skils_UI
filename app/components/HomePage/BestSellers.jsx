@@ -19,7 +19,6 @@ export default function BestSellers() {
         const productsData = data?.data || [];
         setProducts(Array.isArray(productsData) ? productsData : []);
       } catch (error) {
-        console.error("Failed to fetch bestsellers:", error);
         setProducts([]);
       } finally {
         setLoading(false);

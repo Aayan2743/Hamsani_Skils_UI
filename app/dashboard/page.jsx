@@ -76,15 +76,12 @@ export default function DashboardHome() {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const userStr = localStorage.getItem("user");
+      const userId = localStorage.getItem("user_id");
       
-      if (!token || !userStr) {
+      if (!token || !userId) {
         setLoading(false);
         return;
       }
-
-      const user = JSON.parse(userStr);
-      const userId = user?.id;
 
       // Fetch wishlist count with individual error handling
       try {
@@ -95,7 +92,6 @@ export default function DashboardHome() {
           setWishlistCount(wishlistRes.data.data?.length || 0);
         }
       } catch (wishlistError) {
-        console.error("Failed to fetch wishlist:", wishlistError);
         setWishlistCount(0);
       }
 
@@ -105,6 +101,7 @@ export default function DashboardHome() {
           const ordersRes = await api.get(`/admin-dashboard/orders?user_id=${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
+
           if (ordersRes.data.success) {
             const ordersData = ordersRes.data.data || [];
             
@@ -125,13 +122,11 @@ export default function DashboardHome() {
           })));
         }
         } catch (ordersError) {
-          console.error("Failed to fetch orders:", ordersError);
           setOrdersCount(0);
           setRecentOrders([]);
         }
       }
     } catch (error) {
-      console.error("Failed to fetch dashboard data:", error);
     } finally {
       setLoading(false);
     }

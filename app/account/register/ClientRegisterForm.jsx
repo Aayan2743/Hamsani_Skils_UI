@@ -256,11 +256,10 @@ export default function SignupPage() {
       });
 
       const json = res.data;
-
       // STORE TOKEN + USER
       localStorage.setItem("token", json.token);
       localStorage.setItem("token_type", json.token_type);
-      localStorage.setItem("user", JSON.stringify(json.user));
+      localStorage.setItem("user", JSON.stringify(json));
 
       toast.success("Account created successfully 🎉");
       router.push(redirect);

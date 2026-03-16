@@ -4,6 +4,7 @@ import { FiTrash2, FiEdit, FiPlus, FiShoppingBag } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useCart } from "../providers/CartProvider";
+import { useAuth } from "./context/AuthProvider";
 import AddAddessModal from "./AddAddressModal";
 import OTPAuthModal from "./OTPAuthModal";
 import PaymentLoader from "./PaymentLoader";
@@ -13,10 +14,10 @@ import api from "../utils/apiInstance";
 
 export default function TestComponent({ open, onClose }) {
   const { items, updateQty, removeFromCart, clearCart } = useCart();
+  const { user } = useAuth();
   const cartItems = Object.values(items ?? {});
   const router = useRouter();
 
-  const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
 
   /* OTP AUTH MODAL */
@@ -48,8 +49,11 @@ export default function TestComponent({ open, onClose }) {
   /* LOAD TOKEN ON MOUNT */
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setToken(localStorage.getItem("token"));
-      setUserId(localStorage.getItem("user_id"));
+      // Get user_id from localStorage
+      const storedUserId = localStorage.getItem("user_id");
+      if (storedUserId) {
+        setUserId(storedUserId);
+      }
     }
   }, []);
 
@@ -57,11 +61,19 @@ export default function TestComponent({ open, onClose }) {
   useEffect(() => {
     const fetchPaymentGateways = async () => {
       try {
-        const response = await api.get("/user-dashboard/list-payment-gateways");
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          return;
+        }
+
+        const response = await api.get("/user-dashboard/list-payment-gateways", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        
         const gatewayData = response.data.data || response.data;
         setPaymentGateways(gatewayData);
       } catch (error) {
-        console.error("Failed to fetch payment gateways:", error);
       }
     };
 
@@ -92,7 +104,7 @@ export default function TestComponent({ open, onClose }) {
 
   /* FETCH ADDRESS */
   const fetchAddresses = async () => {
-    if (!token) return;
+    if (!user) return;
 
     try {
       setAddressLoading(true);
@@ -100,16 +112,13 @@ export default function TestComponent({ open, onClose }) {
       // Add cache busting parameter
       const timestamp = new Date().getTime();
       const res = await api.get(`/user-dashboard/cart/get-address?_t=${timestamp}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
       });
 
       const data = res?.data?.data || [];
-      console.log("Total addresses from API:", data.length);
-      console.log("Address data:", data);
       
       // Limit to only 2 addresses
       const limitedAddresses = data.slice(0, 2);
-      console.log("Limited addresses:", limitedAddresses.length);
       
       // Force state update by creating new array
       setAddresses([...limitedAddresses]);
@@ -130,7 +139,6 @@ export default function TestComponent({ open, onClose }) {
         );
       }
     } catch (error) {
-      console.error("Failed to fetch addresses:", error);
       toast.error("Failed to load addresses");
     } finally {
       setAddressLoading(false);
@@ -138,11 +146,10 @@ export default function TestComponent({ open, onClose }) {
   };
 
   useEffect(() => {
-    if (open && token) {
-      console.log("Cart opened, fetching addresses...");
+    if (open && user) {
       fetchAddresses();
     }
-  }, [open, token, addressRefreshTrigger,close]);
+  }, [open, user, addressRefreshTrigger]);
 
   /* APPLY COUPON */
   const handleApplyCoupon = async () => {
@@ -152,7 +159,7 @@ export default function TestComponent({ open, onClose }) {
       const res = await api.post(
         "/user-dashboard/cart/apply-coupon",
         { code: coupon.trim(), amount: subtotal },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
       setCouponData(res.data);
@@ -166,7 +173,7 @@ export default function TestComponent({ open, onClose }) {
   /* HANDLE PLACE ORDER BUTTON */
   const handlePlaceOrder = () => {
     // First check if user is logged in
-    if (!token) {
+    if (!user) {
       setShowOTPAuth(true);
       return;
     }
@@ -220,6 +227,8 @@ export default function TestComponent({ open, onClose }) {
     try {
       setLoadingMessage("Creating order...");
       
+      const token = localStorage.getItem("token");
+      
       const createRes = await api.post(
         "/user-dashboard/cart/create-order",
         { amount: finalTotal },
@@ -231,7 +240,6 @@ export default function TestComponent({ open, onClose }) {
 
       // Use Razorpay key from API or fallback to env variable
       const razorpayKey = paymentGateways?.razorpay_key
-  console.log("test",razorpayKey)
       const options = {
         key: razorpayKey,
         amount: order.amount,
@@ -244,6 +252,7 @@ export default function TestComponent({ open, onClose }) {
           setLoadingMessage("Verifying payment...");
           
           try {
+            const token = localStorage.getItem("token");
             await api.post(
               "/user-dashboard/cart/verify-payment",
               response,
@@ -281,6 +290,8 @@ export default function TestComponent({ open, onClose }) {
     setLoadingMessage("Creating PhonePe order...");
 
     try {
+      const token = localStorage.getItem("token");
+      
       // Create PhonePe order with the same payload structure
       const payload = {
         user_id: userId,
@@ -308,6 +319,7 @@ export default function TestComponent({ open, onClose }) {
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      
       // Check if API returned success
       if (response.data.success) {
         setLoadingMessage("PhonePe payment successful!");
@@ -350,6 +362,8 @@ export default function TestComponent({ open, onClose }) {
     setLoadingMessage("Initializing Cashfree...");
 
     try {
+      const token = localStorage.getItem("token");
+      
       const response = await api.post(
         "/user-dashboard/cart/cashfree/initiate",
         {
@@ -380,6 +394,8 @@ export default function TestComponent({ open, onClose }) {
     setLoadingMessage("Initializing PayU...");
 
     try {
+      const token = localStorage.getItem("token");
+      
       const response = await api.post(
         "/user-dashboard/cart/payu/initiate",
         {
@@ -407,6 +423,12 @@ export default function TestComponent({ open, onClose }) {
   /* COMPLETE ORDER - COMMON FUNCTION */
   const completeOrder = async (paymentMethod, paymentDetails) => {
     try {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
       const payload = {
         user_id: userId,
         address_id: selectedAddress.id,
@@ -429,7 +451,7 @@ export default function TestComponent({ open, onClose }) {
         })),
       };
 
-      await api.post("/user-dashboard/orders", payload, {
+      const response = await api.post("/user-dashboard/orders", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -474,8 +496,6 @@ export default function TestComponent({ open, onClose }) {
         <h2 className="text-xl font-semibold mb-3">
           Your Cart ({cartItems.length})
         </h2>
-
-        {/* EMPTY CART MESSAGE */}
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4">
             <div className="relative mb-6">
@@ -508,25 +528,91 @@ export default function TestComponent({ open, onClose }) {
           <>
             {/* CART ITEMS */}
             {cartItems.map((item, i) => (
-              <div key={i} className="flex gap-3 border p-2 rounded mb-2">
+              <div key={i} className="flex gap-3 border p-3 rounded mb-3 bg-white hover:shadow-md transition">
                 <img
                   src={item.img || "/placeholder.png"}
-                  className="w-16 h-16 object-cover"
-                  alt=""
+                  className="w-16 h-16 object-cover rounded"
+                  alt={item.title || item.name}
                 />
                 <div className="flex-1">
-                  <p className="font-medium">{item.name}</p>
-                  <p>₹{item.price} × {item.qty}</p>
+                  <p className="font-semibold text-gray-800 text-sm">{item.title || item.name}</p>
+                  
+                  {/* Size */}
+                  {item.size && (
+                    <div className="text-xs text-gray-600 mt-1">
+                      <span className="font-medium">Size:</span> {item.size}
+                    </div>
+                  )}
 
-                  <div className="flex gap-2 mt-1">
-                    <button onClick={() => handleQtyChange(item.product_id, -1)}>-</button>
-                    <span>{item.qty}</span>
-                    <button onClick={() => handleQtyChange(item.product_id, 1)}>+</button>
+                  {/* Price with Color Swatch */}
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-[#8B4513]">₹{item.price}</p>
+                      {item.color ? (
+                        <div className="flex items-center gap-1.5">
+                          <div
+                            className="w-6 h-6 rounded-full border-2 border-gray-300"
+                            style={{ backgroundColor: item.colorCode || "#cccccc" }}
+                            title={item.color}
+                          />
+                          <span className="text-xs text-gray-600">{item.color}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">No color</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1">
+                      <button 
+                        onClick={() => handleQtyChange(item.product_id, -1)}
+                        className="text-gray-600 hover:text-gray-800 font-bold"
+                      >
+                        −
+                      </button>
+                      <span className="w-6 text-center font-medium text-sm">{item.qty}</span>
+                      <button 
+                        onClick={() => handleQtyChange(item.product_id, 1)}
+                        className="text-gray-600 hover:text-gray-800 font-bold"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Available Colors */}
+                  {item.allVariants && item.allVariants.length > 1 && (
+                    <div className="mt-2 flex items-center gap-2">
+                      {/* <span className="text-xs font-medium text-gray-600">Other colors:</span> */}
+                      {/* <div className="flex gap-1.5">
+                        {item.allVariants.map((variant, idx) => {
+                          const colorValue = variant.values?.[0]?.value;
+                          const colorCode = variant.values?.[0]?.color_code;
+                          const isSelected = colorValue === item.color;
+                          return (
+                            <div
+                              key={idx}
+                              className={`w-5 h-5 rounded-full border-2 hover:border-gray-600 cursor-pointer transition ${
+                                isSelected ? "border-[#8B4513] ring-2 ring-[#8B4513]" : "border-gray-300"
+                              }`}
+                              style={{ backgroundColor: colorCode || "#cccccc" }}
+                              title={colorValue || "Color"}
+                            />
+                          );
+                        })}
+                      </div> */}
+                    </div>
+                  )}
+
+                  {/* Total for this item */}
+                  {/* <p className="text-xs text-gray-500 mt-1">
+                    Totala: ₹{(item.price * item.qty).toFixed(2)}
+                  </p> */}
                 </div>
 
-                <button onClick={() => removeFromCart(item.product_id)}>
-                  <FiTrash2 />
+                <button 
+                  onClick={() => removeFromCart(item.product_id)}
+                  className="text-red-500 hover:text-red-700 transition"
+                >
+                  <FiTrash2 size={18} />
                 </button>
               </div>
             ))}
@@ -621,7 +707,7 @@ export default function TestComponent({ open, onClose }) {
                         try {
                           setAddressLoading(true);
                           await api.delete(`/user-dashboard/cart/delete-address/${addr.id}`, {
-                            headers: { Authorization: `Bearer ${token}` },
+                            headers: { Authorization: `Bearer ${user.token}` },
                           });
                           toast.success("Address deleted successfully");
                           await fetchAddresses();
@@ -727,14 +813,10 @@ export default function TestComponent({ open, onClose }) {
           setEditAddress(null);
         }}
         onSuccess={async (newAddressData) => {
-          console.log("Address saved, refreshing list...");
-          
           // Immediately fetch fresh addresses
           try {
             await fetchAddresses();
-            console.log("Address list refreshed successfully");
           } catch (error) {
-            console.error("Failed to refresh addresses:", error);
           }
           
           // Close the address modal
@@ -748,16 +830,24 @@ export default function TestComponent({ open, onClose }) {
         open={showOTPAuth}
         onClose={() => setShowOTPAuth(false)}
         onSuccess={() => {
-          setToken(localStorage.getItem("token"));
-          setUserId(localStorage.getItem("user_id"));
-          fetchAddresses();
+          const userStr = localStorage.getItem("user");
+          if (userStr) {
+            try {
+              const user = JSON.parse(userStr);
+              setUserId(user?.id?.toString());
+            } catch (e) {
+              // Failed to parse user
+            }
+          }
           setShowOTPAuth(false);
+          setShowAddAddress(false);
+          fetchAddresses();
           // After successful login, show payment modal
           setTimeout(() => {
             if (selectedAddress) {
               setShowPaymentMethod(true);
             } else {
-              toast.info("Please select a delivery address");
+              toast.error("Please select a delivery address");
             }
           }, 500);
         }}

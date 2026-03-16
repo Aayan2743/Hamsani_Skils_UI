@@ -16,7 +16,6 @@ export default function NewArrivals() {
         const productsData = data?.data || [];
         setProducts(Array.isArray(productsData) ? productsData : []);
       } catch (error) {
-        console.error("Failed to fetch new arrivals:", error);
         setProducts([]);
       } finally {
         setLoading(false);

@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { dropdownMenu } from "../utils/animations.js";
 
 import { useCart } from "../providers/CartProvider";
+import { useAuth } from "./context/AuthProvider";
 import TestComponent from "./TestComponent";
 
 import { 
@@ -30,12 +31,12 @@ export default function HeaderNewClient({ initialMenuData = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [token, setToken] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mounted, setMounted] = useState(false);
   const accountDropdownTimer = useRef(null);
 
   const { count, cartOpen, setCartOpen } = useCart();
+  const { user, logout: authLogout } = useAuth();
   const router = useRouter();
   const dropdownRef = useRef(null);
 
@@ -44,25 +45,22 @@ export default function HeaderNewClient({ initialMenuData = [] }) {
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window !== "undefined") {
-      setToken(localStorage.getItem("token"));
-      
-      // Fetch fresh menu data from API on client side only
-      const fetchMenu = async () => {
-        try {
-          // Dynamically import api to avoid SSR issues
-          const { default: api } = await import("../utils/apiInstance");
-          const response = await api.get('/ecom/menu');
-          const data = response.data;
-          const menuItems = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : initialMenuData);
-          setMenuData(menuItems);
-        } catch (error) {
-          // Silently use fallback menu - expected if API is unavailable
-        }
-      };
-      
-      fetchMenu();
-    }
+    
+    // Fetch fresh menu data from API on client side only
+    const fetchMenu = async () => {
+      try {
+        // Dynamically import api to avoid SSR issues
+        const { default: api } = await import("../utils/apiInstance");
+        const response = await api.get('/ecom/menu');
+        const data = response.data;
+        const menuItems = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : initialMenuData);
+        setMenuData(menuItems);
+      } catch (error) {
+        // Silently use fallback menu - expected if API is unavailable
+      }
+    };
+    
+    fetchMenu();
   }, [initialMenuData]);
 
   useEffect(() => {
@@ -81,7 +79,7 @@ export default function HeaderNewClient({ initialMenuData = [] }) {
   }, []);
 
   const logout = () => {
-    localStorage.clear();
+    authLogout();
     router.push("/");
     window.location.reload();
   };
@@ -98,7 +96,7 @@ export default function HeaderNewClient({ initialMenuData = [] }) {
     if (accountDropdownTimer.current) {
       clearTimeout(accountDropdownTimer.current);
     }
-    if (token) {
+    if (user) {
       setAccountOpen(true);
     }
   };
@@ -192,15 +190,17 @@ export default function HeaderNewClient({ initialMenuData = [] }) {
                 onMouseLeave={handleAccountMouseLeave}
               >
                 <button
-                  onClick={() => !token && router.push("/account/login")}
+                  onClick={() => !user && router.push("/account/login")}
                   className="flex flex-col items-center gap-1 hover:text-[#8B4513] transition-colors"
                 >
                   <UserIcon className="w-6 h-6" />
-                  <span className="text-xs hidden md:block">Account</span>
+                  <span className="text-xs hidden md:block">
+                    {user ? (user?.name || "Account") : "Login"}
+                  </span>
                 </button>
 
                 <AnimatePresence>
-                  {token && accountOpen && (
+                  {user && accountOpen && (
                     <motion.div
                       initial="hidden"
                       animate="visible"

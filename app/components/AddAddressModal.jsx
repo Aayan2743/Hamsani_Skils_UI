@@ -4,6 +4,7 @@ import { FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import api from "../utils/apiInstance";
 import axios from "axios";
+import { useAuth } from "./context/AuthProvider";
 import OTPAuthModal from "./OTPAuthModal";
 
 export default function AddAddressModal({
@@ -13,6 +14,7 @@ export default function AddAddressModal({
   editData = null,
   currentAddressCount = 0,
 }) {
+  const { user } = useAuth();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -137,8 +139,7 @@ export default function AddAddressModal({
       return;
     }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!user) {
       toast.error("Please login to continue");
       setShowOTPAuth(true);
       return;
@@ -153,7 +154,7 @@ export default function AddAddressModal({
 
       const res = await api.post(url, form, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       });
 

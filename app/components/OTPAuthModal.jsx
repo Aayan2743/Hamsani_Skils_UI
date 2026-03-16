@@ -274,9 +274,11 @@ import { useState } from "react";
 import { FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import api from "../utils/apiInstance";
+import { useAuth } from "./context/AuthProvider";
 import Link from "next/link";
 
 export default function OTPAuthModal({ open, onClose, onSuccess }) {
+  const { login } = useAuth();
   const [step, setStep] = useState("phone");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -332,15 +334,38 @@ export default function OTPAuthModal({ open, onClose, onSuccess }) {
       });
 
       if (res.data?.status && res.data?.token) {
-        const { token, user } = res.data;
+        // Extract token and user from top level
+        const token = res.data.token;
+        const user = res.data.user;
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        if (!token) {
+          toast.error("No token received from server");
+          setLoading(false);
+          return;
+        }
 
-        toast.success(res.data.message || "Login successful");
+        if (!user || typeof user !== 'object' || Object.keys(user).length === 0) {
+          toast.error("No user data received from server");
+          setLoading(false);
+          return;
+        }
 
-        if (onSuccess) onSuccess();
-        handleClose();
+        // Use AuthProvider's login function to store everything properly
+        try {
+          login({ token, user });
+          
+          toast.success(res.data.message || "Login successful");
+
+          // Wait a moment for context to update before calling onSuccess
+          setTimeout(() => {
+            if (onSuccess) onSuccess();
+            handleClose();
+          }, 100);
+        } catch (loginError) {
+          toast.error("Failed to save login data");
+          setLoading(false);
+          return;
+        }
       } else {
         toast.error(res.data?.message || "Invalid OTP");
       }
@@ -455,17 +480,6 @@ export default function OTPAuthModal({ open, onClose, onSuccess }) {
             >
               Please provide WhatsApp Number
             </p>
-          </div>
-
-          {/* USERNAME LOGIN LINK */}
-          <div className="mt-6 text-center">
-            <Link
-              href="/account/login"
-              onClick={handleClose}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Login With Username & Password
-            </Link>
           </div>
         </div>
       </div>

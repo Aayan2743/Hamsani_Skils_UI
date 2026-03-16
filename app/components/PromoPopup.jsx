@@ -428,7 +428,7 @@ export default function PromoPopup() {
           }
         }
       } catch (error) {
-        console.error("Banner API Error:", error);
+        // Banner API Error
       }
     };
 

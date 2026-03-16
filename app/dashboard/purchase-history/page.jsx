@@ -273,32 +273,47 @@ export default function OrderDetailsPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const userStr = localStorage.getItem("user");
         const token = localStorage.getItem("token");
+        let userId = localStorage.getItem("user_id");
 
-        if (!userStr || !token) {
+        if (!token) {
           router.push("/account/login");
           return;
         }
-        const user = JSON.parse(userStr);
-        const userId = user?.id;
+
+        // If no user_id, try to get it from user object
+        if (!userId) {
+          const userStr = localStorage.getItem("user");
+          if (userStr) {
+            try {
+              const user = JSON.parse(userStr);
+              userId = user?.id?.toString();
+            } catch (parseError) {
+              // Failed to parse user from localStorage
+            }
+          }
+        }
+
         if (!userId) {
           setLoading(false);
           return;
         }
-        const res = await api.get(`/user-dashboard/orders`, {
+        
+        const res = await api.get(`/user-dashboard/orders?user_id=${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
           },
         });
-
+        
         if (res.status === 200 && res.data?.success) {
           const ordersData = res.data.data || [];
           setOrders(ordersData);
+        } else {
+          setOrders([]);
         }
       } catch (error) {
-        console.error("Failed to fetch orders", error);
+        setOrders([]);
       } finally {
         setLoading(false);
       }

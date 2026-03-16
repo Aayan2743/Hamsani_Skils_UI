@@ -95,8 +95,7 @@ export default function HeroCarousel() {
         }
         // If no data from API, slides will remain as FALLBACK_SLIDES
       } catch (error) {
-        console.error('Failed to fetch banners, using fallback data');
-        // Keep fallback slides on error
+        // Failed to fetch banners, using fallback data
       } finally {
         setLoading(false);
       }

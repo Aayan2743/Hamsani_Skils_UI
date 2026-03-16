@@ -62,29 +62,42 @@ export function AuthProvider({ children }) {
   useTokenExpiry();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userStr = localStorage.getItem("user");
-    
-    let userData = null;
-    if (userStr) {
-      try {
-        userData = JSON.parse(userStr);
-      } catch {
-        userData = { name: userStr };
+    const initializeAuth = () => {
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+      
+      let userData = null;
+      if (userStr) {
+        try {
+          userData = JSON.parse(userStr);
+        } catch {
+          userData = { name: userStr };
+        }
       }
-    }
 
-    if (token && userData) {
-      setUser({ ...userData, token });
-    }
+      if (token && userData) {
+        setUser({ ...userData, token });
+      }
 
-    setLoading(false);
+      setLoading(false);
+    };
+
+    initializeAuth();
+    // Listen for storage changes (for cross-tab sync and immediate updates)
+    const handleStorageChange = () => {
+      initializeAuth();
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const login = ({ token, name }) => {
+  const login = ({ token, user }) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify({ name }));
-    setUser({ name, token });
+    localStorage.setItem("user", JSON.stringify(user));
+    if (user?.id) {
+      localStorage.setItem("user_id", user.id.toString());
+    }
+    setUser({ ...user, token });
   };
 
   const logout = () => {

@@ -36,7 +36,6 @@ const FALLBACK_MENU = [
 export const getMenuData = cache(async () => {
   // During build time, return fallback immediately
   if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_BASE_URL) {
-    console.log('Build time: Using fallback menu');
     return FALLBACK_MENU;
   }
 
@@ -59,15 +58,12 @@ export const getMenuData = cache(async () => {
     }
 
     const data = await response.json();
-    console.log('Menu API Response:', data);
     
     // Handle different response structures
     const menuData = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : FALLBACK_MENU);
-    console.log('Processed Menu Data:', menuData);
     
     return menuData;
   } catch (error) {
-    // console.error('Failed to fetch menu:', error.message);
     // Return fallback menu if API fails
     return FALLBACK_MENU;
   }
@@ -121,7 +117,6 @@ export async function getMenuDataClient() {
 
     return data;
   } catch (error) {
-    console.error('Failed to fetch menu:', error);
     return FALLBACK_MENU;
   }
 }
