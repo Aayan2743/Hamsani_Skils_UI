@@ -474,27 +474,27 @@ function ProductDetailsContent() {
               </div>
             )}
 
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              {selectedVariant.quantity > 0 ? (
+            <div className={`border rounded-lg p-3 ${Number(selectedVariant.quantity) > 0 ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}>
+              {Number(selectedVariant.quantity) > 0 ? (
                 <p className="text-green-700 font-medium text-sm">
                   ✓ {selectedVariant.quantity} products available in stock
                 </p>
               ) : (
-                <p className="text-red-700 font-medium text-sm"> Out of Stock</p>
+                <p className="text-red-700 font-medium text-sm">✗ Out of Stock</p>
               )}
             </div>
 
             <div className="flex gap-4 pt-2">
               <button
                 onClick={handleAddToCart}
-                disabled={selectedVariant.quantity === 0}
+                disabled={Number(selectedVariant.quantity) === 0}
                 className="flex-1 bg-white border-2 border-[#8B4513] text-[#8B4513] hover:bg-[#8B4513] hover:text-white py-3 rounded-lg font-semibold transition disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
               >
                 ADD TO CART
               </button>
               <button
                 onClick={handleBuyNow}
-                disabled={selectedVariant.quantity === 0}
+                disabled={Number(selectedVariant.quantity) === 0}
                 className="flex-1 bg-[#FF5722] hover:bg-[#E64A19] text-white py-3 rounded-lg font-semibold transition disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 BUY NOW

@@ -180,7 +180,7 @@ export default function TestComponent({ open, onClose }) {
 
     // Then check if address is selected
     if (!selectedAddress) {
-      toast.error("Please select a delivery address");
+      // toast.error("Please select a delivery address");
       return;
     }
 
@@ -616,7 +616,8 @@ export default function TestComponent({ open, onClose }) {
               </div>
             ))}
 
-        {/* ADDRESS SECTION */}
+        {/* ADDRESS SECTION - Only visible when logged in */}
+        {user && (
         <div className="mt-5">
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-semibold text-gray-800">Delivery Address</h3>
@@ -726,8 +727,10 @@ export default function TestComponent({ open, onClose }) {
           ))
           )}
         </div>
+        )}
 
-        {/* COUPON */}
+        {/* COUPON - Only visible when logged in */}
+        {user && (
         <div className="mt-4">
           <h3 className="font-semibold mb-2">Apply Coupon</h3>
 
@@ -754,6 +757,7 @@ export default function TestComponent({ open, onClose }) {
             </p>
           )}
         </div>
+        )}
 
         {/* TOTAL */}
         <div className="mt-5 border-t pt-3 text-sm space-y-1">
@@ -846,7 +850,7 @@ export default function TestComponent({ open, onClose }) {
             if (selectedAddress) {
               setShowPaymentMethod(true);
             } else {
-              toast.error("Please select a delivery address");
+              // toast.error("Please select a delivery address");
             }
           }, 500);
         }}

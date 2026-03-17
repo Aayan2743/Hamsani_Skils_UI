@@ -776,11 +776,17 @@ export default function CartSidebar({ open, onClose }) {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   /* LOAD TOKEN ON MOUNT */
+  const [token, setToken] = useState(null);
+  const [mounted, setMounted] = useState(false);
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("token");
+      setToken(storedToken);
       setUserId(localStorage.getItem("user_id"));
+      setMounted(true);
     }
-  }, []);
+  }, [open]); // re-check token every time cart opens
 
   /* TOTAL CALCULATION */
   const subtotal = cartItems.reduce(
@@ -804,7 +810,7 @@ export default function CartSidebar({ open, onClose }) {
 
   /* FETCH ADDRESS */
   const fetchAddresses = async () => {
-    if (!user) return;
+    if (!user?.token) return;
 
     try {
       const res = await api.get("/user-dashboard/cart/get-address", {
@@ -812,10 +818,7 @@ export default function CartSidebar({ open, onClose }) {
       });
 
       const data = res?.data?.data || [];
-      
-      // Limit to only 2 addresses
       const limitedAddresses = data.slice(0, 2);
-      
       setAddresses(limitedAddresses);
       setSelectedAddress(
         limitedAddresses.find((a) => a.is_default === 1) || limitedAddresses[0] || null
@@ -827,6 +830,7 @@ export default function CartSidebar({ open, onClose }) {
 
   useEffect(() => {
     if (open && user) fetchAddresses();
+    if (open && !user) setAddresses([]);
   }, [open, user]);
 
   /* APPLY COUPON */
@@ -1128,7 +1132,8 @@ export default function CartSidebar({ open, onClose }) {
               </div>
             ))}
 
-        {/* ADDRESS SECTION */}
+        {/* ADDRESS SECTION - Only show if user is logged in */}
+        {user && (
         <div className="mt-5">
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-semibold text-gray-800">Delivery Address</h3>
@@ -1148,7 +1153,6 @@ export default function CartSidebar({ open, onClose }) {
               <FiPlus className="w-4 h-4" /> Add New
             </button>
           </div>
-
           {addresses.length >= 2 && (
             <p className="text-xs text-orange-600 mb-2 bg-orange-50 p-2 rounded border border-orange-200">
               Maximum 2 addresses allowed. Please edit or delete an existing address.
@@ -1231,6 +1235,7 @@ export default function CartSidebar({ open, onClose }) {
             </div>
           ))}
         </div>
+        )}
 
         {/* COUPON */}
         <div className="mt-4">
