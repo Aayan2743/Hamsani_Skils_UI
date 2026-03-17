@@ -100,7 +100,7 @@ function ProductCard({ product }) {
           {/* Discount Badge */}
           {variant?.discount > 0 && (
             <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-              {variant.discount}% OFF
+              {Math.round(variant.discount)}% OFF
             </div>
           )}
         </div>

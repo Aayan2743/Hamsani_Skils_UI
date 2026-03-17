@@ -139,7 +139,8 @@ function ProductDetailsContent() {
 
   function handleAddToCart() {
     const cartItem = {
-      product_id: product.id,
+      product_id: `${product.id}-${selectedVariant.id}`, // Use variant ID to make it unique
+      variant_id: selectedVariant.id,
       title: product.name,
       price: finalPrice,
       img: currentImage,
@@ -230,7 +231,8 @@ function ProductDetailsContent() {
 
   function handleBuyNow() {
     addToCart({
-      product_id: product.id,
+      product_id: `${product.id}-${selectedVariant.id}`, // Use variant ID to make it unique
+      variant_id: selectedVariant.id,
       title: product.name,
       price: finalPrice,
       img: currentImage,
@@ -353,7 +355,7 @@ function ProductDetailsContent() {
                     ₹{Number(selectedVariant.extra_price).toLocaleString()}
                   </span>
                   <span className="bg-green-100 text-green-700 text-sm font-semibold px-2 py-1 rounded">
-                   {selectedVariant.discount} % OFF
+                   {Math.round(selectedVariant.discount)}% OFF
                   </span>
                 </>
               )}
@@ -364,33 +366,111 @@ function ProductDetailsContent() {
             </p> */}
 
             {product.variant_combinations.length > 0 && (
-              <div>
-                {/* <div className="flex items-center justify-between mb-3">
-                  <p className="font-semibold text-[#2C1810] uppercase text-sm">Select Color</p>
-                  {selectedVariant.values?.[0] && (
-                    <span className="text-sm text-gray-600">
-                      {selectedVariant.values[0].value}
-                    </span>
-                  )}
-                </div> */}
-                {/* <div className="flex gap-3 flex-wrap">
-                  {product.variant_combinations.map((variant) => {
+              <div className="space-y-5">
+                {/* Extract unique colors */}
+                {(() => {
+                  const uniqueColors = [];
+                  const colorMap = new Map();
+                  product.variant_combinations.forEach((variant) => {
                     const color = variant.values?.[0];
-                    return (
-                      <button
-                        key={variant.id}
-                        onClick={() => setSelectedVariant(variant)}
-                        className={`w-10 h-10 rounded-full border-2 transition ${
-                          selectedVariant.id === variant.id
-                            ? "border-[#8B4513] ring-2 ring-[#8B4513] ring-offset-2"
-                            : "border-gray-300 hover:border-gray-400"
-                        }`}
-                        style={{ backgroundColor: color?.color_code || "#ccc" }}
-                        title={color?.value || "Color"}
-                      />
-                    );
-                  })}
-                </div> */}
+                    if (color && !colorMap.has(color.id)) {
+                      colorMap.set(color.id, color);
+                      uniqueColors.push(color);
+                    }
+                  });
+                  
+                  return uniqueColors.length > 0 ? (
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="font-semibold text-[#2C1810] uppercase text-sm">Select Color</p>
+                        {selectedVariant.values?.[0] && (
+                          <span className="text-sm text-gray-600">
+                            {/* {selectedVariant.values[0].value} */}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-3 flex-wrap">
+                        {uniqueColors.map((color) => {
+                          const variantWithColor = product.variant_combinations.find(
+                            (v) => v.values?.[0]?.id === color.id
+                          );
+                          return (
+                            <button
+                              key={color.id}
+                              onClick={() => {
+                                if (variantWithColor) {
+                                  setSelectedVariant(variantWithColor);
+                                }
+                              }}
+                              className={`w-8 h-8 rounded-full border-2 transition ${
+                                selectedVariant.values?.[0]?.id === color.id
+                                  ? "border-[#8B4513] ring-2 ring-[#8B4513] ring-offset-2"
+                                  : "border-gray-300 hover:border-gray-400"
+                              }`}
+                              style={{ backgroundColor: color?.color_code || "#ccc" }}
+                              title={color?.value || "Color"}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
+
+                {/* Extract unique sizes for selected color */}
+                {(() => {
+                  const selectedColor = selectedVariant.values?.[0];
+                  const variantsWithSelectedColor = product.variant_combinations.filter(
+                    (v) => v.values?.[0]?.id === selectedColor?.id
+                  );
+                  
+                  const uniqueSizes = [];
+                  const sizeMap = new Map();
+                  variantsWithSelectedColor.forEach((variant) => {
+                    const size = variant.values?.[1];
+                    if (size && !sizeMap.has(size.id)) {
+                      sizeMap.set(size.id, size);
+                      uniqueSizes.push(size);
+                    }
+                  });
+                  
+                  return uniqueSizes.length > 0 ? (
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="font-semibold text-[#2C1810] uppercase text-sm">Select Size</p>
+                        {selectedVariant.values?.[1] && (
+                          <span className="text-sm text-gray-600">
+                            {/* {selectedVariant.values[1].value} */}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2 flex-wrap">
+                        {uniqueSizes.map((size) => {
+                          const variantWithSize = variantsWithSelectedColor.find(
+                            (v) => v.values?.[1]?.id === size.id
+                          );
+                          return (
+                            <button
+                              key={size.id}
+                              onClick={() => {
+                                if (variantWithSize) {
+                                  setSelectedVariant(variantWithSize);
+                                }
+                              }}
+                              className={`px-3 py-1 border-2 rounded-lg font-medium text-xs transition ${
+                                selectedVariant.values?.[1]?.id === size.id
+                                  ? "border-[#8B4513] bg-[#8B4513] text-white"
+                                  : "border-gray-300 text-[#2C1810] hover:border-[#8B4513]"
+                              }`}
+                            >
+                              {size.value}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
               </div>
             )}
 
@@ -400,7 +480,7 @@ function ProductDetailsContent() {
                   ✓ {selectedVariant.quantity} products available in stock
                 </p>
               ) : (
-                <p className="text-red-700 font-medium text-sm">✗ Out of Stock</p>
+                <p className="text-red-700 font-medium text-sm"> Out of Stock</p>
               )}
             </div>
 
@@ -450,18 +530,17 @@ function ProductDetailsContent() {
               </div>
             </div> */}
 
-            <div className="border-t border-gray-300 pt-6 space-y-3">
-              
-              <div className="border-b border-gray-200">
+            <div className="border-t border-black-300 pt-6 space-y-3">
+              <div className="border-b border-black-200">
                 <button
                   onClick={() => toggleSection("details")}
                   className="w-full flex items-center justify-between py-3 text-left"
                 >
                   <span className="font-semibold text-[#2C1810] uppercase text-sm">Product Details</span>
                   {expandedSection === "details" ? (
-                    <ChevronUp size={20} className="text-gray-600" />
+                    <ChevronUp size={22} className="text-black-600" />
                   ) : (
-                    <ChevronDown size={20} className="text-gray-600" />
+                    <ChevronDown size={22} className="text-black-600" />
                   )}
                 </button>
                 {expandedSection === "details" && (
@@ -469,7 +548,6 @@ function ProductDetailsContent() {
                     {product.description && (
                       <p className="leading-relaxed whitespace-pre-line">{product.description}</p>
                     )}
-                    
                     <div className="grid grid-cols-2 gap-3 mt-4">
                       {selectedVariant.values?.[0]?.value && (
                         <div>
@@ -608,9 +686,9 @@ function ProductDetailsContent() {
                   >
                     <span className="font-semibold text-[#2C1810] uppercase text-sm">Product Declaration</span>
                     {expandedSection === "declaration" ? (
-                      <ChevronUp size={20} className="text-gray-600" />
+                      <ChevronUp size={16} className="text-gray-600" />
                     ) : (
-                      <ChevronDown size={20} className="text-gray-600" />
+                      <ChevronDown size={16} className="text-gray-600" />
                     )}
                   </button>
                   {expandedSection === "declaration" && (
@@ -637,9 +715,9 @@ function ProductDetailsContent() {
                   >
                     <span className="font-semibold text-[#2C1810] uppercase text-sm">Shipping & Returns</span>
                     {expandedSection === "shipping" ? (
-                      <ChevronUp size={20} className="text-gray-600" />
+                      <ChevronUp size={16} className="text-gray-600" />
                     ) : (
-                      <ChevronDown size={20} className="text-gray-600" />
+                      <ChevronDown size={16} className="text-gray-600" />
                     )}
                   </button>
                   {expandedSection === "shipping" && (
@@ -820,7 +898,7 @@ function SimilarProductCard({ product }) {
         />
         {discount > 0 && (
           <div className="absolute top-3 left-3 bg-[#E74C3C] text-white text-xs font-bold px-2 py-1 rounded">
-            -{discount}%
+            -{Math.round(discount)}%
           </div>
         )}
       </div>

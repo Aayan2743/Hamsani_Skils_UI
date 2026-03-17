@@ -53,6 +53,15 @@ export default function WishlistPage() {
     fetchWishlist();
   }, [refreshTrigger]);
 
+  useEffect(() => {
+    const handleWishlistUpdate = () => {
+      fetchWishlist();
+    };
+
+    window.addEventListener("wishlistUpdated", handleWishlistUpdate);
+    return () => window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
+  }, []);
+
   const removeWishlist = async (id) => {
     setRemovingId(id);
     
