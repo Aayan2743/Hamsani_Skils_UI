@@ -142,7 +142,7 @@ export default function DashboardHome() {
       icon: ShoppingCartIcon,
       color: "bg-blue-50",
       iconColor: "text-blue-600",
-      link: "/cart"
+      // link: "/cart"
     },
     {
       title: "Wishlist Items",
@@ -152,14 +152,14 @@ export default function DashboardHome() {
       iconColor: "text-rose-600",
       link: "/dashboard/wishlist"
     },
-    {
-      title: "Total Orders",
-      value: loading ? "..." : String(ordersCount).padStart(2, '0'),
-      icon: ShoppingBagIcon,
-      color: "bg-emerald-50",
-      iconColor: "text-emerald-600",
-      link: "/dashboard/purchase-history"
-    }
+    // {
+    //   title: "Total Orders",
+    //   value: loading ? "..." : String(ordersCount).padStart(2, '0'),
+    //   icon: ShoppingBagIcon,
+    //   color: "bg-emerald-50",
+    //   iconColor: "text-emerald-600",
+    //   link: "/dashboard/purchase-history"
+    // }
   ];
 
   return (
@@ -178,7 +178,7 @@ export default function DashboardHome() {
           <p className="text-white/90">Manage your orders, wishlist, and profile from your dashboard</p>
         </motion.div>
 
-        {/* Stats Grid */}
+
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {stats.map((stat, index) => (
             <motion.div
@@ -186,7 +186,7 @@ export default function DashboardHome() {
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
               className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow cursor-pointer"
             >
-              <Link href={stat.link}>
+              <div href={stat.link}>
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-gray-600 text-sm mb-2">{stat.title}</p>
@@ -196,11 +196,10 @@ export default function DashboardHome() {
                     <stat.icon className={`w-8 h-8 ${stat.iconColor}`} />
                   </div>
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </motion.div>
-
         {/* Recent Orders */}
         <motion.div variants={itemVariants} className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6 border-b border-gray-200">

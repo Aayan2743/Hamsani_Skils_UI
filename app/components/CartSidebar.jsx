@@ -1018,7 +1018,28 @@ export default function CartSidebar({ open, onClose }) {
           <>
             {/* CART ITEMS */}
             {cartItems.map((item, i) => (
-              <div key={i} className="flex gap-3 border p-3 rounded mb-3 bg-white hover:shadow-md transition">
+              <div 
+                key={i} 
+                className="relative flex gap-3 border p-3 rounded mb-3 bg-white hover:shadow-md transition cursor-pointer"
+                onClick={() => {
+                  if (item.product_id) {
+                    router.push(`/products/details?id=${item.product_id}`);
+                    onClose();
+                  }
+                }}
+              >
+                {/* Heart Icon */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition"
+                >
+                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                </button>
+
                 <img
                   src={item.img || "/placeholder.png"}
                   className="w-16 h-16 object-cover rounded"

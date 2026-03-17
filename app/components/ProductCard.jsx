@@ -139,10 +139,15 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/app/providers/CartProvider";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
+import api from "../utils/apiInstance";
+import { useWishlist } from "./WishlistContext";
 
 export default function ProductCard({ product }) {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { fetchWishlistFromAPI } = useWishlist ? useWishlist() : { fetchWishlistFromAPI: () => {} };
+  const [isLiked, setIsLiked] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const imageUrl =
     product.raw?.images?.find((img) => img.is_primary)?.image_url ||
@@ -188,6 +193,39 @@ export default function ProductCard({ product }) {
     });
     toast.success("Added to cart");
   };
+
+  const handleWishlist = async () => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      toast.error("Please login to manage wishlist");
+      router.push("/account/login");
+      return;
+    }
+    setWishlistLoading(true);
+    try {
+      const res = await api.post(
+        "/user-dashboard/wishlist-toggle",
+        { product_id: product.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data?.success) {
+        setIsLiked(!isLiked);
+        toast.success(isLiked ? "Removed from wishlist" : "Added to wishlist");
+        
+        // Dispatch event to refresh wishlist page
+        window.dispatchEvent(new Event("wishlistUpdated"));
+      } else {
+        toast.error("Failed to update wishlist");
+      }
+    } catch (error) {
+      toast.error("Failed to update wishlist");
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
   return (
     <div
       onClick={() => router.push(`/products/details?id=${product.slug}`)}
@@ -201,6 +239,20 @@ export default function ProductCard({ product }) {
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
+
+        {/* HEART ICON - TOP RIGHT */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleWishlist();
+          }}
+          disabled={wishlistLoading}
+          className="absolute top-3 right-3 bg-white/90 hover:bg-white rounded-full p-2 shadow-md transition-all hover:shadow-lg disabled:opacity-50"
+        >
+          <svg className={`w-5 h-5 transition ${isLiked ? 'fill-red-500 text-red-500' : 'text-red-500'}`} fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
 
         {/* BADGES */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">

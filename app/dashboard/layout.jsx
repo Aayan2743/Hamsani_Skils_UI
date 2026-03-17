@@ -84,7 +84,7 @@ export default function DashboardLayout({ children }) {
                             <button
                               type="button"
                               onClick={() => navigateTo(navPath)}
-                              className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all flex items-center gap-3 ${
+                              className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all flex items-center gap-3 cursor-pointer ${
                                 isActive 
                                   ? 'bg-[#8B4513] text-white shadow-md' 
                                   : 'text-gray-700 hover:bg-gray-100'
@@ -139,7 +139,7 @@ export default function DashboardLayout({ children }) {
                         <button
                           type="button"
                           onClick={() => navigateTo(navPath)}
-                          className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all flex items-center gap-3 ${
+                          className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all flex items-center gap-3 cursor-pointer ${
                             isActive
                               ? 'bg-[#8B4513] text-white shadow-md'
                               : 'text-gray-700 hover:bg-gray-100'

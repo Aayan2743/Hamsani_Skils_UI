@@ -601,7 +601,6 @@ export default function TestComponent({ open, onClose }) {
                       </div> */}
                     </div>
                   )}
-
                   {/* Total for this item */}
                   {/* <p className="text-xs text-gray-500 mt-1">
                     Totala: ₹{(item.price * item.qty).toFixed(2)}

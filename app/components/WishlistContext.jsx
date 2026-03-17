@@ -1,18 +1,49 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
+import api from "../utils/apiInstance";
 
 const WishlistContext = createContext();
 
 export function WishlistProvider({ children }) {
   const [wishlist, setWishlist] = useState([]);
+  const [wishlistProducts, setWishlistProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchWishlistFromAPI = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setWishlist([]);
+        setWishlistProducts([]);
+        return;
+      }
+
+      const res = await api.get("/user-dashboard/get-wishlist", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data?.success) {
+        const products = res.data.data || [];
+        setWishlistProducts(products);
+        setWishlist(products.map(p => p.id));
+      }
+    } catch (error) {
+      // Silent fail
+    }
+  };
 
   useEffect(() => {
-    setWishlist(JSON.parse(localStorage.getItem("wishlist")) || []);
+    fetchWishlistFromAPI();
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
-  }, [wishlist]);
+    const handleWishlistUpdate = () => {
+      fetchWishlistFromAPI();
+    };
+
+    window.addEventListener("wishlistUpdated", handleWishlistUpdate);
+    return () => window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
+  }, []);
 
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
@@ -21,7 +52,7 @@ export function WishlistProvider({ children }) {
   };
 
   return (
-    <WishlistContext.Provider value={{ wishlist, toggleWishlist }}>
+    <WishlistContext.Provider value={{ wishlist, wishlistProducts, toggleWishlist, fetchWishlistFromAPI, loading }}>
       {children}
     </WishlistContext.Provider>
   );
