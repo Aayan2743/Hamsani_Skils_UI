@@ -307,7 +307,7 @@ export default function TestComponent({ open, onClose }) {
           total_amount: finalTotal,
         },
         items: cartItems.map((item) => ({
-          product_id: item.product_id,
+          product_id: String(item.product_id).split("-")[0],
           quantity: item.qty,
           price: item.price,
           total: item.price * item.qty,
@@ -444,7 +444,7 @@ export default function TestComponent({ open, onClose }) {
           total_amount: finalTotal,
         },
         items: cartItems.map((item) => ({
-          product_id: item.product_id,
+          product_id: String(item.product_id).split("-")[0],
           quantity: item.qty,
           price: item.price,
           total: item.price * item.qty,
